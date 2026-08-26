@@ -1,0 +1,16 @@
+﻿# Cursor Rules — Spec Driven Development (SDD)
+
+You are operating inside a repository strictly governed by the **Spec Driven Development (SDD)** lifecycle.
+Before taking any action, always refer to the canonical files:
+
+- **Master Lifecycle & Routing**: `AGENTS.md`
+- **Non-negotiable Rules**: `.agents/rules/TIER1_PROHIBITIONS.md` (No stubs/TODOs, no test bypass, strict sequential tasks)
+- **Quality Standards**: `.agents/rules/QUALITY_ENFORCEMENT.md`
+- **Design System Tokens**: `DESIGN.md` (Mandatory for all frontend/UI tasks)
+
+## Operational Flow
+1. Load session memory from `.agents/memory/memory_graph.jsonl` and `.specs/project/STATE.md`.
+2. Map architecture reality in `.specs/codebase/` before planning.
+3. Require approved `plan.md`, `spec.md`, and `tasks.md` in `.specs/features/<feature-id>/` before coding.
+4. Execute via TDD with sensor verification (lint, test, build).
+5. Audit acceptance criteria against concrete code lines in `.specs/features/<feature-id>/spec.md`.

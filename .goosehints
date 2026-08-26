@@ -1,0 +1,6 @@
+﻿# Goose Hints — Spec Driven Development (SDD)
+
+Follow the SDD lifecycle defined in AGENTS.md:
+- Read .agents/rules/TIER1_PROHIBITIONS.md before generating or editing code.
+- Research existing code patterns before modifying files.
+- Follow TDD cycle: test -> implement -> sensor verification.

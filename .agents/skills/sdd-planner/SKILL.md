@@ -125,11 +125,10 @@ This is the primary tool for session continuity. It should be updated:
 ## ⚠️ Known Technical Debts
 - [Description] - [Priority: Low/Med/High]
 ```
-## More Templates:
- - Follow the [plan-template.md](references/plan-template.md) for detailed.
- - Follow the [specs-template.md](references/spec-template.md) for detailed.
- - Follow the [task-template.md](references/task-template.md) for detailed.
-
+## Reference Templates
+- [Plan Template](references/plan-template.md) — Problem statement, scope boundaries, and high-level strategy.
+- [Specification Template](references/spec-template.md) — User stories, BDD acceptance criteria, and sensor thresholds.
+- [Tasks Template](references/task-template.md) — Sequential atomic tasks table with evidence columns.
 
 ## Quality Rules
 
@@ -137,11 +136,9 @@ This is the primary tool for session continuity. It should be updated:
 - **Explicit Decisions**: Never leave an architectural or business decision to "vague memory".
 - **Actionable State**: The `.specs/project/STATE.md` should answer "What do I do now?" if the agent's memory was completely wiped.
 - **Sub-Agent Delegation**: In large implementations, create the plan and delegate to the implementer.
-- [ ] All research followed the Verification Chain.
-- [ ] Requirements are traceable and verifiable.
-- [ ] Out of scope is explicitly defined.
-- [ ] No "hallucination leak" — every tech choice is backed by the codebase or documentation.
-- Tasks MUST explicitly state the requirement to pass tests, lint, and build before being marked as completed.
+- **Traceable IDs**: Ensure every requirement has a unique ID (e.g. `FR-1`, `AC-1`, `TASK-01`).
+- **Research Integrity**: All research must follow the Verification Chain with zero unverified assumptions.
+- **Sensor Requirement**: Tasks MUST explicitly state the requirement to pass tests, lint, and build before being marked as completed.
 
 ## Prohibited
 

@@ -1,0 +1,7 @@
+﻿# OpenHands / OpenDevin Instructions
+
+This project strictly uses Spec Driven Development (SDD).
+1. Master Manual: Read AGENTS.md.
+2. Prohibitions: Strictly obey .agents/rules/TIER1_PROHIBITIONS.md (No unauthorized git reset/push --force, no stubs).
+3. Quality: Follow .agents/rules/QUALITY_ENFORCEMENT.md.
+4. Always run sensors (lint, test, build) before finalizing tasks.

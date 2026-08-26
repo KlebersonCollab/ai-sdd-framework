@@ -1,6 +1,9 @@
 ---
 name: write-a-skill
-description: Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill.
+version: 1.0.0
+description: "Create new agent skills with proper structure, progressive disclosure, and bundled resources. Use when user wants to create, write, or build a new skill."
+category: meta-skill
+keywords: ["skill", "authoring", "agent-skill", "extend", "write-a-skill", "meta-skill"]
 ---
 
 # Writing Skills

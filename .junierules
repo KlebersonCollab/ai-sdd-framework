@@ -1,0 +1,5 @@
+﻿# JetBrains AI / Junie Rules — Spec Driven Development (SDD)
+
+1. Consult `AGENTS.md` for role and workflow definitions.
+2. Adhere to `.agents/rules/TIER1_PROHIBITIONS.md` and `.agents/rules/QUALITY_ENFORCEMENT.md`.
+3. Adhere to `DESIGN.md` for UI and styling tasks.

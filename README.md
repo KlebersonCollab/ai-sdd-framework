@@ -1,4 +1,4 @@
-﻿# AI-SDD Framework
+# AI-SDD Framework
 
 > **Spec Driven Development (SDD) Lifecycle, Governance & Skill Runtime for AI Agents**
 
@@ -56,6 +56,28 @@ flowchart TD
 
 ---
 
+## 🌐 Universal Multi-Harness Compatibility (Rule Bridges)
+
+AI-SDD Framework is 100% harness-agnostic. `AGENTS.md` and `.agents/rules/` serve as the **Single Source of Truth**, while lightweight **Rule Bridges** adapt the governance to every major AI coding assistant:
+
+| Harness / Tool | Bridge File | Integration Mode |
+| :--- | :--- | :--- |
+| **Antigravity (Google AGY)** | `AGENTS.md` & `.agents/` | Native Core |
+| **Claude Code (Anthropic)** | `CLAUDE.md` | Auto-loaded session context |
+| **Cursor IDE** | `.cursorrules` & `.cursor/rules/sdd.mdc` | Project rules injection |
+| **Windsurf / Cascade** | `.windsurfrules` | Cascade system rules |
+| **Cline & Roo Code** | `.clinerules` | Agent prompt envelope |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | Copilot Workspace & Chat |
+| **Aider Chat** | `.aider.conf.yml` | Auto `--read` flags |
+| **Kimi CLI (Moonshot)** | `KIMI.md` | Project-level instructions |
+| **Goose CLI (Block)** | `.goosehints` | Context hints |
+| **OpenHands (OpenDevin)** | `.openhands_instructions` | Execution environment rules |
+| **Continue.dev** | `.continue/rules.md` | Assistant system rules |
+| **JetBrains AI / Junie** | `.junierules` | IDE instructions |
+| **Devin (Cognition)** | `.devin/instructions.md` | Repository onboarding context |
+
+---
+
 ## 📁 Repository Structure
 
 ```
@@ -67,7 +89,7 @@ ai-sdd-framework/
 │   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order
 │   │   ├── QUALITY_ENFORCEMENT.md      # Test & hook bypass bans, scratchpad isolation
 │   │   └── TOKEN_OPTIMIZATION.md       # Calibrated output verbosity per model tier
-│   └── skills/                         # Specialized Agent Skills & Protocols
+│   └── skills/                         # Specialized Agent Skills & Protocols (Open Format)
 │       ├── sdd-memory/                 # Long-term recall & graph maintenance
 │       ├── sdd-explorer/               # Codebase discovery & technical mapping
 │       ├── sdd-planner/                # Problem decomposition, specs & ADR authoring
@@ -84,7 +106,20 @@ ai-sdd-framework/
 │   ├── project/                        # Product vision, session state & ADRs
 │   ├── features/                       # Active feature specifications
 │   └── knowledge/                      # Curated patterns and anti-patterns
-├── AGENTS.md                           # Master Operating Manual & Skill Routing Matrix
+├── .cursor/rules/sdd.mdc                # 🌉 Cursor MDC modern rule bridge
+├── .devin/instructions.md              # 🌉 Devin instruction bridge
+├── .github/copilot-instructions.md     # 🌉 GitHub Copilot rule bridge
+├── .continue/rules.md                  # 🌉 Continue.dev rule bridge
+├── .cursorrules                        # 🌉 Cursor rule bridge
+├── .windsurfrules                      # 🌉 Windsurf rule bridge
+├── .clinerules                         # 🌉 Cline / Roo Code rule bridge
+├── .aider.conf.yml                     # 🌉 Aider configuration bridge
+├── .goosehints                         # 🌉 Goose CLI bridge
+├── .openhands_instructions             # 🌉 OpenHands bridge
+├── .junierules                         # 🌉 JetBrains AI / Junie bridge
+├── CLAUDE.md                           # 🌉 Claude Code bridge
+├── KIMI.md                             # 🌉 Kimi CLI bridge
+├── AGENTS.md                           # 🏛️ Master Operating Manual & Skill Routing Matrix
 └── DESIGN.md                           # Linear-inspired Design Tokens & UI Specification
 ```
 

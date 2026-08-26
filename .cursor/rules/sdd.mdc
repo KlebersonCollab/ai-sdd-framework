@@ -1,0 +1,13 @@
+﻿---
+description: "Spec Driven Development (SDD) governance rules for Cursor"
+globs: ["*"]
+alwaysApply: true
+---
+
+# SDD Framework Governance for Cursor
+
+This project enforces Spec Driven Development:
+1. Always consult `AGENTS.md` for architecture and skill routing.
+2. Comply with all rules in `.agents/rules/TIER1_PROHIBITIONS.md` and `.agents/rules/QUALITY_ENFORCEMENT.md`.
+3. Never write production code without an approved spec in `.specs/features/<id>/`.
+4. If UI work is requested, strictly adhere to `DESIGN.md`.

@@ -1,0 +1,15 @@
+﻿# Windsurf / Cascade Rules — Spec Driven Development (SDD)
+
+You MUST comply with the SDD lifecycle and engineering guardrails:
+
+## Single Source of Truth
+- **Master Operating Manual**: `AGENTS.md`
+- **Tier 1 Prohibitions**: `.agents/rules/TIER1_PROHIBITIONS.md`
+- **Quality Enforcement**: `.agents/rules/QUALITY_ENFORCEMENT.md`
+- **Design System**: `DESIGN.md`
+
+## Key Execution Rules
+- Always research before modifying code (state what you know and don't know).
+- Never deliver partial implementations, stubs, or `// TODO` comments.
+- Follow the sequence defined in `.specs/features/<feature-id>/tasks.md`.
+- Validate all changes with lint, tests, and build before completing tasks.

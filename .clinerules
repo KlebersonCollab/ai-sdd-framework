@@ -1,0 +1,9 @@
+﻿# Cline & Roo Code Rules — Spec Driven Development (SDD)
+
+MANDATORY AGENT EXECUTION PROTOCOL:
+
+1. **Architecture & Routing**: Follow `AGENTS.md`. Execute sequentially: Memory -> Explorer -> Planner -> Executor -> Review.
+2. **Quality & Prohibitions**: Obey `.agents/rules/TIER1_PROHIBITIONS.md` and `.agents/rules/QUALITY_ENFORCEMENT.md`.
+3. **No Unplanned Code**: Never write production code without an approved spec in `.specs/features/<feature-id>/`.
+4. **Evidence-Based Completion**: Only mark tasks complete when tests, lint, and build succeed and evidence is recorded.
+5. **UI & Frontend**: Strictly follow tokens in `DESIGN.md`.

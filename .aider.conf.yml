@@ -1,0 +1,5 @@
+﻿# Aider Configuration for Spec Driven Development
+read:
+  - AGENTS.md
+  - .agents/rules/TIER1_PROHIBITIONS.md
+  - .agents/rules/QUALITY_ENFORCEMENT.md
