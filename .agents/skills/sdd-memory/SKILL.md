@@ -14,8 +14,9 @@ Follow these steps strictly for each interaction:
    - **Determine Active Namespace**: Distinguish between shared repository architecture (`namespace: "global"` or `"project"`) and private operator preferences/session state (`namespace: "user:<userId>"` or `"tenant:<tenantId>"`).
    - **Scope Boundaries**: Proactively identify the current project scope, repository name, and target specification standards (SDD).
 
-2. Memory Retrieval & Isolation Filter
+2. Memory Retrieval & Isolation Filter (MemGPT / TiM Lifecycle Gate)
    - Reconstruct the active state of the codebase and user preferences by reading the memory artifact at `.agents/memory/memory_graph.jsonl` (and tenant/user-specific partition files if present).
+   - **Active-Only Ingress Gate**: Rehydrate ONLY records where `status === "active"` (or missing `status` for legacy compatibility). Exclude records where `status === "superseded"` or `"archived"` to avoid prompt pollution and outdated decision recall.
    - **Boundary Enforcement**: Filter records matching the active `namespace` or `tenantId` plus shared `"global"` records. Never load or cross-contaminate private records belonging to other tenants or operators.
    - If the file does not exist yet, treat memory as empty and start fresh. Always refer to this system as your **"memory"**.
 
@@ -42,7 +43,7 @@ Follow these steps strictly for each interaction:
 
 ## Artifact & Memory Graph Operations
 
-> **IMPORTANT — File-based JSONL storage with Partitioning Support.**
+> **IMPORTANT — File-based JSONL storage with Partitioning & Lifecycle Support.**
 > Memory is maintained directly on disk as a **JSONL artifact**. No external graph databases or third-party graph tools are required.
 
 ### Storage locations
@@ -52,48 +53,49 @@ Follow these steps strictly for each interaction:
 - One JSON object per line. Each line is one of three record types: `entity`, `relation`, or `observation`.
 - This file system structure is the **single source of truth** for long-term recall.
 
-### Record schemas
+### Record schemas (MemGPT / TiM Lifecycle Standard)
 
 **Entity** (one line):
 ```json
-{"type":"entity","name":"string (Entity identifier)","entityType":"string (Type classification)","observations":["string (Associated observations)"],"role":"architecture|user_profile|episodic|rule|decision|preference|project_state|feedback","state":"current|historical|transition","confidence":"high|medium|low|tentative","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null","access_count":0,"last_accessed":"ISO8601|null"}
+{"type":"entity","name":"string (Entity identifier)","entityType":"string (Type classification)","observations":["string (Associated observations)"],"role":"architecture|user_profile|episodic|rule|decision|preference|project_state|feedback","status":"active|superseded|archived","supersededBy":"string|null","updatedAt":"ISO8601","confidence":"high|medium|low|tentative","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null","access_count":0,"last_accessed":"ISO8601|null"}
 ```
 
 **Relation** (one line):
 ```json
-{"type":"relation","from":"string (Source entity)","to":"string (Target entity)","relationType":"string (Active voice relation)","state":"current|historical|transition","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null","superseded_by":"<relation signature>|null"}
+{"type":"relation","from":"string (Source entity)","to":"string (Target entity)","relationType":"string (Active voice relation)","status":"active|superseded|archived","supersededBy":"string|null","updatedAt":"ISO8601","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null"}
 ```
 
 **Observation** (append-only note to an existing entity; one line):
 ```json
-{"type":"observation","entityName":"string","contents":["string (New facts to add)"],"state":"current|historical|transition","confidence":"high|medium|low|tentative","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null"}
+{"type":"observation","entityName":"string","contents":["string (New facts to add)"],"status":"active|superseded|archived","supersededBy":"string|null","updatedAt":"ISO8601","confidence":"high|medium|low|tentative","namespace":"global|project|tenant:<id>|user:<id>","tenantId":"string|null"}
 ```
 
 ### Write operations (how to perform them as file edits)
 
-- **create_entities** → Append one `entity` line per entity to the designated `.jsonl` file.
+- **create_entities** → Append one `entity` line per entity with `"status":"active"`, `"supersededBy":null`, and current `"updatedAt"` ISO timestamp.
   Ignore duplicates by checking existing `name` and `namespace` values already present before appending.
-- **create_relations** → Append one `relation` line per relation. Skip duplicates (same `from`+`to`+`relationType`+`namespace`).
-- **add_observations** → Append one `observation` line referencing an existing entity `name` within the same `namespace`. If the
-  entity does not yet exist, first append its `entity` line, then the `observation` line.
-- **supersede** → When a fact changes (user moves, plan revised, decision reversed), NEVER blind-overwrite.
-  Instead: (1) update the old record's line to `"state":"historical"`; (2) append the new record with
-  `"state":"current"`; (3) link them with a relation `{"type":"relation","from":"<old name>","to":"<new name>","relationType":"SUPERSEDED_BY","state":"historical","namespace":"<active namespace>"}`.
+- **create_relations** → Append one `relation` line per relation with `"status":"active"`, `"supersededBy":null`, and current `"updatedAt"`. Skip duplicates.
+- **add_observations** → Append one `observation` line referencing an existing entity `name` within the same `namespace` with `"status":"active"`, `"supersededBy":null`, and current `"updatedAt"`.
+- **supersede (MemGPT / TiM Protocol)** → When a fact, decision, or architectural component is updated or reversed:
+  1. Locate the existing active record and update its fields: `"status":"superseded"`, `"supersededBy":"<new_entity_or_id>"`, `"updatedAt":"<current_ISO8601>"`.
+  2. Append the new replacement record with `"status":"active"`, `"supersededBy":null`, and `"updatedAt":"<current_ISO8601>"`.
+  3. Optionally append a relation: `{"type":"relation","from":"<old name>","to":"<new name>","relationType":"SUPERSEDED_BY","status":"active","supersededBy":null,"updatedAt":"<timestamp>","namespace":"<active namespace>"}`.
 
 ### Read operations (how to perform them)
 
 - **read_graph** → Read `.agents/memory/memory_graph.jsonl` (and partition files) using `view_file` and parse each line as JSON.
+- **filter_by_lifecycle** → Filter ONLY records where `record.status === "active"` (or missing `status` for legacy records).
 - **filter_by_namespace** → Filter nodes and observations matching the active session's `tenantId` and `namespace` (or `"global"` / `"project"`).
 - **search_nodes** → Search patterns using `grep_search` or line filtering in the memory files.
 
 ### Backward Compatibility
-Records without explicit `namespace` or `tenantId` must be automatically treated by the agent as `"namespace": "global"` and `"tenantId": null`.
+Records without explicit `namespace`, `tenantId`, or `status` must be automatically treated by the agent as `"namespace": "global"`, `"tenantId": null`, and `"status": "active"`.
 
 ### Example artifact content
 ```jsonl
-{"type":"entity","name":"ai-sdd-framework","entityType":"Framework","observations":["Spec Driven Development agent framework","Enforces strict lifecycle: Memory -> Explorer -> Planner -> Executor -> Review"],"namespace":"project","tenantId":null}
-{"type":"entity","name":"specs/","entityType":"Directory","observations":["Houses brownfield codebase maps and active feature specifications"],"namespace":"project","tenantId":null}
-{"type":"relation","from":"ai-sdd-framework","to":"specs/","relationType":"CONTAINS","namespace":"project","tenantId":null}
-{"type":"observation","entityName":"ai-sdd-framework","contents":["Rules located in .agents/rules/","Skills located in .agents/skills/"],"namespace":"project","tenantId":null}
-{"type":"entity","name":"user:developer_alice","entityType":"User","observations":["Prefers concise diffs and Portuguese documentation"],"role":"user_profile","namespace":"user:developer_alice","tenantId":"tenant-alpha"}
+{"type":"entity","name":"ai-sdd-framework","entityType":"Framework","observations":["Spec Driven Development agent framework","Enforces strict lifecycle: Memory -> Explorer -> Planner -> Executor -> Review"],"status":"active","supersededBy":null,"updatedAt":"2026-08-28T23:40:00.000Z","namespace":"project","tenantId":null}
+{"type":"entity","name":"specs/","entityType":"Directory","observations":["Houses brownfield codebase maps and active feature specifications"],"status":"active","supersededBy":null,"updatedAt":"2026-08-28T23:40:00.000Z","namespace":"project","tenantId":null}
+{"type":"relation","from":"ai-sdd-framework","to":"specs/","relationType":"CONTAINS","status":"active","supersededBy":null,"updatedAt":"2026-08-28T23:40:00.000Z","namespace":"project","tenantId":null}
+{"type":"observation","entityName":"ai-sdd-framework","contents":["Rules located in .agents/rules/","Skills located in .agents/skills/"],"status":"active","supersededBy":null,"updatedAt":"2026-08-28T23:40:00.000Z","namespace":"project","tenantId":null}
+{"type":"entity","name":"user:developer_alice","entityType":"User","observations":["Prefers concise diffs and Portuguese documentation"],"role":"user_profile","status":"active","supersededBy":null,"updatedAt":"2026-08-28T23:40:00.000Z","namespace":"user:developer_alice","tenantId":"tenant-alpha"}
 ```
