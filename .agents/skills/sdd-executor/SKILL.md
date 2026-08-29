@@ -28,21 +28,28 @@ While executing, monitor for complexity drift:
 - If structural design changes are needed.
 **Action**: Pause execution and request a re-plan from the sdd-planner.
 
-### 3. Atomic Execution
+### 3. Atomic Execution (AgentCoder & SWE-agent SOTA)
 For each task:
 1. **List Steps**: Write 2-3 implementation steps in the chat.
-2. **TDD Cycle**: Write/update a test, see it fail, then make it pass.
-3. **Commit**: Use atomic commits (e.g., `feat: [description] (FR-X)`).
-4. **Log Evidence**: Update the `Evidence` column in `tasks.md` with the commit hash or test result. You CANNOT mark a task as complete unless you verify that the build succeeds, lint passes, and tests pass.
+2. **ACI Surgical Inspection**: Read target code in slices of 100–300 lines (`view_file` with `StartLine`/`EndLine`) before editing.
+3. **TDD Cycle & Test Immutability**:
+   - Run existing tests to verify baseline failure.
+   - **Fix Production Code ONLY**: Never alter test assertions or remove test cases to bypass failures (AgentCoder Protocol).
+   - Apply minimal clean code using contiguous block replacements (`replace_file_content`).
+4. **Sensor Verification**: Run build, linter, and test suite sensors.
+5. **Commit**: Use atomic commits (e.g., `feat: [description] (TASK-XX)`).
+6. **Log Evidence**: Update the `Evidence` column in `tasks.md` with the commit hash and sensor pass snippet.
 
 ## Quality Rules
 - **Simplicity**: Follow the [Coding Principles](references/coding-principles.md).
 - **Alignment**: Adhere strictly to the naming and style in `CONVENTIONS.md`.
-- **Integrity**: NO "ghost" features and NO skipped error handling.
+- **Integrity**: NO "ghost" features, NO skipped error handling, NO test tampering.
 - **Observable Governance**: Every task completed MUST include valid evidence in the `tasks.md` table.
 
 ## Prohibited
 - NO modifying the specification or technical design without a re-plan.
+- NO modifying, watering down, or commenting out test assertions to pass a test suite (AgentCoder Violation).
+- NO blind-overwriting entire files with full dumps when making localized changes (SWE-agent ACI Violation).
 - NO leaving unused variables, imports, or "TODOs".
 - NO committing without running tests.
 - NO marking a task as complete without passing tests, passing lint, and a successful build.

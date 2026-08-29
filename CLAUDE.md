@@ -1,4 +1,4 @@
-﻿# Claude Code Guidelines — Spec Driven Development (SDD)
+# Claude Code Guidelines — Spec Driven Development (SDD)
 
 This repository strictly adheres to the **Spec Driven Development (SDD)** lifecycle and AI Agent Governance standard.
 Before executing ANY task, analyzing code, or modifying files, you MUST read and comply with the canonical instructions and rules:
@@ -20,6 +20,9 @@ Before executing ANY task, analyzing code, or modifying files, you MUST read and
 
 ## ⚠️ Hard Rules for Claude Code
 - **Never guess**: Search and research before proposing code changes.
-- **Never write stubs or TODOs**: Implement every function, edge case, and error path completely.
+- **Never write stubs or TODOs**: Implement every function, edge case, and error path completely (Prohibition 1).
+- **Never blind-overwrite files**: Use surgical chunk replacements (`replace_file_content`) and windowed line slices (Prohibition 8 - SWE-agent ACI).
+- **Never weaken test assertions**: Fix production code to pass tests, never alter tests to mask defects (Prohibition 9 - AgentCoder).
+- **Never commit with Spec Drift**: Ensure all modified files are mapped in `.specs/features/<id>/tasks.md` and pass `check-spec-drift.js`.
 - **Never skip or modify specs during execution**: If complexity drift occurs (>3 files or high-risk path), pause and replan.
 - **Follow Design System**: All UI/Frontend work must strictly follow [DESIGN.md](DESIGN.md) tokens.

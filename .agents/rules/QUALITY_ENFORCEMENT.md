@@ -48,6 +48,12 @@ LLM assistants often create temporary files for debugging but forget to remove t
 - ✅ Using the agent's `scratch/` directory for ephemeral experiments
 - ✅ Cleaning up all temporary scratch files immediately after verification
 
+### Spec-Code Drift Prevention (Constitutional SDD) - STRICTLY ENFORCED
+- **NEVER** commit production code modifications, new source files, or route handlers that are not explicitly declared in an active feature specification under `.specs/features/<feature-id>/tasks.md`.
+- **NEVER** bypass the Pre-Commit Spec Drift Sensor (`check-spec-drift.js`) using `--no-verify` or manual hook disabling.
+- **ALWAYS** declare target file boundaries in `tasks.md` before executing implementation changes.
+- **ALWAYS** ensure the pre-commit hook passes with 0 orphaned/drifting files.
+
 ## Enforcement
 
 These rules apply to ALL implementations:

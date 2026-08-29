@@ -153,4 +153,35 @@ The human spent time defining the task sequence for a reason. The order reflects
 
 **The task list is an ORDER, not a MENU. Execute sequentially.**
 
+---
+
+## PROHIBITION 8: Agent-Computer Interface (ACI) Protocol for Surgical File Manipulation (SWE-agent SOTA)
+
+**NEVER** blind-overwrite existing codebase files with full dumps (`write_to_file` with `Overwrite: true`) when performing targeted changes, bug fixes, or incremental feature additions.
+
+### Forbidden Patterns
+- Overwriting a 500-line file to change 3 lines (risks line truncation and context loss).
+- Executing unbounded shell commands that dump thousands of raw lines into agent context (causes context exhaustion and catastrophic forgetting).
+- Blindly editing files without reading the exact line slice (`view_file` with `StartLine`/`EndLine`) immediately prior to the edit.
+
+### Required Behavior
+- **Surgical Edits**: Use targeted chunk replacement (`replace_file_content`) with exact character matching and verified line numbers.
+- **Bounded Reading**: Read slices of at most 200–300 lines around the target area before replacing content.
+- **Atomic Rollback**: If a tool edit fails or creates lint errors, revert immediately and re-inspect before trying again.
+
+---
+
+## PROHIBITION 9: Test Immutability and Decoupled Verification Gate (AgentCoder SOTA)
+
+**NEVER** alter, soften, comment out, or remove existing test assertions, BDD acceptance criteria, or test fixtures during the implementation phase to make a failing test suite pass.
+
+### Forbidden Patterns
+- Modifying test expectations (e.g. changing `assert result == 200` to `assert result == 500` because the handler is returning 500).
+- Deleting or skipping test cases (`@pytest.mark.skip`, `it.skip`, `// test removed`).
+- Injecting conditional test mocks that bypass real business logic execution.
+
+### Required Behavior
+- **Fix Production Code, NOT the Test**: When a test fails, the defect resides in the implementation code.
+- **Safety Valve Re-Plan**: If a test assertion is genuinely invalid due to an outdated requirement or specification bug, you MUST STOP, trigger the Safety Valve, and request an official re-plan from `sdd-planner`. An executor is NEVER authorized to change tests unilaterally.
+
 <!-- TIER1_PROHIBITIONS:END -->

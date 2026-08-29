@@ -1,4 +1,4 @@
-﻿# AI-SDD Framework
+# AI-SDD Framework
 
 > **Spec Driven Development (SDD) Lifecycle, Universal AI Agent Governance & Multi-Harness Skill Runtime**
 
@@ -218,9 +218,12 @@ ai-sdd-framework/
 │   ├── memory/
 │   │   └── memory_graph.jsonl          # Cross-session persistent knowledge graph
 │   ├── rules/                          # Non-negotiable system rules (Highest Precedence)
-│   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order
-│   │   ├── QUALITY_ENFORCEMENT.md      # Test & hook bypass bans, scratchpad isolation
+│   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order, ACI & Test Immutability
+│   │   ├── QUALITY_ENFORCEMENT.md      # Test & hook bypass bans, scratchpad isolation, Spec Drift invariance
 │   │   └── TOKEN_OPTIMIZATION.md       # Calibrated output verbosity per model tier
+│   ├── scripts/                        # Governance & sensor scripts
+│   │   ├── check-spec-drift.js         # Pre-commit Spec Drift Sensor (Constitutional SDD)
+│   │   └── install-hooks.js            # Git pre-commit hook installer
 │   └── skills/                         # Specialized Agent Skills & Protocols (Open Format)
 │       ├── sdd-memory/                 # Long-term recall & graph maintenance
 │       ├── sdd-explorer/               # Codebase discovery & technical mapping

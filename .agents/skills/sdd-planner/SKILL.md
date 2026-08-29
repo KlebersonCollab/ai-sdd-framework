@@ -63,35 +63,43 @@ Actions to do:
   2. Surprising without context.
   3. The result of a real trade-off.
 
-### 3 - Task Strategy
-- **Atomic Tasks**: Each task should be implementable in one pass.
-- **Verification Criteria**: Every task must have a "How to test" note.
-- **Dependencies**: List which tasks depend on others.
+### 3 - Task Strategy (MetaGPT Standardized Operating Procedures - SOP)
+- **Strict Schema Contract**: All `tasks.md` files MUST follow a strict 7-column table schema:
+  - `Status`: `[ ]` (Pending) or `[x]` (Verified Complete).
+  - `ID`: Sequential traceable identifier (`TASK-01`, `TASK-02`, ...).
+  - `Type`: Atomic task category (`test` | `feat` | `fix` | `refactor` | `docs` | `rules` | `skill`).
+  - `Description`: Clear, single-responsibility action statement.
+  - `Target Files`: Concrete file paths (relative to repo root). Maximum 1–3 files per task.
+  - `Dependencies`: Explicit task IDs that must complete first (`TASK-XX` or `None`).
+  - `Evidence`: Commit hash + sensor verification pass log.
+- **Decoupled Test-First Ordering**: Test harness / spec setup tasks MUST precede production implementation tasks.
+- **Atomic Tasks**: Each task should be implementable in one continuous pass without touching external systems.
 
 ### 4 - Validation
 - **Alignment Check**: Verify that the `plan.md` is not a "mini-spec". It must focus on **What** and **Why**, not **How**.
+- **Schema Validation**: Reject any task list missing required columns, dependency links, or file boundaries.
 - **Glossary Sync**: Ensure any new terms used in the plan are present in `CONTEXT.md`.
 
-Each feature MUST move through the following phases.
+Each feature MUST move through the following phases:
 
 Feature artifacts MUST be stored in:
-
-.specs/features/<feature-id>/
+`.specs/features/<feature-id>/`
 
 Structure:
-
+```
 .specs/features/
 └── <feature-id>/
     ├── plan.md
     ├── spec.md
     └── tasks.md
+```
 
 Feature Phases:
-1. Draft ->
-2. Review ->
-3. Approved -> 
-4. In Progress ->
-5. Completed
+1. `Draft` ->
+2. `Review` ->
+3. `Approved` -> 
+4. `In Progress` ->
+5. `Completed`
 
 *Only the Executor can mark with the [x] a Task, Planners are prohibited*
 
