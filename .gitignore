@@ -1,0 +1,78 @@
+# =============================================================================
+# .gitignore — Spec Driven Development (SDD) Canonical Exclusions
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. Environment Variables & Secrets (CRITICAL)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.env
+*.pem
+*.key
+*.cert
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+*.kdbx
+
+# -----------------------------------------------------------------------------
+# 2. AI Agent Scratchpads & Ephemeral Artifacts
+# -----------------------------------------------------------------------------
+scratch/
+*.local.jsonl
+.agents/memory/*.local.jsonl
+docs/security-audit/.edge-temp/
+*.log
+
+# -----------------------------------------------------------------------------
+# 3. Dependencies & Package Managers
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.yarn/
+vendor/
+
+# -----------------------------------------------------------------------------
+# 4. Python Runtimes & Caches
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# -----------------------------------------------------------------------------
+# 5. Build Artifacts & Distribution
+# -----------------------------------------------------------------------------
+dist/
+build/
+out/
+target/
+bin/
+obj/
+*.tsbuildinfo
+
+# -----------------------------------------------------------------------------
+# 6. Operating System & IDE Configurations
+# -----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates

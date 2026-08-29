@@ -115,16 +115,36 @@ After fetching metadata for a paper, generate a BibTeX entry:
 curl -s "https://export.arxiv.org/api/query?id_list=1706.03762" | python3 -c "
 import sys, xml.etree.ElementTree as ET
 ns = {'a': 'http://www.w3.org/2005/Atom', 'arxiv': 'http://arxiv.org/schemas/atom'}
+
+def escape_bibtex(text):
+    if not text:
+        return ''
+    chars = [
+        ('\\\\', '\\\\textbackslash{}'),
+        ('{', '\\\\{'),
+        ('}', '\\\\}'),
+        ('$', '\\\\$'),
+        ('%', '\\\\%'),
+        ('&', '\\\\&'),
+        ('_', '\\\\_'),
+        ('#', '\\\\#'),
+        ('~', '\\\\textasciitilde{}'),
+        ('^', '\\\\textasciicircum{}')
+    ]
+    for orig, esc in chars:
+        text = text.replace(orig, esc)
+    return text
+
 root = ET.parse(sys.stdin).getroot()
 entry = root.find('a:entry', ns)
 if entry is None: sys.exit('Paper not found')
-title = entry.find('a:title', ns).text.strip().replace('\n', ' ')
-authors = ' and '.join(a.find('a:name', ns).text for a in entry.findall('a:author', ns))
+title = escape_bibtex(entry.find('a:title', ns).text.strip().replace('\n', ' '))
+authors = escape_bibtex(' and '.join(a.find('a:name', ns).text for a in entry.findall('a:author', ns)))
 year = entry.find('a:published', ns).text[:4]
 raw_id = entry.find('a:id', ns).text.strip().split('/abs/')[-1]
 cat = entry.find('arxiv:primary_category', ns)
 primary = cat.get('term') if cat is not None else 'cs.LG'
-last_name = entry.find('a:author', ns).find('a:name', ns).text.split()[-1]
+last_name = escape_bibtex(entry.find('a:author', ns).find('a:name', ns).text.split()[-1])
 print(f'@article{{{last_name}{year}_{raw_id.replace(\".\", \"\")},')
 print(f'  title     = {{{title}}},')
 print(f'  author    = {{{authors}}},')
