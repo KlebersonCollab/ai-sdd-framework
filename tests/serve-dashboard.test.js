@@ -106,6 +106,15 @@ test('HTTP Server: GET / and GET /api/features', async (t) => {
     assert.ok(htmlRes.body.includes('navTabMemory'), 'HTML should contain Memory Graph tab');
     assert.ok(htmlRes.body.includes('memoryGraphCanvas'), 'HTML should contain graph canvas');
     assert.ok(htmlRes.body.includes('nodeInspector'), 'HTML should contain node inspector drawer');
+    assert.ok(htmlRes.body.includes('function switchView('), 'HTML should define switchView function');
+    assert.ok(htmlRes.body.includes('function renderVisMemoryGraph('), 'HTML should define renderVisMemoryGraph function');
+
+    const faviconRes = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/favicon.ico`, (res) => {
+        resolve({ status: res.statusCode });
+      }).on('error', reject);
+    });
+    assert.strictEqual(faviconRes.status, 204, 'GET /favicon.ico should return 204');
   } finally {
     await new Promise((resolve) => serverInstance.close(resolve));
   }
