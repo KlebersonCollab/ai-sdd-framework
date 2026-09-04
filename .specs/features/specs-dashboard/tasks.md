@@ -17,8 +17,8 @@
 | [x] | TASK-05 | docs | Add dashboard launch instructions to README.md, AGENTS.md, and package npm scripts | `README.md`, `AGENTS.md`, `package.json` | TASK-04 | 5d86ad3 (4/4 passed) |
 | [x] | TASK-06 | review | Audit acceptance criteria against sensor test suite and verify spec drift compliance | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | tests 4/4 pass, drift 0, memory 0 errors |
 | [x] | TASK-07 | test | Add unit test assertions for rich Plan parsing, structured User Stories, and BDD Given/When/Then tokens | `tests/serve-dashboard.test.js` | TASK-06 | c3d9d99 (Red phase: 3 new tests failing) |
-| [ ] | TASK-08 | feat | Implement deep parsing for plan.md (problem, in/out scope, approach) and structured User Stories in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-07 | |
-| [ ] | TASK-09 | feat | Implement structured BDD parser extracting Given, When, Then, And clauses with category tags | `.agents/scripts/serve-dashboard.js` | TASK-08 | |
+| [x] | TASK-08 | feat | Implement deep parsing for plan.md (problem, in/out scope, approach) and structured User Stories in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-07 | c6c2edf (7/7 passed) |
+| [x] | TASK-09 | feat | Implement structured BDD parser extracting Given, When, Then, And clauses with category tags | `.agents/scripts/serve-dashboard.js` | TASK-08 | c6c2edf (7/7 passed) |
 | [ ] | TASK-10 | feat | Redesign UI to true vertical cascading sections (1. Plan & Scope, 2. US Cards, 3. BDD Gherkin Badges, 4. Tasks) | `.agents/scripts/serve-dashboard.js` | TASK-09 | |
 | [ ] | TASK-11 | review | Verify all sensor suites and test immutability for enhanced cascading dashboard | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-10 | |
 
