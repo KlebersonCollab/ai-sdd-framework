@@ -100,9 +100,29 @@ test('HTTP Server: GET / and GET /api/features', async (t) => {
     assert.ok(htmlRes.headers['content-type'].includes('text/html'));
     assert.ok(htmlRes.body.includes('Specs Dashboard'), 'HTML should contain title');
     assert.ok(htmlRes.body.includes('bootstrap'), 'HTML should reference bootstrap');
+    assert.ok(htmlRes.body.includes('statProgressBar'), 'HTML should contain overall progress bar element');
+    assert.ok(htmlRes.body.includes('height: 100%'), 'HTML should style progress-bar-custom with height: 100%');
   } finally {
     await new Promise((resolve) => serverInstance.close(resolve));
   }
+});
+
+test('Parser: parseTasksTable handles [x], [X], and spaced variations', () => {
+  const sample = `
+| Status | ID | Type | Description | Target Files | Dependencies | Evidence |
+|---|---|---|---|---|---|---|
+| [ x ] | TASK-A | test | Spaced done | \`test.js\` | None | ev1 |
+| [X] | TASK-B | feat | Capital done | \`feat.js\` | TASK-A | ev2 |
+| [ ] | TASK-C | docs | Pending | \`doc.md\` | TASK-B | |
+| [-] | TASK-D | feat | In progress dash | \`wip.js\` | TASK-C | |
+| [.] | TASK-E | feat | In progress dot | \`wip2.js\` | TASK-D | |
+`;
+  const tasks = serveDashboard.parseTasksTable(sample);
+  assert.strictEqual(tasks[0].status, 'done');
+  assert.strictEqual(tasks[1].status, 'done');
+  assert.strictEqual(tasks[2].status, 'pending');
+  assert.strictEqual(tasks[3].status, 'in_progress');
+  assert.strictEqual(tasks[4].status, 'in_progress');
 });
 
 test('Enhanced Parser: parseUserStory decomposes role, action, and benefit', () => {

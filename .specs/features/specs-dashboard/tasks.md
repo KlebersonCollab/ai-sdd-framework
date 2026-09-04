@@ -24,6 +24,8 @@
 | [x] | TASK-12 | feat | Implement Server-Sent Events (SSE /api/events) and recursive fs.watch with unref in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-11 | node tests/serve-dashboard.test.js (7/7 passed in 38ms) |
 | [x] | TASK-13 | feat | Add client-side SSE listener and marked.js markdown parsing for High-Level Approach & Problem Statement | `.agents/scripts/serve-dashboard.js` | TASK-12 | initLiveSync badge & markdown-content styled |
 | [x] | TASK-14 | review | Run test suite and spec drift sensor for dynamic reload and watch mode | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-13 | tests 7/7 pass, drift 0, memory 0 errors |
+| [x] | TASK-15 | feat | Fix progress bar CSS height, add overall progress bar to metric pill, and support spaced task status marks | `.agents/scripts/serve-dashboard.js`, `tests/serve-dashboard.test.js` | TASK-14 | 8/8 tests pass in 41ms |
+| [x] | TASK-16 | review | Run full sensor audit (tests, drift, memory) for progress bar loading and completion state | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-15 | 8/8 pass, drift 0, memory 0 errors |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).
