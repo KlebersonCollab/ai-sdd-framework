@@ -102,6 +102,10 @@ test('HTTP Server: GET / and GET /api/features', async (t) => {
     assert.ok(htmlRes.body.includes('bootstrap'), 'HTML should reference bootstrap');
     assert.ok(htmlRes.body.includes('statProgressBar'), 'HTML should contain overall progress bar element');
     assert.ok(htmlRes.body.includes('height: 100%'), 'HTML should style progress-bar-custom with height: 100%');
+    assert.ok(htmlRes.body.includes('vis-network'), 'HTML should load vis-network CDN');
+    assert.ok(htmlRes.body.includes('navTabMemory'), 'HTML should contain Memory Graph tab');
+    assert.ok(htmlRes.body.includes('memoryGraphCanvas'), 'HTML should contain graph canvas');
+    assert.ok(htmlRes.body.includes('nodeInspector'), 'HTML should contain node inspector drawer');
   } finally {
     await new Promise((resolve) => serverInstance.close(resolve));
   }
@@ -192,4 +196,68 @@ test('Enhanced Parser: parseAcceptanceCriteria decomposes Gherkin Given/When/The
   assert.strictEqual(criteria[0].clauses[2].keyword, 'THEN');
   assert.strictEqual(criteria[0].clauses[3].keyword, 'AND');
 });
+
+test('Memory Graph: parseMemoryGraph parses entities, relations, observations, and infers nodes', () => {
+  if (!serveDashboard.parseMemoryGraph) {
+    assert.fail('serveDashboard.parseMemoryGraph function is not defined');
+  }
+
+  const sampleJsonl = `
+{"type":"entity","name":"core-service","entityType":"service","role":"architecture","status":"active","observations":["Main business logic"]}
+{"type":"entity","name":"auth-module","entityType":"module","role":"security","status":"active","observations":["JWT authentication"]}
+{"type":"relation","from":"core-service","to":"auth-module","predicate":"DEPENDS_ON","weight":1}
+{"type":"relation","from":"core-service","to":"redis-cache","predicate":"USES_CACHE","weight":0.8}
+{"type":"observation","entityName":"core-service","content":"Handles user payments"}
+`;
+
+  const graph = serveDashboard.parseMemoryGraph(sampleJsonl);
+  assert.ok(graph, 'Graph object must be returned');
+  assert.strictEqual(graph.nodes.length, 3, 'Should contain 2 declared + 1 inferred entity');
+
+  const coreNode = graph.nodes.find(n => n.id === 'core-service');
+  assert.ok(coreNode, 'core-service node must exist');
+  assert.strictEqual(coreNode.entityType, 'service');
+  assert.strictEqual(coreNode.observations.length, 2, 'Should aggregate inline and separate observations');
+  assert.ok(coreNode.observations.includes('Handles user payments'));
+
+  const inferredNode = graph.nodes.find(n => n.id === 'redis-cache');
+  assert.ok(inferredNode, 'redis-cache must be inferred');
+  assert.strictEqual(inferredNode.entityType, 'inferred');
+
+  assert.strictEqual(graph.edges.length, 2, 'Should have 2 edges');
+  assert.strictEqual(graph.edges[0].from, 'core-service');
+  assert.strictEqual(graph.edges[0].to, 'auth-module');
+  assert.strictEqual(graph.edges[0].label, 'DEPENDS_ON');
+  assert.strictEqual(graph.edges[1].to, 'redis-cache');
+  assert.strictEqual(graph.edges[1].label, 'USES_CACHE');
+
+  assert.ok(graph.stats, 'Graph stats must be present');
+  assert.strictEqual(graph.stats.totalNodes, 3);
+  assert.strictEqual(graph.stats.totalEdges, 2);
+});
+
+test('HTTP Server: GET /api/memory returns graph data', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const memoryRes = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/memory`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(memoryRes.status, 200, 'GET /api/memory should return 200');
+    assert.ok(memoryRes.headers['content-type'].includes('application/json'));
+    const parsed = JSON.parse(memoryRes.body);
+    assert.ok(Array.isArray(parsed.nodes), 'Memory API should return nodes array');
+    assert.ok(Array.isArray(parsed.edges), 'Memory API should return edges array');
+    assert.ok(parsed.stats, 'Memory API should return stats');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
 

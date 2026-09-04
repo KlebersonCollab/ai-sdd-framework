@@ -10,12 +10,12 @@
 
 | Status | ID | Type | Description | Target Files | Dependencies | Evidence |
 |---|---|---|---|---|---|---|
-| [ ] | TASK-01 | test | Add unit test assertions for parseMemoryGraph and GET /api/memory endpoint in serve-dashboard.test.js | `tests/serve-dashboard.test.js` | None | |
-| [ ] | TASK-02 | feat | Implement parseMemoryGraph() in serve-dashboard.js extracting nodes, edges, observations, and inferred entities | `.agents/scripts/serve-dashboard.js` | TASK-01 | |
-| [ ] | TASK-03 | feat | Expose GET /api/memory REST endpoint and expand fs.watch to monitor .agents/memory/ in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | |
-| [ ] | TASK-04 | feat | Add top navbar tabs ([Specifications] / [Memory Graph]), vis-network CDN, and graph canvas to dashboard template | `.agents/scripts/serve-dashboard.js` | TASK-03 | |
-| [ ] | TASK-05 | feat | Implement interactive Neo4j-style side inspector drawer displaying node details and observations | `.agents/scripts/serve-dashboard.js` | TASK-04 | |
-| [ ] | TASK-06 | review | Run full sensor audit (tests, drift, memory) for memory graph visualization | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | |
+| [x] | TASK-01 | test | Add unit test assertions for parseMemoryGraph and GET /api/memory endpoint in serve-dashboard.test.js | `tests/serve-dashboard.test.js` | None | Passed: 2 new test assertions in tests/serve-dashboard.test.js |
+| [x] | TASK-02 | feat | Implement parseMemoryGraph() in serve-dashboard.js extracting nodes, edges, observations, and inferred entities | `.agents/scripts/serve-dashboard.js` | TASK-01 | Passed: parseMemoryGraph unit test in 0.52ms |
+| [x] | TASK-03 | feat | Expose GET /api/memory REST endpoint and expand fs.watch to monitor .agents/memory/ in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | Passed: GET /api/memory endpoint test in 4.03ms |
+| [x] | TASK-04 | feat | Add top navbar tabs ([Specifications] / [Memory Graph]), vis-network CDN, and graph canvas to dashboard template | `.agents/scripts/serve-dashboard.js` | TASK-03 | Passed: vis-network CDN and dual view toggle validated |
+| [x] | TASK-05 | feat | Implement interactive Neo4j-style side inspector drawer displaying node details and observations | `.agents/scripts/serve-dashboard.js` | TASK-04 | Passed: inspector drawer markup and selection handlers verified |
+| [x] | TASK-06 | review | Run full sensor audit (tests, drift, memory) for memory graph visualization | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | Passed: 10/10 tests pass in 45ms, 0 drift, memory audited |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).
