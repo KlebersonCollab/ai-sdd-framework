@@ -77,6 +77,187 @@ function parseTasksTable(content) {
 }
 
 /**
+ * Decomposes a User Story into role, action, and benefit
+ * @param {string} rawText
+ * @returns {object}
+ */
+function parseUserStory(rawText) {
+  if (!rawText) return { id: '', role: '', action: '', benefit: '', raw: '' };
+
+  const idMatch = rawText.match(/\*\*(US-[^*:]+)\*\*/i) || rawText.match(/(US-\d+)/i);
+  const id = idMatch ? idMatch[1] : '';
+
+  let cleanText = rawText.replace(/^-\s+/, '').replace(/^\*\*US-[^*:]+\*\*:\s*/i, '').trim();
+
+  // Pattern: As a [role], I want [action], so that [benefit]
+  const enMatch = cleanText.match(/^(?:As an?|As)\s+([^,]+),\s*(?:I want to|I want)\s+([^,]+?)(?:,\s*so that|\s+so that)\s+(.+)$/i);
+  if (enMatch) {
+    return {
+      id,
+      role: enMatch[1].trim(),
+      action: enMatch[2].trim(),
+      benefit: enMatch[3].trim(),
+      raw: rawText
+    };
+  }
+
+  // Pattern: Como [role], quero [action], para [benefit]
+  const ptMatch = cleanText.match(/^(?:Como|Sendo)\s+([^,]+),\s*(?:quero|desejo)\s+([^,]+?)(?:,\s*para que|\s+para que|\s+para|\s+de modo que)\s+(.+)$/i);
+  if (ptMatch) {
+    return {
+      id,
+      role: ptMatch[1].trim(),
+      action: ptMatch[2].trim(),
+      benefit: ptMatch[3].trim(),
+      raw: rawText
+    };
+  }
+
+  return {
+    id,
+    role: 'User',
+    action: cleanText,
+    benefit: '',
+    raw: rawText
+  };
+}
+
+/**
+ * Extracts sections from plan.md (Problem statement, Scope, Approach, ADRs)
+ * @param {string} content
+ * @returns {object}
+ */
+function parsePlanSections(content) {
+  if (!content) return { problemStatement: '', inScope: [], outOfScope: [], approach: '', adrs: [] };
+
+  let problemStatement = '';
+  const problemMatch = content.match(/##\s+1\.\s+Problem Statement[\s\S]*?(?=##|$)/i);
+  if (problemMatch) {
+    problemStatement = problemMatch[0].replace(/##\s+1\.\s+Problem Statement.*?\n/i, '').trim();
+  }
+
+  const inScope = [];
+  const outOfScope = [];
+
+  const scopeMatch = content.match(/##\s+2\.\s+Scope & Boundaries[\s\S]*?(?=##|$)/i);
+  if (scopeMatch) {
+    const scopeText = scopeMatch[0];
+
+    const inScopeMatch = scopeText.match(/-\s+\*\*In Scope\*\*:([\s\S]*?)(?=-\s+\*\*Out of Scope\*\*:|$)/i);
+    if (inScopeMatch) {
+      const items = inScopeMatch[1].split('\n')
+        .map(l => l.trim())
+        .filter(l => l.startsWith('-') || l.startsWith('*'))
+        .map(l => l.replace(/^[-*]\s+/, ''));
+      inScope.push(...items);
+    }
+
+    const outScopeMatch = scopeText.match(/-\s+\*\*Out of Scope\*\*:([\s\S]*?)(?=##|$)/i);
+    if (outScopeMatch) {
+      const items = outScopeMatch[1].split('\n')
+        .map(l => l.trim())
+        .filter(l => l.startsWith('-') || l.startsWith('*'))
+        .map(l => l.replace(/^[-*]\s+/, ''));
+      outOfScope.push(...items);
+    }
+  }
+
+  let approach = '';
+  const approachMatch = content.match(/##\s+3\.\s+High-Level Approach[\s\S]*?(?=##|$)/i);
+  if (approachMatch) {
+    approach = approachMatch[0].replace(/##\s+3\.\s+High-Level Approach.*?\n/i, '').trim();
+  }
+
+  const adrs = [];
+  const adrRegex = /\[(ADR\s*\d+:[^\]]+)\]\(([^)]+)\)/gi;
+  let adrMatch;
+  while ((adrMatch = adrRegex.exec(content)) !== null) {
+    adrs.push({
+      title: adrMatch[1].trim(),
+      link: adrMatch[2].trim()
+    });
+  }
+
+  return {
+    problemStatement,
+    inScope,
+    outOfScope,
+    approach,
+    adrs
+  };
+}
+
+/**
+ * Extracts BDD acceptance criteria scenarios and decomposes Given/When/Then/And clauses
+ * @param {string} content
+ * @returns {Array<object>}
+ */
+function parseAcceptanceCriteria(content) {
+  if (!content) return [];
+  const criteria = [];
+
+  const lines = content.split('\n');
+  let currentCategory = 'Acceptance Criteria';
+  let currentAc = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    if (line.startsWith('###')) {
+      let rawCat = line.replace(/^###\s+/, '').trim();
+      currentCategory = rawCat.replace(/\([^)]*\)/g, '').trim();
+      continue;
+    }
+
+    const acHeaderMatch = line.match(/^-\s+\*\*(AC-\d+:[^*]+)\*\*/i);
+    if (acHeaderMatch) {
+      if (currentAc) {
+        criteria.push(currentAc);
+      }
+      const fullTitle = acHeaderMatch[1].trim();
+      const id = fullTitle.split(':')[0].trim();
+      currentAc = {
+        id,
+        title: fullTitle,
+        category: currentCategory,
+        clauses: []
+      };
+      continue;
+    }
+
+    if (currentAc && (line.startsWith('-') || line.startsWith('*'))) {
+      const clauseMatch = line.match(/^[-*]\s+\*\*(Given|When|Then|And|Dado|Quando|Então|E)\*\*\s*(.*)$/i);
+      if (clauseMatch) {
+        let kw = clauseMatch[1].toUpperCase();
+        if (kw === 'DADO') kw = 'GIVEN';
+        if (kw === 'QUANDO') kw = 'WHEN';
+        if (kw === 'ENTÃO' || kw === 'ENTAO') kw = 'THEN';
+        if (kw === 'E') kw = 'AND';
+
+        currentAc.clauses.push({
+          keyword: kw,
+          text: clauseMatch[2].trim()
+        });
+      } else {
+        const plainText = line.replace(/^[-*]\s+/, '').trim();
+        if (plainText) {
+          currentAc.clauses.push({
+            keyword: 'STEP',
+            text: plainText
+          });
+        }
+      }
+    }
+  }
+
+  if (currentAc) {
+    criteria.push(currentAc);
+  }
+
+  return criteria;
+}
+
+/**
  * Extracts sections, user stories and acceptance criteria from Markdown files
  * @param {string} featureDir
  * @returns {object}
@@ -88,7 +269,7 @@ function parseFeature(featureDir) {
   const tasksPath = path.join(featureDir, 'tasks.md');
 
   let title = featureId;
-  let problemStatement = '';
+  let plan = { problemStatement: '', inScope: [], outOfScope: [], approach: '', adrs: [] };
   let userStories = [];
   let acceptanceCriteria = [];
   let businessRules = [];
@@ -99,11 +280,7 @@ function parseFeature(featureDir) {
     const planContent = fs.readFileSync(planPath, 'utf8');
     const titleMatch = planContent.match(/^#\s+Plan:\s*(.+)$/m) || planContent.match(/^#\s+(.+)$/m);
     if (titleMatch) title = titleMatch[1].trim();
-
-    const problemMatch = planContent.match(/##\s+1\.\s+Problem Statement[\s\S]*?(?=##|$)/i);
-    if (problemMatch) {
-      problemStatement = problemMatch[0].replace(/##\s+1\.\s+Problem Statement.*?\n/i, '').trim();
-    }
+    plan = parsePlanSections(planContent);
   }
 
   // 2. Parse spec.md
@@ -117,7 +294,7 @@ function parseFeature(featureDir) {
     // Extract User Stories: - **US-X**: ...
     const usMatches = specContent.match(/-\s+\*\*US-[^:]+\*\*:\s*.+/g);
     if (usMatches) {
-      userStories = usMatches.map(m => m.replace(/^-\s+/, '').trim());
+      userStories = usMatches.map(m => parseUserStory(m));
     }
 
     // Extract Business Rules: - **BR-X**: ...
@@ -126,22 +303,8 @@ function parseFeature(featureDir) {
       businessRules = brMatches.map(m => m.replace(/^-\s+/, '').trim());
     }
 
-    // Extract Acceptance Criteria: - **AC-X: ...**
-    const acRegex = /-\s+\*\*(AC-\d+:[^*]+)\*\*([\s\S]*?)(?=-\s+\*\*AC-\d+:|##|$)/g;
-    let match;
-    while ((match = acRegex.exec(specContent)) !== null) {
-      const acTitle = match[1].trim();
-      const acDetails = match[2].trim()
-        .split('\n')
-        .map(l => l.trim())
-        .filter(l => l.startsWith('-') || l.startsWith('*'))
-        .map(l => l.replace(/^[-*]\s+/, ''));
-      acceptanceCriteria.push({
-        id: acTitle.split(':')[0].trim(),
-        title: acTitle,
-        details: acDetails
-      });
-    }
+    // Extract Acceptance Criteria:
+    acceptanceCriteria = parseAcceptanceCriteria(specContent);
   }
 
   // 3. Parse tasks.md
@@ -156,7 +319,8 @@ function parseFeature(featureDir) {
   return {
     id: featureId,
     title,
-    problemStatement,
+    plan,
+    problemStatement: plan.problemStatement,
     userStories,
     businessRules,
     acceptanceCriteria,
@@ -238,7 +402,10 @@ module.exports = {
   parseTasksTable,
   parseFeature,
   getAllFeatures,
-  startServer
+  startServer,
+  parseUserStory,
+  parsePlanSections,
+  parseAcceptanceCriteria
 };
 
 if (require.main === module) {
