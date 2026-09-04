@@ -19,8 +19,8 @@
 | [x] | TASK-07 | test | Add unit test assertions for rich Plan parsing, structured User Stories, and BDD Given/When/Then tokens | `tests/serve-dashboard.test.js` | TASK-06 | c3d9d99 (Red phase: 3 new tests failing) |
 | [x] | TASK-08 | feat | Implement deep parsing for plan.md (problem, in/out scope, approach) and structured User Stories in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-07 | c6c2edf (7/7 passed) |
 | [x] | TASK-09 | feat | Implement structured BDD parser extracting Given, When, Then, And clauses with category tags | `.agents/scripts/serve-dashboard.js` | TASK-08 | c6c2edf (7/7 passed) |
-| [ ] | TASK-10 | feat | Redesign UI to true vertical cascading sections (1. Plan & Scope, 2. US Cards, 3. BDD Gherkin Badges, 4. Tasks) | `.agents/scripts/serve-dashboard.js` | TASK-09 | |
-| [ ] | TASK-11 | review | Verify all sensor suites and test immutability for enhanced cascading dashboard | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-10 | |
+| [x] | TASK-10 | feat | Redesign UI to true vertical cascading sections (1. Plan & Scope, 2. US Cards, 3. BDD Gherkin Badges, 4. Tasks) | `.agents/scripts/serve-dashboard.js` | TASK-09 | 9d3c193 (7/7 passed) |
+| [x] | TASK-11 | review | Verify all sensor suites and test immutability for enhanced cascading dashboard | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-10 | tests 7/7 pass, drift 0, memory 0 errors |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).
