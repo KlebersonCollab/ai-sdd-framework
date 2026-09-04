@@ -104,3 +104,72 @@ test('HTTP Server: GET / and GET /api/features', async (t) => {
     await new Promise((resolve) => serverInstance.close(resolve));
   }
 });
+
+test('Enhanced Parser: parseUserStory decomposes role, action, and benefit', () => {
+  if (!serveDashboard.parseUserStory) {
+    assert.fail('serveDashboard.parseUserStory function is not defined');
+  }
+
+  const rawUS = '- **US-1**: As a developer, I want to launch a local dashboard, so that I can visually track SDD feature progress.';
+  const parsed = serveDashboard.parseUserStory(rawUS);
+
+  assert.strictEqual(parsed.id, 'US-1');
+  assert.ok(parsed.role.toLowerCase().includes('developer'));
+  assert.ok(parsed.action.toLowerCase().includes('launch a local dashboard'));
+  assert.ok(parsed.benefit.toLowerCase().includes('track sdd feature progress'));
+});
+
+test('Enhanced Parser: parsePlanSections extracts problem, inScope, outOfScope', () => {
+  if (!serveDashboard.parsePlanSections) {
+    assert.fail('serveDashboard.parsePlanSections function is not defined');
+  }
+
+  const samplePlan = `
+# Plan: Sample
+## 1. Problem Statement & Motivation
+Need better visibility.
+## 2. Scope & Boundaries
+- **In Scope**:
+  - Item Alpha
+  - Item Beta
+- **Out of Scope**:
+  - Item Gamma
+## 3. High-Level Approach
+Step 1 then Step 2.
+`;
+
+  const plan = serveDashboard.parsePlanSections(samplePlan);
+  assert.ok(plan.problemStatement.includes('Need better visibility'));
+  assert.strictEqual(plan.inScope.length, 2);
+  assert.strictEqual(plan.inScope[0], 'Item Alpha');
+  assert.strictEqual(plan.outOfScope.length, 1);
+  assert.strictEqual(plan.outOfScope[0], 'Item Gamma');
+  assert.ok(plan.approach.includes('Step 1'));
+});
+
+test('Enhanced Parser: parseAcceptanceCriteria decomposes Gherkin Given/When/Then clauses', () => {
+  if (!serveDashboard.parseAcceptanceCriteria) {
+    assert.fail('serveDashboard.parseAcceptanceCriteria function is not defined');
+  }
+
+  const sampleSpec = `
+## 3. Acceptance Criteria (BDD)
+### Happy Path (Success Scenarios)
+- **AC-1: Server Start**
+  - **Given** server is installed
+  - **When** start command runs
+  - **Then** port 3000 opens
+  - **And** returns 200 OK
+`;
+
+  const criteria = serveDashboard.parseAcceptanceCriteria(sampleSpec);
+  assert.strictEqual(criteria.length, 1);
+  assert.strictEqual(criteria[0].id, 'AC-1');
+  assert.strictEqual(criteria[0].category, 'Happy Path');
+  assert.strictEqual(criteria[0].clauses.length, 4);
+  assert.strictEqual(criteria[0].clauses[0].keyword, 'GIVEN');
+  assert.strictEqual(criteria[0].clauses[1].keyword, 'WHEN');
+  assert.strictEqual(criteria[0].clauses[2].keyword, 'THEN');
+  assert.strictEqual(criteria[0].clauses[3].keyword, 'AND');
+});
+
