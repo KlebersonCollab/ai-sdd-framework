@@ -180,12 +180,46 @@ function getAllFeatures() {
 }
 
 /**
- * Server placeholder to be completed in TASK-03 and TASK-04
+ * Starts the native HTTP server serving the dashboard and /api/features endpoint
+ * @param {number} port
+ * @returns {Promise<http.Server>}
  */
 function startServer(port = 3000) {
   const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('Specs Dashboard Server Running');
+    const parsedUrl = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    const pathname = parsedUrl.pathname;
+
+    // CORS & Common headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
+    if (req.method === 'GET' && pathname === '/api/features') {
+      try {
+        const features = getAllFeatures();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ features, count: features.length, timestamp: new Date().toISOString() }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+
+    if (req.method === 'GET' && (pathname === '/' || pathname === '/index.html')) {
+      const html = renderDashboardHtml();
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+      return;
+    }
+
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('404 Not Found');
   });
 
   return new Promise((resolve, reject) => {
@@ -194,6 +228,23 @@ function startServer(port = 3000) {
     });
     server.on('error', reject);
   });
+}
+
+function renderDashboardHtml() {
+  return `<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Specs Dashboard — AI-SDD Framework</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-4">
+    <h1>Specs Dashboard</h1>
+  </div>
+</body>
+</html>`;
 }
 
 module.exports = {
