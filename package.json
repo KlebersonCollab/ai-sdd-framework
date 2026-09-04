@@ -1,0 +1,12 @@
+{
+  "name": "ai-sdd-framework",
+  "version": "1.0.0",
+  "description": "Spec Driven Development Lifecycle, Universal AI Agent Governance & Multi-Harness Skill Runtime",
+  "scripts": {
+    "dashboard": "node .agents/scripts/serve-dashboard.js",
+    "test": "node tests/serve-dashboard.test.js",
+    "check-drift": "node .agents/scripts/check-spec-drift.js",
+    "compact-memory": "node .agents/scripts/compact-memory.js"
+  },
+  "license": "MIT"
+}

@@ -53,7 +53,7 @@ Artifacts are strictly partitioned across 4 distinct layers:
 │   ├── memory/
 │   │   └── memory_graph.jsonl      # Cross-session recall (entities, relations, observations)
 │   ├── rules/                      # System rules (Tier 1 Prohibitions, Quality Enforcement, Token Opt)
-│   ├── scripts/                    # Governance & sensor scripts (check-spec-drift.js, install-hooks.js)
+│   ├── scripts/                    # Governance & sensor scripts (serve-dashboard.js, check-spec-drift.js, install-hooks.js)
 │   └── skills/                     # Specialized agent capabilities
 ├── .specs/
 │   ├── codebase/                   # Brownfield reality (STACK, ARCHITECTURE, CONVENTIONS, CONCERNS, TECHNICAL-MAP)
@@ -79,6 +79,7 @@ Use this matrix to route every user request to the appropriate skill:
 | **Code Restructuring / Clean Code** | `refactor` | `sdd-executor` | Source code with non-regression tests |
 | **Specification & Quality Audit** | `sdd-review` | Test runner, linter, build sensors, drift sensor | Formal Verification Report with Verdict in chat |
 | **UI / Frontend / Design System** | `sdd-executor` / `sdd-planner` | `DESIGN.md`, `view_file` | Source code matching `DESIGN.md` tokens |
+| **Specs & Feature Dashboard** | `sdd-executor` / `sdd-planner` | `serve-dashboard.js`, `DESIGN.md` | Interactive UI at `http://localhost:3000` |
 | **Symbol & Pattern Lookup** | `search` | `grep_search`, `find_by_name` | Direct file:line references |
 | **Scientific / Algorithmic Papers** | `arxiv` | `read_url_content`, curl | Paper summaries and BibTeX |
 | **Skill Authoring & Extension** | `write-a-skill` | — | `.agents/skills/<skill-name>/SKILL.md` |

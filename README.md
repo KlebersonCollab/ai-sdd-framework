@@ -286,8 +286,18 @@ The agent will execute:
 2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence.
 3. `sdd-review` → audits sensors (lint, test, build) and generates a formal Verification Report.
 
+### 4. Visualize with Specs Dashboard
+Launch the zero-dependency, real-time documentation dashboard:
+```bash
+npm run dashboard
+# Or directly:
+node .agents/scripts/serve-dashboard.js
+```
+Open [http://localhost:3000](http://localhost:3000) to inspect all active features cascading from User Stories to BDD criteria and MetaGPT atomic task execution tables, styled with the native Linear Dark design system.
+
 ---
 
 ## 📄 License
 
 This project is licensed under the [MIT License](LICENSE).
+
