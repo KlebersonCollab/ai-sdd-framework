@@ -14,8 +14,8 @@
 | [x] | TASK-02 | feat | Implement Markdown parsing utility in serve-dashboard.js extracting features, US, BDD, and tasks table | `.agents/scripts/serve-dashboard.js` | TASK-01 | b3af876 (Parser: 3/4 tests passed) |
 | [x] | TASK-03 | feat | Implement native Node.js HTTP server and REST endpoint /api/features in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | 5319dd1 (4/4 passed) |
 | [x] | TASK-04 | feat | Build responsive frontend UI template with Bootstrap 5 CDN and DESIGN.md Linear Dark styling | `.agents/scripts/serve-dashboard.js` | TASK-03 | 43c57d6 (4/4 passed) |
-| [ ] | TASK-05 | docs | Add dashboard launch instructions to README.md, AGENTS.md, and package npm scripts | `README.md`, `AGENTS.md`, `package.json` | TASK-04 | |
-| [ ] | TASK-06 | review | Audit acceptance criteria against sensor test suite and verify spec drift compliance | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | |
+| [x] | TASK-05 | docs | Add dashboard launch instructions to README.md, AGENTS.md, and package npm scripts | `README.md`, `AGENTS.md`, `package.json` | TASK-04 | 5d86ad3 (4/4 passed) |
+| [x] | TASK-06 | review | Audit acceptance criteria against sensor test suite and verify spec drift compliance | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | tests 4/4 pass, drift 0, memory 0 errors |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).
