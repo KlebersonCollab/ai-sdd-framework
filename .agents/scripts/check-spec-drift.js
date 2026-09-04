@@ -67,8 +67,9 @@ function getDeclaredTargetFiles() {
     const lines = content.split('\n');
 
     for (const line of lines) {
-      if (!line.startsWith('|') || line.includes('Target Files') || line.includes('---')) continue;
-      const columns = line.split('|').map(c => c.trim()).filter(Boolean);
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('|') || trimmed.includes('Target Files') || trimmed.includes('---')) continue;
+      const columns = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
       
       // In 7-column schema: Status (0), ID (1), Type (2), Description (3), Target Files (4), Dependencies (5), Evidence (6)
       // In 5-column schema: Status (0), ID (1), Description (2), Target Files (3), Evidence (4)

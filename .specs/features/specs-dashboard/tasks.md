@@ -1,0 +1,26 @@
+# Task List: Specs Dashboard (Visual Documentation & Cascade Viewer)
+
+## Sequence Guidelines (MetaGPT SOP)
+- **Strict Sequential Order**: Tasks must be executed top-to-bottom without reordering.
+- **Atomic File Boundaries**: Each task modifies at most 1–3 specific target files.
+- **Decoupled Test Setup**: Test definition / scaffolding tasks (`Type: test`) MUST precede implementation tasks (`Type: feat`).
+- **Sensor Evidence Gate**: Mark complete `[x]` ONLY after passing test sensors with recorded commit/test evidence.
+
+## Implementation Tasks
+
+| Status | ID | Type | Description | Target Files | Dependencies | Evidence |
+|---|---|---|---|---|---|---|
+| [ ] | TASK-01 | test | Create automated sensor test suite validating markdown parser and HTTP server endpoints | `tests/serve-dashboard.test.js` | None | |
+| [ ] | TASK-02 | feat | Implement Markdown parsing utility in serve-dashboard.js extracting features, US, BDD, and tasks table | `.agents/scripts/serve-dashboard.js` | TASK-01 | |
+| [ ] | TASK-03 | feat | Implement native Node.js HTTP server and REST endpoint /api/features in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | |
+| [ ] | TASK-04 | feat | Build responsive frontend UI template with Bootstrap 5 CDN and DESIGN.md Linear Dark styling | `.agents/scripts/serve-dashboard.js` | TASK-03 | |
+| [ ] | TASK-05 | docs | Add dashboard launch instructions to README.md, AGENTS.md, and package npm scripts | `README.md`, `AGENTS.md`, `package.json` | TASK-04 | |
+| [ ] | TASK-06 | review | Audit acceptance criteria against sensor test suite and verify spec drift compliance | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | |
+
+## Schema Dictionary
+- **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).
+- **ID**: Sequential traceable identifier (`TASK-01` to `TASK-06`).
+- **Type**: `test` | `feat` | `docs` | `review`.
+- **Target Files**: Concrete relative file paths.
+- **Dependencies**: Explicit predecessor IDs or `None`.
+- **Evidence**: Test sensor execution output.
