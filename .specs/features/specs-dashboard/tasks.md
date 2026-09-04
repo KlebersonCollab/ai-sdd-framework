@@ -12,7 +12,7 @@
 |---|---|---|---|---|---|---|
 | [x] | TASK-01 | test | Create automated sensor test suite validating markdown parser and HTTP server endpoints | `tests/serve-dashboard.test.js` | None | c16a7b4 (Red phase verified: 4 fails) |
 | [x] | TASK-02 | feat | Implement Markdown parsing utility in serve-dashboard.js extracting features, US, BDD, and tasks table | `.agents/scripts/serve-dashboard.js` | TASK-01 | b3af876 (Parser: 3/4 tests passed) |
-| [ ] | TASK-03 | feat | Implement native Node.js HTTP server and REST endpoint /api/features in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | |
+| [x] | TASK-03 | feat | Implement native Node.js HTTP server and REST endpoint /api/features in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-02 | 5319dd1 (4/4 passed) |
 | [ ] | TASK-04 | feat | Build responsive frontend UI template with Bootstrap 5 CDN and DESIGN.md Linear Dark styling | `.agents/scripts/serve-dashboard.js` | TASK-03 | |
 | [ ] | TASK-05 | docs | Add dashboard launch instructions to README.md, AGENTS.md, and package npm scripts | `README.md`, `AGENTS.md`, `package.json` | TASK-04 | |
 | [ ] | TASK-06 | review | Audit acceptance criteria against sensor test suite and verify spec drift compliance | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-05 | |
