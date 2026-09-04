@@ -21,6 +21,9 @@
 | [x] | TASK-09 | feat | Implement structured BDD parser extracting Given, When, Then, And clauses with category tags | `.agents/scripts/serve-dashboard.js` | TASK-08 | c6c2edf (7/7 passed) |
 | [x] | TASK-10 | feat | Redesign UI to true vertical cascading sections (1. Plan & Scope, 2. US Cards, 3. BDD Gherkin Badges, 4. Tasks) | `.agents/scripts/serve-dashboard.js` | TASK-09 | 9d3c193 (7/7 passed) |
 | [x] | TASK-11 | review | Verify all sensor suites and test immutability for enhanced cascading dashboard | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-10 | tests 7/7 pass, drift 0, memory 0 errors |
+| [x] | TASK-12 | feat | Implement Server-Sent Events (SSE /api/events) and recursive fs.watch with unref in serve-dashboard.js | `.agents/scripts/serve-dashboard.js` | TASK-11 | node tests/serve-dashboard.test.js (7/7 passed in 38ms) |
+| [x] | TASK-13 | feat | Add client-side SSE listener and marked.js markdown parsing for High-Level Approach & Problem Statement | `.agents/scripts/serve-dashboard.js` | TASK-12 | initLiveSync badge & markdown-content styled |
+| [x] | TASK-14 | review | Run test suite and spec drift sensor for dynamic reload and watch mode | `tests/serve-dashboard.test.js`, `.agents/scripts/serve-dashboard.js` | TASK-13 | tests 7/7 pass, drift 0, memory 0 errors |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[x]` (Verified Complete).

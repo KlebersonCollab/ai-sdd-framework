@@ -7,6 +7,7 @@
 - **US-4**: As a developer, I want the tasks table to clearly display task IDs, types, descriptions, dependencies, statuses, and sensor/commit evidence.
 - **US-5**: As a user, I want the dashboard to follow the Linear Dark design system from `DESIGN.md` with dark theme tokens, clean typography, and subtle hairline borders.
 - **US-6**: As a user, I want to refresh the page or click a Refresh button to immediately see changes made to markdown files on disk.
+- **US-7**: As a developer editing markdown specs in my editor, I want the dashboard to automatically refresh in real-time via Server-Sent Events (SSE) and file watching without manually restarting the service or pressing reload.
 
 ## 2. Business Rules & Invariants
 - **BR-1 (Zero Dependencies)**: The server and parser script MUST execute using only Node.js standard library modules (`http`, `fs`, `path`, `url`). No `node_modules` may be introduced.
@@ -37,6 +38,12 @@
     - User Stories / Plan summary from `plan.md`
     - BDD Scenarios (Given/When/Then) from `spec.md`
     - 7-Column MetaGPT Task Table from `tasks.md` with status badges.
+
+- **AC-7: Dynamic Live Sync & File Watching**
+  - **Given** the dashboard is open in a browser connected to `/api/events`
+  - **When** any specification file in `.specs/` is edited and saved on disk
+  - **Then** the server detects the change via `fs.watch` and broadcasts a reload event via SSE
+  - **And** the dashboard updates the data and UI dynamically without requiring manual server restart.
 
 ### Input & Validation Scenarios
 - **AC-4: Custom Port Selection**
