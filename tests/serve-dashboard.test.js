@@ -99,15 +99,10 @@ test('HTTP Server: GET / and GET /api/features', async (t) => {
     assert.strictEqual(htmlRes.status, 200, 'GET / should return 200');
     assert.ok(htmlRes.headers['content-type'].includes('text/html'));
     assert.ok(htmlRes.body.includes('Specs Dashboard'), 'HTML should contain title');
-    assert.ok(htmlRes.body.includes('bootstrap'), 'HTML should reference bootstrap');
-    assert.ok(htmlRes.body.includes('statProgressBar'), 'HTML should contain overall progress bar element');
-    assert.ok(htmlRes.body.includes('height: 100%'), 'HTML should style progress-bar-custom with height: 100%');
-    assert.ok(htmlRes.body.includes('vis-network'), 'HTML should load vis-network CDN');
-    assert.ok(htmlRes.body.includes('navTabMemory'), 'HTML should contain Memory Graph tab');
-    assert.ok(htmlRes.body.includes('memoryGraphCanvas'), 'HTML should contain graph canvas');
-    assert.ok(htmlRes.body.includes('nodeInspector'), 'HTML should contain node inspector drawer');
-    assert.ok(htmlRes.body.includes('function switchView('), 'HTML should define switchView function');
-    assert.ok(htmlRes.body.includes('function renderVisMemoryGraph('), 'HTML should define renderVisMemoryGraph function');
+    assert.ok(htmlRes.body.includes('id="app"'), 'HTML should contain Vue 3 mount element #app');
+    assert.ok(htmlRes.body.includes('/assets/index-'), 'HTML should reference compiled Vite assets');
+    assert.ok(!htmlRes.body.includes('bootstrap.min.css'), 'Legacy Bootstrap CSS CDN must be removed');
+    assert.ok(!htmlRes.body.includes('bootstrap.bundle.min.js'), 'Legacy Bootstrap JS CDN must be removed');
 
     const faviconRes = await new Promise((resolve, reject) => {
       http.get(`http://localhost:${port}/favicon.ico`, (res) => {
@@ -264,6 +259,176 @@ test('HTTP Server: GET /api/memory returns graph data', async () => {
     assert.ok(Array.isArray(parsed.nodes), 'Memory API should return nodes array');
     assert.ok(Array.isArray(parsed.edges), 'Memory API should return edges array');
     assert.ok(parsed.stats, 'Memory API should return stats');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('Task Mutation: updateTaskInMarkdown modifies status and records feedback in Markdown table', () => {
+  if (!serveDashboard || !serveDashboard.updateTaskInMarkdown) {
+    assert.fail('serveDashboard.updateTaskInMarkdown function is not defined');
+  }
+
+  const initialMarkdown = `
+| Status | ID | Type | Description | Target Files | Dependencies | Evidence |
+|---|---|---|---|---|---|---|
+| [ ] | TASK-01 | feat | First task | \`file1.js\` | None | |
+| [x] | TASK-02 | test | Second task | \`file2.js\` | TASK-01 | git-abc |
+`;
+
+  // 1. Move TASK-01 from pending to in_progress
+  const updatedInProgress = serveDashboard.updateTaskInMarkdown(initialMarkdown, 'TASK-01', 'in_progress');
+  assert.ok(updatedInProgress.includes('| [-] | TASK-01 | feat | First task | `file1.js` | None | |'), 'Should update TASK-01 to [-]');
+
+  // 2. Move TASK-02 from done back to pending with feedback
+  const updatedFeedback = serveDashboard.updateTaskInMarkdown(initialMarkdown, 'TASK-02', 'pending', 'Revision: tests need edge cases');
+  assert.ok(updatedFeedback.includes('| [ ] | TASK-02 | test | Second task | `file2.js` | TASK-01 | [Reverted] Revision: tests need edge cases |'), 'Should update TASK-02 to [ ] and append feedback');
+
+  // 3. Move TASK-01 to done with evidence
+  const updatedDone = serveDashboard.updateTaskInMarkdown(initialMarkdown, 'TASK-01', 'done', 'git-99999');
+  assert.ok(updatedDone.includes('| [x] | TASK-01 | feat | First task | `file1.js` | None | git-99999 |'), 'Should update TASK-01 to [x] with evidence');
+});
+
+test('HTTP Server: PATCH /api/features/:featureId/tasks/:taskId modifies tasks.md and returns updated task', async () => {
+  const fs = require('node:fs');
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  // Create temporary test feature directory
+  const testFeatureDir = path.resolve(__dirname, '../.specs/features/_test-temp-feature');
+  if (!fs.existsSync(testFeatureDir)) fs.mkdirSync(testFeatureDir, { recursive: true });
+
+  const tempTasksFile = path.join(testFeatureDir, 'tasks.md');
+  const tempTasksMd = `
+| Status | ID | Type | Description | Target Files | Dependencies | Evidence |
+|---|---|---|---|---|---|---|
+| [ ] | TASK-TEMP | feat | Temporary task | \`src/temp.js\` | None | |
+`;
+  fs.writeFileSync(tempTasksFile, tempTasksMd, 'utf8');
+
+  try {
+    const payload = JSON.stringify({ status: 'in_progress' });
+    const patchRes = await new Promise((resolve, reject) => {
+      const req = http.request({
+        hostname: 'localhost',
+        port: port,
+        path: '/api/features/_test-temp-feature/tasks/TASK-TEMP',
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Content-Length': Buffer.byteLength(payload)
+        }
+      }, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+      });
+      req.on('error', reject);
+      req.write(payload);
+      req.end();
+    });
+
+    assert.strictEqual(patchRes.status, 200, 'PATCH /api/features/:id/tasks/:id should return 200');
+    const resBody = JSON.parse(patchRes.body);
+    assert.strictEqual(resBody.success, true);
+    assert.strictEqual(resBody.task.id, 'TASK-TEMP');
+    assert.strictEqual(resBody.task.status, 'in_progress');
+
+    // Verify physical file on disk was modified
+    const modifiedOnDisk = fs.readFileSync(tempTasksFile, 'utf8');
+    assert.ok(modifiedOnDisk.includes('| [-] | TASK-TEMP |'), 'Physical tasks.md should have [-] checkbox');
+  } finally {
+    if (fs.existsSync(testFeatureDir)) {
+      fs.rmSync(testFeatureDir, { recursive: true, force: true });
+    }
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: Static Asset Serving serves from dist directory when present', async () => {
+  const fs = require('node:fs');
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  const distDir = path.resolve(__dirname, '../.agents/dashboard/dist');
+  const testAssetDir = path.join(distDir, 'assets');
+  if (!fs.existsSync(testAssetDir)) fs.mkdirSync(testAssetDir, { recursive: true });
+
+  const testJsFile = path.join(testAssetDir, 'test-bundle.js');
+  fs.writeFileSync(testJsFile, 'console.log("Cockpit SPA");', 'utf8');
+
+  try {
+    const assetRes = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/assets/test-bundle.js`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(assetRes.status, 200, 'Should serve static asset with 200');
+    assert.ok(assetRes.headers['content-type'].includes('javascript'), 'Content type should be javascript');
+    assert.strictEqual(assetRes.body, 'console.log("Cockpit SPA");');
+  } finally {
+    if (fs.existsSync(testJsFile)) fs.unlinkSync(testJsFile);
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: Terminal WebSocket upgrades on /api/terminal', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const upgradeRes = await new Promise((resolve, reject) => {
+      const req = http.request({
+        port,
+        path: '/api/terminal',
+        headers: {
+          'Connection': 'Upgrade',
+          'Upgrade': 'websocket',
+          'Sec-WebSocket-Key': 'dGhlIHNhbXBsZSBub25jZQ==',
+          'Sec-WebSocket-Version': '13'
+        }
+      });
+      req.on('upgrade', (res, socket, head) => {
+        socket.destroy();
+        resolve({ status: res.statusCode, headers: res.headers });
+      });
+      req.on('response', (res) => {
+        resolve({ status: res.statusCode, headers: res.headers });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+
+    assert.strictEqual(upgradeRes.status, 101, 'WebSocket upgrade should return 101 Switching Protocols');
+    assert.strictEqual(upgradeRes.headers['upgrade'].toLowerCase(), 'websocket');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: GET /api/terminal-config returns detected OS terminal font and shell', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const configRes = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/terminal-config`, (res) => {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve({ status: res.statusCode, headers: res.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(configRes.status, 200, 'GET /api/terminal-config should return 200');
+    const parsed = JSON.parse(configRes.body);
+    assert.ok(parsed.fontFamily, 'Must return fontFamily');
+    assert.ok(parsed.shell, 'Must return shell');
+    if (process.platform === 'win32') {
+      assert.ok(parsed.shell.includes('powershell'), 'Shell on Windows must be powershell');
+    }
   } finally {
     await new Promise((resolve) => serverInstance.close(resolve));
   }

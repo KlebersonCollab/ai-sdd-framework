@@ -8,3 +8,7 @@
 - **Memory Graph**: JSONL-based persistent associative memory tracking entities, relations, and observations across sessions.
 - **Rule Bridge**: Lightweight adapter configuration files tailoring AGENTS.md governance to specific AI IDEs/agents.
 - **Feature Dashboard**: An interactive visual presentation tool parsing .specs/features/ to display feature progress, user stories, acceptance criteria, and task tables.
+- **AI Agent Cockpit**: Modular web workspace (Vue 3 SPA) combining living specs, real-time Kanban task tracking, memory graph visualization, and an embedded terminal for sensor and agent execution.
+- **Reactive Kanban Board**: Column-based task view dynamically driven by `tasks.md` status, updating automatically via SSE/WebSocket without destructive UI-induced drift.
+- **Embedded PTY Terminal**: In-browser interactive terminal powered by `xterm.js` streaming to a local shell over WebSockets with 1-click trigger actions for SDD sensors.
+

@@ -215,14 +215,17 @@ All skills follow the **Open Agent Skills Standard** with structured YAML frontm
 ```
 ai-sdd-framework/
 ├── .agents/
+│   ├── dashboard/dist/                 # Pre-compiled production Vue 3 Cockpit SPA assets
 │   ├── memory/
 │   │   └── memory_graph.jsonl          # Cross-session persistent knowledge graph
 │   ├── rules/                          # Non-negotiable system rules (Highest Precedence)
 │   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order, ACI & Test Immutability
 │   │   ├── QUALITY_ENFORCEMENT.md      # Test & hook bypass bans, scratchpad isolation, Spec Drift invariance
 │   │   └── TOKEN_OPTIMIZATION.md       # Calibrated output verbosity per model tier
-│   ├── scripts/                        # Governance & sensor scripts
+│   ├── scripts/                        # Governance, server & sensor scripts (Zero-Dependency)
+│   │   ├── serve-dashboard.js          # Native HTTP & RFC 6455 WebSocket gateway & Markdown/Memory parser
 │   │   ├── check-spec-drift.js         # Pre-commit Spec Drift Sensor (Constitutional SDD)
+│   │   ├── compact-memory.js           # Memory graph maintenance & compaction
 │   │   └── install-hooks.js            # Git pre-commit hook installer
 │   └── skills/                         # Specialized Agent Skills & Protocols (Open Format)
 │       ├── sdd-memory/                 # Long-term recall & graph maintenance
@@ -239,8 +242,12 @@ ai-sdd-framework/
 ├── .specs/                             # Living Specifications (Created per project)
 │   ├── codebase/                       # Physical code architecture & stack maps
 │   ├── project/                        # Product vision, session state & ADRs
-│   ├── features/                       # Active feature specifications
+│   ├── features/                       # Active feature specifications (plan.md, spec.md, tasks.md)
 │   └── knowledge/                      # Curated patterns and anti-patterns
+├── packages/
+│   └── dashboard/                      # Modular Vue 3 + Vite + Tailwind source code for Cockpit UI
+├── tests/
+│   └── serve-dashboard.test.js         # Sensor test suite (15 unit & integration tests)
 ├── .cursor/rules/sdd.mdc                # 🌉 Cursor MDC modern rule bridge
 ├── .devin/instructions.md              # 🌉 Devin instruction bridge
 ├── .github/copilot-instructions.md     # 🌉 GitHub Copilot rule bridge
@@ -270,6 +277,8 @@ Copy the `.agents/`, `AGENTS.md`, `DESIGN.md`, and bridge files into the root of
 cp -r .agents/ AGENTS.md DESIGN.md CLAUDE.md .cursorrules .windsurfrules .clinerules /path/to/your/project/
 ```
 
+> **Zero Host Pollution**: Host projects require **zero npm dependencies**. The server runtime (`serve-dashboard.js`) and governance sensors run purely on native Node.js standard libraries (`http`, `fs`, `crypto`, `child_process`).
+
 ### 2. Auto-Discovery Protocol
 Start your AI session in any supported tool. The agent will execute the **Blocking Gate**:
 1. Check `.agents/memory/memory_graph.jsonl` for past session memory.
@@ -286,14 +295,39 @@ The agent will execute:
 2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence.
 3. `sdd-review` → audits sensors (lint, test, build) and generates a formal Verification Report.
 
-### 4. Visualize with Specs Dashboard
-Launch the zero-dependency, real-time documentation dashboard:
+### 4. Interactive Human-AI Cockpit
+Launch the Cockpit web workspace (Vue 3 SPA + Embedded Terminal):
+
 ```bash
 npm run dashboard
-# Or directly:
+# Or directly with zero dependencies:
 node .agents/scripts/serve-dashboard.js
 ```
-Open [http://localhost:3000](http://localhost:3000) to inspect all active features cascading from User Stories to BDD criteria and MetaGPT atomic task execution tables, styled with the native Linear Dark design system.
+
+Open [http://localhost:3000](http://localhost:3000) to access:
+
+- **📋 Interactive Human-AI Kanban**:
+  - Drag-and-drop tasks or use quick-action menus with **two-way git sync** directly to physical `.specs/features/<id>/tasks.md`.
+  - **Review & Quality Rejection**: Moving a card back from Done prompts for structured review feedback, automatically recorded in Markdown for the agent to fix.
+  - **Agent Dispatcher**: 1-click `[⚡ Delegar]` button that generates task-specific context prompts and copies them to the clipboard or terminal.
+- ** cascade Specifications View**:
+  - Vertical cascade from Problem Statements to User Stories (Role/Action/Benefit), BDD Criteria (Given/When/Then), and MetaGPT atomic task tables.
+- **🧠 Interactive Memory Graph**:
+  - Force-directed network diagram (`vis-network`) visualizing all entities, relationships, and observations from `memory_graph.jsonl` with an interactive side inspector drawer.
+- **💻 Embedded Terminal Drawer (`xterm.js`)**:
+  - Openable via header badge or shortcut (`Ctrl+\`` / `Cmd+\``).
+  - Connected to native PowerShell on Windows (with UTF-8 Nerd Font rendering) or Bash on POSIX.
+  - Interactive line discipline with real-time typing echo, Backspace, command history (↑ / ↓), and 1-click sensor buttons (`[🔍 Drift Check]`, `[🧪 npm test]`).
+
+### Useful Framework Scripts
+
+| Command | Purpose |
+| :--- | :--- |
+| `npm run dashboard` | Starts the native Cockpit server on port 3000 |
+| `npm test` | Runs the 15-test framework and parser sensor suite |
+| `npm run check-drift` | Pre-commit Spec Drift Sensor validating code changes against `tasks.md` |
+| `npm run build:dashboard` | Recompiles the Vue 3 frontend from `packages/dashboard/` into `.agents/dashboard/dist/` |
+| `npm run compact-memory` | Compacts and resolves superseded entities in `memory_graph.jsonl` |
 
 ---
 
