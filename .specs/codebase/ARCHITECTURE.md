@@ -3,7 +3,7 @@
 ## Directory Organization
 - `.agents/`: Governance runtime, memory graph, system rules, sensor scripts, and skill definitions.
 - `.specs/`: Living specifications partitioned across codebase reality, project vision, active features, and knowledge base.
-- Rule Bridges: Root adapter files (AGENTS.md, CLAUDE.md, .cursorrules, .windsurfrules, .clinerules, etc.)
+- Root Standards: Central governance in `AGENTS.md`, design system in `DESIGN.md`, and skills/memory in `.agents/`.
 
 ## Architectural Patterns
 - **Spec Driven Development (SDD)**: Strict 5-stage lifecycle (Memory -> Explorer -> Planner -> Executor -> Reviewer).

@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Architecture: SDD](https://img.shields.io/badge/Architecture-SDD_5_Layers-lavender.svg)](#-architecture--artifact-topology)
-[![Multi-Harness: 13+ Agents](https://img.shields.io/badge/Compatibility-13%2B_AI_Harnesses-success.svg)](#-universal-multi-harness-compatibility-rule-bridges)
+[![Governance: Canonical Core](https://img.shields.io/badge/Governance-AGENTS.md%20SSOT-success.svg)](#-canonical-governance--standards)
 [![Lifecycle: Memory_First](https://img.shields.io/badge/Lifecycle-Strict_5_Phases-orange.svg)](#-the-sdd-lifecycle-protocol)
 [![Design System: Linear_Dark](https://img.shields.io/badge/Design_System-Linear_Tokens-5e6ad2.svg)](DESIGN.md)
 
@@ -28,71 +28,41 @@ Instead of unconstrained "prompt-and-code" execution, the framework enforces a *
 
 ---
 
-## 🌐 Universal Multi-Harness Compatibility (Rule Bridges)
+## 🏛️ Canonical Governance & Standards (AGENTS.md & DESIGN.md)
 
-AI-SDD Framework is **100% harness-agnostic**. The core architecture is **File-First**: all state lives in standard Markdown, JSON Lines, and Mermaid diagrams. 
+AI-SDD Framework is **100% harness-agnostic** and operates on a **File-First Single Source of Truth**: all state lives in standard Markdown, JSON Lines, and Mermaid diagrams. 
 
-`AGENTS.md` and `.agents/rules/` serve as the **Single Source of Truth**, while lightweight **Rule Bridges** adapt the governance to every major AI coding assistant in the industry:
+Rather than maintaining fragmented, tool-specific configuration files, governance, lifecycle enforcement, and UI standards are consolidated into three canonical foundations:
+
+1. **`AGENTS.md`**: Master Operating Manual, Blocking Gates, Execution Rules, and Skill Routing Matrix across all AI agents and assistants.
+2. **`DESIGN.md`**: Design tokens, color palettes, typography scales, and UI/UX invariant constraints.
+3. **`.agents/`**: Core governance runtime comprising system rules (`.agents/rules/`), persistent memory graph (`.agents/memory/`), automation scripts (`.agents/scripts/`), and specialized skills (`.agents/skills/`).
 
 ```mermaid
 flowchart TD
     subgraph Core["🏛️ CANONICAL CORE (Single Source of Truth)"]
         AG["AGENTS.md<br/>Master Operating Manual & Skill Router"]
+        DESIGN["DESIGN.md<br/>Design System & UI/UX Tokens"]
         RULES[".agents/rules/<br/>• TIER1_PROHIBITIONS.md<br/>• QUALITY_ENFORCEMENT.md<br/>• TOKEN_OPTIMIZATION.md"]
-        SKILLS[".agents/skills/<br/>Open Agent Skills Format"]
-        SPECS[".specs/<br/>Living Specs & Memory Graph"]
+        SKILLS[".agents/skills/<br/>Open Agent Skills Runtime"]
+        MEM[".agents/memory/<br/>Persistent Associative Graph"]
+        SCRIPTS[".agents/scripts/<br/>Governance Sensors & Dashboard"]
     end
 
-    subgraph Bridges["🌉 UNIVERSAL RULE BRIDGES"]
-        CLAUDE["CLAUDE.md<br/>(Claude Code CLI)"]
-        CURSOR[".cursorrules & .cursor/rules/sdd.mdc<br/>(Cursor IDE)"]
-        WINDSURF[".windsurfrules<br/>(Windsurf / Cascade)"]
-        CLINE[".clinerules<br/>(Cline / Roo Code)"]
-        COPILOT[".github/copilot-instructions.md<br/>(GitHub Copilot)"]
-        AIDER[".aider.conf.yml<br/>(Aider Chat)"]
-        KIMI["KIMI.md<br/>(Kimi CLI / Moonshot)"]
-        DEVIN[".devin/instructions.md<br/>(Devin / Cognition)"]
-        CONTINUE[".continue/rules.md<br/>(Continue.dev)"]
-        JUNIE[".junierules<br/>(JetBrains AI / Junie)"]
-        GOOSE[".goosehints<br/>(Block Goose CLI)"]
-        OPENHANDS[".openhands_instructions<br/>(OpenHands / OpenDevin)"]
+    subgraph Specs["📐 LIVING SPECS (.specs/)"]
+        CODEBASE[".specs/codebase/<br/>Brownfield Reality & Stack"]
+        PROJECT[".specs/project/<br/>Vision, Roadmap & ADRs"]
+        FEATURES[".specs/features/<br/>Active Feature Specs & Tasks"]
+        KNOWLEDGE[".specs/knowledge/<br/>Patterns & Anti-patterns"]
     end
-
-    CLAUDE --> AG
-    CURSOR --> AG
-    WINDSURF --> AG
-    CLINE --> AG
-    COPILOT --> AG
-    AIDER --> AG
-    KIMI --> AG
-    DEVIN --> AG
-    CONTINUE --> AG
-    JUNIE --> AG
-    GOOSE --> AG
-    OPENHANDS --> AG
 
     AG --- RULES
     AG --- SKILLS
-    AG --- SPECS
+    AG --- MEM
+    AG --- SCRIPTS
+    AG --- DESIGN
+    AG --- Specs
 ```
-
-### Supported Harness Matrix
-
-| Harness / Platform | Bridge File | Mechanism |
-| :--- | :--- | :--- |
-| **Antigravity (Google AGY)** | `AGENTS.md` & `.agents/` | Native Core & Rule Priority |
-| **Claude Code (Anthropic)** | `CLAUDE.md` | Auto-loaded session context & CLI envelope |
-| **Cursor IDE** | `.cursorrules` & `.cursor/rules/sdd.mdc` | Project rules injection & MDC system |
-| **Windsurf (Codeium)** | `.windsurfrules` | Cascade system rules injection |
-| **Cline & Roo Code** | `.clinerules` | Agent prompt envelope |
-| **GitHub Copilot** | `.github/copilot-instructions.md` | Copilot Workspace & PR Chat instructions |
-| **Aider Chat** | `.aider.conf.yml` | Auto-read flags on startup |
-| **Kimi CLI (Moonshot)** | `KIMI.md` | Project-level instructions |
-| **Goose CLI (Block)** | `.goosehints` | Context hints per execution turn |
-| **OpenHands (OpenDevin)** | `.openhands_instructions` | Sandboxed environment execution rules |
-| **Continue.dev** | `.continue/rules.md` | Assistant system rules |
-| **JetBrains AI / Junie** | `.junierules` | IDE context instructions |
-| **Devin (Cognition)** | `.devin/instructions.md` | Onboarding & repository guidelines |
 
 ---
 
@@ -248,21 +218,10 @@ ai-sdd-framework/
 │   └── dashboard/                      # Modular Vue 3 + Vite + Tailwind source code for Cockpit UI
 ├── tests/
 │   └── serve-dashboard.test.js         # Sensor test suite (15 unit & integration tests)
-├── .cursor/rules/sdd.mdc                # 🌉 Cursor MDC modern rule bridge
-├── .devin/instructions.md              # 🌉 Devin instruction bridge
-├── .github/copilot-instructions.md     # 🌉 GitHub Copilot rule bridge
-├── .continue/rules.md                  # 🌉 Continue.dev rule bridge
-├── .cursorrules                        # 🌉 Cursor legacy rule bridge
-├── .windsurfrules                      # 🌉 Windsurf rule bridge
-├── .clinerules                         # 🌉 Cline / Roo Code rule bridge
-├── .aider.conf.yml                     # 🌉 Aider configuration bridge
-├── .goosehints                         # 🌉 Goose CLI bridge
-├── .openhands_instructions             # 🌉 OpenHands bridge
-├── .junierules                         # 🌉 JetBrains AI / Junie bridge
-├── CLAUDE.md                           # 🌉 Claude Code bridge
-├── KIMI.md                             # 🌉 Kimi CLI bridge
+├── .github/
+│   └── copilot-instructions.md         # GitHub Copilot instructions referencing AGENTS.md
 ├── AGENTS.md                           # 🏛️ Master Operating Manual & Skill Routing Matrix
-├── DESIGN.md                           # Linear-inspired Design Tokens & UI Specification
+├── DESIGN.md                           # 🎨 Linear-inspired Design Tokens & UI Specification
 └── README.md                           # Official Documentation
 ```
 
@@ -271,10 +230,10 @@ ai-sdd-framework/
 ## 🚀 Quickstart: Bootstrapping a Project
 
 ### 1. Integrate into your workspace
-Copy the `.agents/`, `AGENTS.md`, `DESIGN.md`, and bridge files into the root of your project:
+Copy the `.agents/`, `AGENTS.md`, and `DESIGN.md` into the root of your project:
 
 ```bash
-cp -r .agents/ AGENTS.md DESIGN.md CLAUDE.md .cursorrules .windsurfrules .clinerules /path/to/your/project/
+cp -r .agents/ AGENTS.md DESIGN.md /path/to/your/project/
 ```
 
 > **Zero Host Pollution**: Host projects require **zero npm dependencies**. The server runtime (`serve-dashboard.js`) and governance sensors run purely on native Node.js standard libraries (`http`, `fs`, `crypto`, `child_process`).
