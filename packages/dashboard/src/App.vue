@@ -39,26 +39,21 @@
         </div>
       </transition>
 
-      <!-- VIEW 1: Specifications Cascade -->
+      <!-- VIEW 1: Specifications Cascade (Unified Execution Cascade) -->
       <div v-show="activeView === 'specs'">
-        <SpecsCascade :features="features" />
-      </div>
-
-      <!-- VIEW 2: Interactive Human-AI Kanban Board -->
-      <div v-show="activeView === 'kanban'">
-        <KanbanBoard
+        <SpecsCascade
           :features="features"
           @update-task="handleTaskUpdate"
           @dispatch-agent="handleDispatchAgent"
         />
       </div>
 
-      <!-- VIEW 3: Memory Graph View -->
+      <!-- VIEW 2: Memory Graph View -->
       <div v-show="activeView === 'memory'">
         <MemoryGraphView ref="memoryGraphRef" />
       </div>
 
-      <!-- VIEW 4: Living HTML Documentation Platform -->
+      <!-- VIEW 3: Living HTML Documentation Platform -->
       <div v-show="activeView === 'docs'">
         <LivingDocsView ref="livingDocsRef" />
       </div>
@@ -78,7 +73,6 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import Navbar from './components/Navbar.vue';
 import MetricsHeader from './components/MetricsHeader.vue';
 import SpecsCascade from './components/SpecsCascade.vue';
-import KanbanBoard from './components/KanbanBoard.vue';
 import MemoryGraphView from './components/MemoryGraphView.vue';
 import TerminalDrawer from './components/TerminalDrawer.vue';
 import LivingDocsView from './components/LivingDocsView.vue';

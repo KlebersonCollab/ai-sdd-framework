@@ -161,6 +161,99 @@
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
             <span class="badge badge-success">100%</span>
+            <span class="card-title">Unified Spec Execution Cascade &amp; Legacy Kanban Retirement</span>
+            <span class="card-subtitle font-mono">enhanced-spec-cascade</span>
+          </div>
+          <span class="task-count">7/7 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">In Spec Driven Development (SDD), the single source of truth for all feature execution is the 7-column MetaGPT task table inside <code class="inline-code">.specs/features/&lt;id&gt;/tasks.md</code>.</p><p class="doc-p">In earlier iterations, an interactive 3-column Kanban board (<code class="inline-code">To Do</code>, <code class="inline-code">In Progress</code>, <code class="inline-code">Done</code>) was introduced in the Cockpit. In practice, this created three critical problems:
+1. <strong>The Ghost Column</strong>: In AI-driven SDD, agents execute atomically in seconds or minutes (TDD: Red-Green-Refactor-Commit). Tasks jump directly from <code class="inline-code">[ ]</code> to <code class="inline-code">[x]</code>, leaving the <code class="inline-code">In Progress</code> column an empty ghost 99% of the time.
+2. <strong>Topological Ordering Invalidation</strong>: SDD tasks form a strict Directed Acyclic Graph (DAG) with explicit <code class="inline-code">Dependencies</code>. Drag-and-drop Kanban allows arbitrary card movements that break dependency ordering.
+3. <strong>Severe UI Redundancy</strong>: The <code class="inline-code">SpecsCascade</code> view already renders the complete specification cascade (Plan → User Stories → BDD Criteria → 7-Column Tasks Table). The Kanban board merely duplicated the task list in a detached, decontextualized format.</p><p class="doc-p">We must eliminate this redundancy by <strong>retiring the legacy Kanban board</strong> and elevating the <strong><code class="inline-code">SpecsCascade</code> component into a unified, AI-native execution cockpit</strong>:
+<li class="doc-li">Real-time topological dependency resolution highlighting the <strong>Next Actionable Task</strong> (<code class="inline-code">⚡ Pronta / Next</code>).</li>
+<li class="doc-li">Automatic detection and labeling of blocked tasks (<code class="inline-code">🔒 Bloqueada</code> with blocking dependency tags).</li>
+<li class="doc-li">Inline task operations: <code class="inline-code">⚡ Delegar Prompt</code> (generating &amp; copying surgical agent prompts) and <code class="inline-code">↩ Rejeitar</code> (reverting completed tasks with feedback written directly to disk).</li>
+<li class="doc-li">Dynamic, clickable dependency badges (<code class="inline-code">TASK-01 ✓</code> / <code class="inline-code">TASK-02 ○</code>) that scroll directly to dependency rows.</li>
+<li class="doc-li">Interactive traceability between BDD Acceptance Criteria and task execution.</li>
+<li class="doc-li">Quick status and type filters with summary statistics.</li></p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">refactor</span></td>
+        <td>Delete `KanbanBoard.vue` and remove Kanban navigation tab and views from `Navbar.vue` and `App.vue`</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/Navbar.vue`, `packages/dashboard/src/App.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement topological dependency resolution logic in `SpecsCascade.vue` (`isBlocked`, `isReady`, `isNextActionable`)</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/SpecsCascade.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement dynamic dependency badges with status indicators (`✓`/`○`) and jump-to-row scrolling in `SpecsCascade.vue`</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/SpecsCascade.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement inline task actions (`⚡ Delegar Prompt` and `↩ Rejeitar` with feedback modal) in `SpecsCascade.vue` and `App.vue`</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/SpecsCascade.vue`, `packages/dashboard/src/App.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement BDD Acceptance Criteria traceability cross-highlighting, target files copy chips, and status/type quick filters</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/SpecsCascade.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Compile dashboard assets (`npm run build:dashboard`) and regenerate static documentation (`npm run docs:export`)</td>
+        <td class="files-col"><code>`packages/dashboard/dist/index.html`, `docs/index.html`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Run complete SDD sensors (`verify-sdd-integrity.js`, unit tests, spec drift check) and audit acceptance criteria</td>
+        <td class="files-col"><code>`tests/serve-dashboard.test.js`, `.agents/scripts/verify-sdd-integrity.js`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
             <span class="card-title">Universal Living HTML Documentation Platform &amp; Standalone Static Exporter</span>
             <span class="card-subtitle font-mono">living-html-docs</span>
           </div>
@@ -557,17 +650,17 @@ We chose <strong>Option 1: Vis-Network via CDN with Native Node.js Parser (<code
       </div>
     
 
-      <div class="card adr-card" data-status="accepted" data-title="adr 0003: modular vue 3 cockpit dashboard with interactive human-ai kanban and embedded terminal">
+      <div class="card adr-card" data-status="superseded" data-title="adr 0003: modular vue 3 cockpit dashboard with interactive human-ai kanban and embedded terminal">
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
-            <span class="badge badge-success">ACCEPTED</span>
+            <span class="badge badge-muted">SUPERSEDED</span>
             <span class="card-title">ADR 0003: Modular Vue 3 Cockpit Dashboard with Interactive Human-AI Kanban and Embedded Terminal</span>
           </div>
           <span class="card-date">2026-09-11</span>
         </div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0003: Modular Vue 3 Cockpit Dashboard with Interactive Human-AI Kanban and Embedded Terminal</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
-Accepted (Revised with Interactive Human-AI Dynamics)</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+Superseded by ADR 0005</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
 2026-09-11</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
 The AI-SDD Framework requires a visual cockpit that not only observes specifications and memory, but actively facilitates the real-world collaboration loop between the human developer (acting as Tech Lead / Reviewer) and AI agents (acting as Implementers).
 Developers need to:
@@ -641,6 +734,55 @@ We adopt <strong>Strategy B: Dual-Projection Architecture for Universal Living D
         </div>
       </div>
     
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0005: unified spec execution cascade &amp; retirement of legacy kanban board">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0005: Unified Spec Execution Cascade &amp; Retirement of Legacy Kanban Board</span>
+          </div>
+          <span class="card-date">2026-09-27</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0005: Unified Spec Execution Cascade &amp; Retirement of Legacy Kanban Board</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-09-27</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+In ADR 0003, we introduced a 3-column Interactive Kanban Board (<code class="inline-code">To Do</code>, <code class="inline-code">In Progress</code>, <code class="inline-code">Done</code>) inside the Vue 3 Cockpit Dashboard. The intention was to provide human-in-the-loop task dispatching and status mutation.</p><p class="doc-p">However, in practical operation within an AI-driven Spec Driven Development (SDD) ecosystem:
+1. <strong>The Physics of AI Execution</strong>: Unlike human developers who keep tasks in &quot;In Progress&quot; for days, AI agents execute atomically in seconds or minutes (TDD: Red-Green-Refactor-Commit). Tasks jump directly from <code class="inline-code">[ ]</code> (Pending) to <code class="inline-code">[x]</code> (Done). Consequently, the &quot;In Progress&quot; column remained an empty visual ghost 99% of the time.
+2. <strong>Topological Dependency Invalidation</strong>: SDD tasks follow a strict Directed Acyclic Graph (DAG) defined in the MetaGPT 7-column schema (<code class="inline-code">Dependencies</code> column). Free-form drag-and-drop between columns visually distorts task ordering and invites accidental execution of blocked tasks.
+3. <strong>Severe UI Redundancy</strong>: The <code class="inline-code">SpecsCascade</code> view already rendered the complete hierarchical specification cascade: Strategic Plan (<code class="inline-code">plan.md</code>) → User Stories (<code class="inline-code">spec.md</code>) → BDD Acceptance Criteria (<code class="inline-code">spec.md</code>) → 7-Column Task Execution Table (<code class="inline-code">tasks.md</code>). The Kanban board merely duplicated the task list in an inferior, decontextualized format.</p><p class="doc-p">We evaluated two alternatives:
+<li class="doc-li"><strong>Alternative A: Retain and Artificially Animate Kanban</strong>: Force subagents to log micro-status transitions into <code class="inline-code">[-]</code> during their 15-second runs.</li>
+<li class="doc-li"><strong>Alternative B: Retire Kanban and Unify into Enhanced Spec Cascade</strong>: Eliminate <code class="inline-code">KanbanBoard.vue</code> and enhance <code class="inline-code">SpecsCascade.vue</code> with real-time topological dependency resolution, inline delegation/reversion actions, BDD traceability, and clickable dependency badges.</li></p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We adopt <strong>Alternative B: Retire Legacy Kanban in favor of the Unified Spec Execution Cascade</strong>:</p><p class="doc-p">1. <strong>Retire <code class="inline-code">KanbanBoard.vue</code></strong>:
+<li class="doc-li">Remove <code class="inline-code">packages/dashboard/src/components/KanbanBoard.vue</code>.</li>
+<li class="doc-li">Remove the <code class="inline-code">[📌 Kanban Board]</code> tab from <code class="inline-code">Navbar.vue</code> and routing in <code class="inline-code">App.vue</code>.</li>
+<li class="doc-li">Supersede ADR 0003 with ADR 0005.</li></p><p class="doc-p">2. <strong>Elevate <code class="inline-code">SpecsCascade.vue</code> with Native AI Capabilities</strong>:
+<li class="doc-li"><strong>Topological Dependency Resolver &amp; Next Actionable Task Highlight</strong>:</li>
+<li class="doc-li">Compute task readiness based on dependencies.</li>
+<li class="doc-li">Unblocked pending tasks are labeled &quot;Pronta / Ready&quot;.</li>
+<li class="doc-li">The first unblocked pending task is highlighted with a pulse badge: <code class="inline-code">⚡ PRÓXIMA / NEXT ACTIONABLE</code>.</li>
+<li class="doc-li">Tasks with pending dependencies are flagged as <code class="inline-code">🔒 Bloqueada</code> with tooltip showing blocking tasks.</li>
+<li class="doc-li"><strong>Inline Task Operations</strong>:</li>
+<li class="doc-li"><code class="inline-code">⚡ Delegar Prompt</code>: Generates and copies a context-rich prompt tailored for the AI agent (including Task ID, Description, Target Files, and SDD guidelines).</li>
+<li class="doc-li"><code class="inline-code">↩ Rejeitar / Reverter</code>: Allows the tech lead to reopen a completed task (<code class="inline-code">[x]</code> → <code class="inline-code">[ ]</code>) with feedback that is persisted directly into <code class="inline-code">tasks.md</code>.</li>
+<li class="doc-li"><strong>Dynamic Dependency Badges</strong>:</li>
+<li class="doc-li">Transform raw dependency strings into reactive badges:</li>
+<li class="doc-li">Green check <code class="inline-code">TASK-01 ✓</code> if the dependency is satisfied.</li>
+<li class="doc-li">Amber circle <code class="inline-code">TASK-02 ○</code> if the dependency is blocking.</li>
+<li class="doc-li">Clicking any dependency badge automatically scrolls to and highlights that task row.</li>
+<li class="doc-li"><strong>Traceability &amp; Filters</strong>:</li>
+<li class="doc-li">Quick filters by status (<code class="inline-code">All</code>, <code class="inline-code">Pending</code>, <code class="inline-code">Done</code>, <code class="inline-code">Blocked</code>) and task type (<code class="inline-code">feat</code>, <code class="inline-code">test</code>, <code class="inline-code">fix</code>, <code class="inline-code">refactor</code>, <code class="inline-code">docs</code>).</li>
+<li class="doc-li">Visual link between BDD Acceptance Criteria and tasks.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>Zero Redundancy</strong>: The Cockpit eliminates duplicated task views and focuses strictly on high-value projections: Specifications, Living Docs, Memory Graph, and Terminal.</li>
+<li class="doc-li"><strong>True AI-Native Workflow</strong>: Eliminates legacy human agile ceremonies (3-column Kanban) in favor of DAG dependency resolution and atomic verification.</li>
+<li class="doc-li"><strong>Enhanced Productivity</strong>: Developers identify the exact next actionable task at a glance without manually tracing dependency IDs.</li>
+<li class="doc-li"><strong>Reduced Bundle Footprint</strong>: Eliminates dead component code and simplifies state synchronization in <code class="inline-code">App.vue</code>.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Drag-and-drop column movement is removed. <em>Mitigation</em>: Dragging was an anti-pattern for DAG-governed tasks; inline one-click status buttons (<code class="inline-code">Delegar</code>, <code class="inline-code">Rejeitar</code>) provide superior, dependency-safe control.</li>
+</p></div>
+        </div>
+      </div>
+    
       </div>
     </section>
 
@@ -710,14 +852,15 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and audit of feature <code class="inline-code">living-html-docs</code> (Milestone 4: Universal Living HTML Documentation Platform &amp; Standalone Static Exporter).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 9/9 tasks executed under <code class="inline-code">sdd-executor</code> and audited under <code class="inline-code">sdd-review</code>. Integrated <code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, and <code class="inline-code">/api/knowledge</code> in <code class="inline-code">serve-dashboard.js</code>. Created <code class="inline-code">LivingDocsView.vue</code> with interactive sub-tabs for Architecture (with dynamic Mermaid rendering), ADR Decision Hub (with status filters), Domain Glossary (with instant search), Governance Rules, and Knowledge Base. Delivered zero-dependency single-file static HTML exporter (<code class="inline-code">export-docs.js</code> -&gt; <code class="inline-code">npm run docs:export</code> generating <code class="inline-code">docs/index.html</code>).</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">enhanced-spec-cascade</code> (Unified Spec Execution Cascade &amp; Legacy Kanban Retirement).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 7/7 tasks completed. Retired <code class="inline-code">KanbanBoard.vue</code> and Kanban navigation tab. Elevated <code class="inline-code">SpecsCascade.vue</code> with real-time topological dependency resolution (DAG), Next Actionable Task pulse highlight (<code class="inline-code">⚡ PRÓXIMA</code>), dynamic dependency status badges (<code class="inline-code">✓</code>/<code class="inline-code">○</code>) with jump-to-row scrolling, inline task actions (<code class="inline-code">⚡ Delegar</code> with structured prompt copy, <code class="inline-code">↩ Rejeitar</code> with feedback modal and two-way sync), target files chips, and BDD Acceptance Criteria traceability glow. ADR 0005 accepted; ADR 0003 superseded.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
   1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 21/21 passing (100% in 135ms).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 21/21 passing (100% in 139ms).
   3. Spec Drift Sensor: <code class="inline-code">npm run check-drift</code> — 0 drifted files.
   4. Dashboard Build: <code class="inline-code">npm run build:dashboard</code> — Clean build to <code class="inline-code">.agents/dashboard/dist/</code>.
-  5. Standalone HTML Export: <code class="inline-code">npm run docs:export</code> — Generated <code class="inline-code">docs/index.html</code> (85 KB).</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+  5. Standalone HTML Export: <code class="inline-code">npm run docs:export</code> — Generated <code class="inline-code">docs/index.html</code> (99 KB).</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-09-27 - Unified Spec Execution Cascade &amp; Kanban Retirement (ADR 0005)</strong>: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside <code class="inline-code">SpecsCascade.vue</code> featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline <code class="inline-code">Delegar</code>/<code class="inline-code">Rejeitar</code> actions, and clickable dependency badges. Superseded ADR 0003.</li>
 <li class="doc-li"><strong>2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)</strong>: Formalized dual-projection living documentation strategy combining native Node.js endpoints (<code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, <code class="inline-code">/api/knowledge</code>), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (<code class="inline-code">export-docs.js</code>).</li>
 <li class="doc-li"><strong>2026-09-27 - SSE Reactivity Normalization</strong>: Standardized SSE payloads to transmit <code class="inline-code">{ type: &#039;reload&#039;, event: &#039;reload&#039;, timestamp }</code> and updated <code class="inline-code">App.vue</code> to handle both, eliminating the manual refresh requirement. Wired <code class="inline-code">fetchMemory</code> in <code class="inline-code">MemoryGraphView</code> and <code class="inline-code">fetchDocs</code> in <code class="inline-code">LivingDocsView</code> to live sync events.</li>
 <li class="doc-li"><strong>2026-09-27 - ADR Lifecycle &amp; Canonical Integrity</strong>: Enforced explicit ADR lifecycle (<code class="inline-code">Proposed</code> -&gt; <code class="inline-code">Accepted</code> -&gt; <code class="inline-code">Superseded</code>). Marked ADR 0001 as superseded by ADR 0003. Created <code class="inline-code">ROADMAP.md</code> to satisfy AGENTS.md requirements.</li>

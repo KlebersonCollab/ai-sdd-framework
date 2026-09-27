@@ -1,7 +1,7 @@
 # ADR 0003: Modular Vue 3 Cockpit Dashboard with Interactive Human-AI Kanban and Embedded Terminal
 
 ## Status
-Accepted (Revised with Interactive Human-AI Dynamics)
+Superseded by ADR 0005
 
 ## Date
 2026-09-11
