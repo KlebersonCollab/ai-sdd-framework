@@ -377,4 +377,8 @@ onBeforeUnmount(() => {
     networkInstance.destroy();
   }
 });
+
+defineExpose({
+  fetchMemory
+});
 </script>

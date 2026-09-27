@@ -1,7 +1,7 @@
 # ADR 0001: Native Node.js Server & Linear Dark Bootstrap Architecture for Specs Dashboard
 
 ## Status
-Accepted
+Superseded by [ADR 0003: Modular Vue 3 Cockpit Dashboard](0003-modular-vue3-cockpit-dashboard.md)
 
 ## Date
 2026-09-03

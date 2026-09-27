@@ -184,4 +184,22 @@ The human spent time defining the task sequence for a reason. The order reflects
 - **Fix Production Code, NOT the Test**: When a test fails, the defect resides in the implementation code.
 - **Safety Valve Re-Plan**: If a test assertion is genuinely invalid due to an outdated requirement or specification bug, you MUST STOP, trigger the Safety Valve, and request an official re-plan from `sdd-planner`. An executor is NEVER authorized to change tests unilaterally.
 
+---
+
+## PROHIBITION 10: Architectural Decision Invariance & ADR Lifecycle
+
+**NEVER** alter, contradict, or reverse structural technical decisions (frameworks, runtime protocols, monorepo structures, storage models) without an approved Architectural Decision Record (ADR) in `.specs/project/ADRs/`.
+
+### Forbidden Patterns
+- Changing an architectural pattern established by an active ADR without recording a replacement ADR.
+- Leaving a superseded ADR marked as `Accepted` when a new ADR replaces its decision.
+- Introducing dependencies or architecture models that violate invariants recorded in `ADRs/` or `STACK.md`.
+
+### Required Behavior
+- **ADR Lifecycle Governance**: When replacing or updating an architectural decision:
+  1. Author a new ADR in `.specs/project/ADRs/` with sequential numbering (`000X-slug.md`).
+  2. Mark the status of the new ADR as `Accepted`.
+  3. Surgically update the predecessor ADR status to `Superseded by [ADR 000X: Title](000X-slug.md)`.
+  4. Ensure both ADRs cross-link each other.
+
 <!-- TIER1_PROHIBITIONS:END -->

@@ -189,11 +189,13 @@ ai-sdd-framework/
 │   ├── memory/
 │   │   └── memory_graph.jsonl          # Cross-session persistent knowledge graph
 │   ├── rules/                          # Non-negotiable system rules (Highest Precedence)
-│   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order, ACI & Test Immutability
+│   │   ├── TIER1_PROHIBITIONS.md       # Prohibitions: No shortcuts, No destructive git, Sequential order, ACI, Test & ADR Immutability
 │   │   ├── QUALITY_ENFORCEMENT.md      # Test & hook bypass bans, scratchpad isolation, Spec Drift invariance
 │   │   └── TOKEN_OPTIMIZATION.md       # Calibrated output verbosity per model tier
 │   ├── scripts/                        # Governance, server & sensor scripts (Zero-Dependency)
-│   │   ├── serve-dashboard.js          # Native HTTP & RFC 6455 WebSocket gateway & Markdown/Memory parser
+│   │   ├── serve-dashboard.js          # Native HTTP & RFC 6455 WebSocket gateway & 360° Living Specs API
+│   │   ├── export-docs.js              # Standalone single-file HTML documentation compiler
+│   │   ├── verify-sdd-integrity.js     # SDD Canonical Integrity & Schema Sensor
 │   │   ├── check-spec-drift.js         # Pre-commit Spec Drift Sensor (Constitutional SDD)
 │   │   ├── compact-memory.js           # Memory graph maintenance & compaction
 │   │   └── install-hooks.js            # Git pre-commit hook installer
@@ -210,14 +212,20 @@ ai-sdd-framework/
 │       ├── arxiv/                      # Academic paper extraction & BibTeX generation
 │       └── write-a-skill/              # Meta-skill for authoring new agent skills
 ├── .specs/                             # Living Specifications (Created per project)
-│   ├── codebase/                       # Physical code architecture & stack maps
-│   ├── project/                        # Product vision, session state & ADRs
-│   ├── features/                       # Active feature specifications (plan.md, spec.md, tasks.md)
+│   ├── codebase/                       # Physical code architecture & stack maps (STACK, ARCHITECTURE, CONVENTIONS, CONCERNS, TECHNICAL-MAP)
+│   ├── project/                        # Product vision, roadmap, session state & ADRs (PROJECT, ROADMAP, STATE, CONTEXT, ADRs/)
+│   ├── features/                       # Active feature specifications (modular-vue-cockpit, living-html-docs)
 │   └── knowledge/                      # Curated patterns and anti-patterns
+├── docs/                               # Exported Standalone Living Documentation
+│   └── index.html                      # Single-file offline documentation (100% serverless)
 ├── packages/
 │   └── dashboard/                      # Modular Vue 3 + Vite + Tailwind source code for Cockpit UI
 ├── tests/
-│   └── serve-dashboard.test.js         # Sensor test suite (15 unit & integration tests)
+│   ├── serve-dashboard.test.js         # Server & Living Docs API test suite (19 unit & integration tests)
+│   └── export-docs.test.js             # Standalone static exporter test suite (2 tests)
+├── .cursorrules                        # Universal Cursor AI directive referencing AGENTS.md
+├── .windsurfrules                      # Universal Windsurf AI directive referencing AGENTS.md
+├── .clinerules                         # Universal Cline / RooCode directive referencing AGENTS.md
 ├── .github/
 │   └── copilot-instructions.md         # GitHub Copilot instructions referencing AGENTS.md
 ├── AGENTS.md                           # 🏛️ Master Operating Manual & Skill Routing Matrix
@@ -254,7 +262,7 @@ The agent will execute:
 2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence.
 3. `sdd-review` → audits sensors (lint, test, build) and generates a formal Verification Report.
 
-### 4. Interactive Human-AI Cockpit
+### 4. Interactive Human-AI Cockpit & Universal Living Docs
 Launch the Cockpit web workspace (Vue 3 SPA + Embedded Terminal):
 
 ```bash
@@ -265,11 +273,17 @@ node .agents/scripts/serve-dashboard.js
 
 Open [http://localhost:3000](http://localhost:3000) to access:
 
+- **📚 Universal Living HTML Documentation (360° Specs Projection)**:
+  - **🏛️ Architecture & System Map**: Renders `STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, and **dynamic in-browser Mermaid diagrams** from ````mermaid code blocks.
+  - **📜 ADR Decision Hub**: Interactive timeline of all Architectural Decision Records with status filtering (`Accepted`, `Superseded`, `Proposed`) and cross-impact tracking.
+  - **📖 Domain & Vision**: Instant search across ubiquitous domain terms in `CONTEXT.md`, executive vision (`PROJECT.md`), and strategic milestones (`ROADMAP.md`).
+  - **🛡️ Governance & Rules**: Visual reference for Tier 1 Absolute Prohibitions, Quality Enforcement, and Token Optimization.
+  - **🧠 Knowledge Base**: Curated architectural patterns and anti-patterns.
 - **📋 Interactive Human-AI Kanban**:
   - Drag-and-drop tasks or use quick-action menus with **two-way git sync** directly to physical `.specs/features/<id>/tasks.md`.
   - **Review & Quality Rejection**: Moving a card back from Done prompts for structured review feedback, automatically recorded in Markdown for the agent to fix.
   - **Agent Dispatcher**: 1-click `[⚡ Delegar]` button that generates task-specific context prompts and copies them to the clipboard or terminal.
-- ** cascade Specifications View**:
+- ** cascaded Feature Specifications**:
   - Vertical cascade from Problem Statements to User Stories (Role/Action/Benefit), BDD Criteria (Given/When/Then), and MetaGPT atomic task tables.
 - **🧠 Interactive Memory Graph**:
   - Force-directed network diagram (`vis-network`) visualizing all entities, relationships, and observations from `memory_graph.jsonl` with an interactive side inspector drawer.
@@ -278,13 +292,23 @@ Open [http://localhost:3000](http://localhost:3000) to access:
   - Connected to native PowerShell on Windows (with UTF-8 Nerd Font rendering) or Bash on POSIX.
   - Interactive line discipline with real-time typing echo, Backspace, command history (↑ / ↓), and 1-click sensor buttons (`[🔍 Drift Check]`, `[🧪 npm test]`).
 
+### 5. Standalone Zero-Server Documentation Export
+Compile the entire specification and governance tree into a standalone, single-file HTML document for offline review or static hosting (e.g. GitHub Pages):
+
+```bash
+npm run docs:export
+```
+Emits **`docs/index.html`** (~85 KB) with embedded CSS, client-side search, tabs, and rendered Mermaid diagrams—100% functional offline without Node.js.
+
 ### Useful Framework Scripts
 
 | Command | Purpose |
 | :--- | :--- |
-| `npm run dashboard` | Starts the native Cockpit server on port 3000 |
-| `npm test` | Runs the 15-test framework and parser sensor suite |
-| `npm run check-drift` | Pre-commit Spec Drift Sensor validating code changes against `tasks.md` |
+| `npm run dashboard` | Starts the native Cockpit server on port 3000 with real-time SSE live-sync |
+| `npm test` | Runs the 21-test sensor suite preceded by the SDD Canonical Integrity Sensor |
+| `npm run verify-sdd` | Fast (<50ms) sensor auditing required canonical files, ADR statuses, schemas, and escape integrity |
+| `npm run docs:export` | Compiles 100% of `.specs/` and rules into a standalone offline `docs/index.html` |
+| `npm run check-drift` | Pre-commit Spec Drift Sensor validating staged git code against active `tasks.md` |
 | `npm run build:dashboard` | Recompiles the Vue 3 frontend from `packages/dashboard/` into `.agents/dashboard/dist/` |
 | `npm run compact-memory` | Compacts and resolves superseded entities in `memory_graph.jsonl` |
 

@@ -25,6 +25,18 @@
       </button>
       <button
         type="button"
+        @click="$emit('change-view', 'docs')"
+        :class="[
+          'px-3 py-1 text-xs font-semibold rounded transition-all',
+          activeView === 'docs'
+            ? 'bg-primary text-white shadow-sm'
+            : 'text-ink-muted hover:text-white hover:bg-surface-4'
+        ]"
+      >
+        📚 Living Docs
+      </button>
+      <button
+        type="button"
         @click="$emit('change-view', 'kanban')"
         :class="[
           'px-3 py-1 text-xs font-semibold rounded transition-all',

@@ -55,7 +55,12 @@
 
       <!-- VIEW 3: Memory Graph View -->
       <div v-show="activeView === 'memory'">
-        <MemoryGraphView />
+        <MemoryGraphView ref="memoryGraphRef" />
+      </div>
+
+      <!-- VIEW 4: Living HTML Documentation Platform -->
+      <div v-show="activeView === 'docs'">
+        <LivingDocsView ref="livingDocsRef" />
       </div>
     </main>
 
@@ -76,12 +81,15 @@ import SpecsCascade from './components/SpecsCascade.vue';
 import KanbanBoard from './components/KanbanBoard.vue';
 import MemoryGraphView from './components/MemoryGraphView.vue';
 import TerminalDrawer from './components/TerminalDrawer.vue';
+import LivingDocsView from './components/LivingDocsView.vue';
 
 const activeView = ref('specs');
 const features = ref([]);
 const syncState = ref('syncing');
 const isTerminalOpen = ref(false);
 const terminalDrawerRef = ref(null);
+const memoryGraphRef = ref(null);
+const livingDocsRef = ref(null);
 const toastMessage = ref(null);
 
 let toastTimer = null;
@@ -167,11 +175,15 @@ function initSSE() {
     eventSource.onmessage = (event) => {
       try {
         const payload = JSON.parse(event.data);
-        if (payload.event === 'reload' || payload.event === 'init') {
+        if (payload.type === 'reload' || payload.event === 'reload' || payload.event === 'init') {
           loadFeatures();
+          memoryGraphRef.value?.fetchMemory?.();
+          livingDocsRef.value?.fetchDocs?.();
         }
       } catch (e) {
         loadFeatures();
+        memoryGraphRef.value?.fetchMemory?.();
+        livingDocsRef.value?.fetchDocs?.();
       }
     };
     eventSource.onerror = () => {

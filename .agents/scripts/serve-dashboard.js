@@ -584,6 +584,136 @@ function parseMemoryGraph(jsonlContent) {
 }
 
 /**
+ * Safe reader for optional markdown files
+ * @param {string} filePath
+ * @returns {string}
+ */
+function readDocFile(filePath) {
+  if (fs.existsSync(filePath)) {
+    return fs.readFileSync(filePath, 'utf8');
+  }
+  return '';
+}
+
+/**
+ * Parses all project-wide documents and ADRs under .specs/project/
+ * @returns {object}
+ */
+function parseProjectDocs() {
+  const projectDir = path.join(REPO_ROOT, '.specs', 'project');
+  const project = readDocFile(path.join(projectDir, 'PROJECT.md'));
+  const roadmap = readDocFile(path.join(projectDir, 'ROADMAP.md'));
+  const state = readDocFile(path.join(projectDir, 'STATE.md'));
+  const context = readDocFile(path.join(projectDir, 'CONTEXT.md'));
+
+  const adrs = [];
+  const adrsDir = path.join(projectDir, 'ADRs');
+  if (fs.existsSync(adrsDir)) {
+    const files = fs.readdirSync(adrsDir).filter(f => f.endsWith('.md'));
+    for (const f of files) {
+      const content = fs.readFileSync(path.join(adrsDir, f), 'utf8');
+      const titleMatch = content.match(/^#\s+(.+)$/m);
+      const statusMatch = content.match(/^##\s+Status\s*\n+([^\n]+)/im);
+      const dateMatch = content.match(/^##\s+Date\s*\n+([^\n]+)/im);
+
+      const title = titleMatch ? titleMatch[1].trim() : f.replace(/\.md$/, '');
+      const rawStatus = statusMatch ? statusMatch[1].trim() : 'Unknown';
+      let status = 'unknown';
+      const lower = rawStatus.toLowerCase();
+      if (lower.startsWith('accepted')) status = 'accepted';
+      else if (lower.startsWith('superseded')) status = 'superseded';
+      else if (lower.startsWith('proposed')) status = 'proposed';
+      else if (lower.startsWith('deprecated')) status = 'deprecated';
+
+      adrs.push({
+        id: f.replace(/\.md$/, ''),
+        filename: f,
+        title,
+        status,
+        rawStatus,
+        date: dateMatch ? dateMatch[1].trim() : '',
+        content
+      });
+    }
+  }
+
+  return {
+    project,
+    roadmap,
+    state,
+    context,
+    adrs
+  };
+}
+
+/**
+ * Parses all brownfield codebase map documents under .specs/codebase/
+ * @returns {object}
+ */
+function parseCodebaseDocs() {
+  const codebaseDir = path.join(REPO_ROOT, '.specs', 'codebase');
+  return {
+    stack: readDocFile(path.join(codebaseDir, 'STACK.md')),
+    architecture: readDocFile(path.join(codebaseDir, 'ARCHITECTURE.md')),
+    conventions: readDocFile(path.join(codebaseDir, 'CONVENTIONS.md')),
+    concerns: readDocFile(path.join(codebaseDir, 'CONCERNS.md')),
+    technicalMap: readDocFile(path.join(codebaseDir, 'TECHNICAL-MAP.md'))
+  };
+}
+
+/**
+ * Parses governance rules under .agents/rules/
+ * @returns {object}
+ */
+function parseRulesDocs() {
+  const rulesDir = path.join(REPO_ROOT, '.agents', 'rules');
+  return {
+    prohibitions: readDocFile(path.join(rulesDir, 'TIER1_PROHIBITIONS.md')),
+    quality: readDocFile(path.join(rulesDir, 'QUALITY_ENFORCEMENT.md')),
+    tokenOptimization: readDocFile(path.join(rulesDir, 'TOKEN_OPTIMIZATION.md'))
+  };
+}
+
+/**
+ * Parses knowledge patterns and anti-patterns under .specs/knowledge/
+ * @returns {object}
+ */
+function parseKnowledgeDocs() {
+  const kbDir = path.join(REPO_ROOT, '.specs', 'knowledge');
+  const patternsDir = path.join(kbDir, 'patterns');
+  const antiPatternsDir = path.join(kbDir, 'anti-patterns');
+
+  const patterns = [];
+  if (fs.existsSync(patternsDir)) {
+    const files = fs.readdirSync(patternsDir).filter(f => f.endsWith('.md'));
+    for (const f of files) {
+      patterns.push({
+        id: f.replace(/\.md$/, ''),
+        filename: f,
+        content: fs.readFileSync(path.join(patternsDir, f), 'utf8')
+      });
+    }
+  }
+
+  const antiPatterns = [];
+  if (fs.existsSync(antiPatternsDir)) {
+    const files = fs.readdirSync(antiPatternsDir).filter(f => f.endsWith('.md'));
+    for (const f of files) {
+      antiPatterns.push({
+        id: f.replace(/\.md$/, ''),
+        filename: f,
+        content: fs.readFileSync(path.join(antiPatternsDir, f), 'utf8')
+      });
+    }
+  }
+
+  return {
+    patterns,
+    antiPatterns
+  };
+}
+
+/**
  * Retrieves and parses all features under .specs/features/
  * @returns {Array<object>}
  */
@@ -600,7 +730,7 @@ let watchDebounceTimer = null;
 let activeWatchers = [];
 
 function notifyClients() {
-  const payload = `data: ${JSON.stringify({ type: 'reload', timestamp: Date.now() })}\n\n`;
+  const payload = `data: ${JSON.stringify({ type: 'reload', event: 'reload', timestamp: Date.now() })}\n\n`;
   for (const client of sseClients) {
     try {
       client.write(payload);
@@ -972,6 +1102,54 @@ function startServer(port = 3000) {
       return;
     }
 
+    if (req.method === 'GET' && pathname === '/api/project') {
+      try {
+        const data = parseProjectDocs();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+
+    if (req.method === 'GET' && pathname === '/api/codebase') {
+      try {
+        const data = parseCodebaseDocs();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+
+    if (req.method === 'GET' && pathname === '/api/rules') {
+      try {
+        const data = parseRulesDocs();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+
+    if (req.method === 'GET' && pathname === '/api/knowledge') {
+      try {
+        const data = parseKnowledgeDocs();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify(data));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ error: err.message }));
+      }
+      return;
+    }
+
     if (req.method === 'PATCH') {
       const patchMatch = pathname.match(/^\/api\/features\/([^\/]+)\/tasks\/([^\/]+)$/);
       if (patchMatch) {
@@ -1062,7 +1240,11 @@ module.exports = {
   parseMemoryGraph,
   updateTaskInMarkdown,
   updateFeatureTask,
-  detectOsTerminalFont
+  detectOsTerminalFont,
+  parseProjectDocs,
+  parseCodebaseDocs,
+  parseRulesDocs,
+  parseKnowledgeDocs
 };
 
 if (require.main === module) {

@@ -5,7 +5,9 @@
   "scripts": {
     "dashboard": "node --watch .agents/scripts/serve-dashboard.js",
     "build:dashboard": "npm --prefix packages/dashboard run build",
-    "test": "node tests/serve-dashboard.test.js",
+    "test": "node .agents/scripts/verify-sdd-integrity.js && node tests/serve-dashboard.test.js && node tests/export-docs.test.js",
+    "docs:export": "node .agents/scripts/export-docs.js",
+    "verify-sdd": "node .agents/scripts/verify-sdd-integrity.js",
     "check-drift": "node .agents/scripts/check-spec-drift.js",
     "compact-memory": "node .agents/scripts/compact-memory.js"
   },

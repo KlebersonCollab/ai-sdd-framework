@@ -14,13 +14,15 @@ The objective is to enforce a **Spec Driven Development (SDD)** lifecycle and pr
 **MANDATORY**: At the START of every session, execute this sequence:
 
 1. **Memory Recall**: Load persistent memory via `sdd-memory` from `.agents/memory/memory_graph.jsonl`.
-2. **Read Project Context**: Check `.specs/project/CONTEXT.md` (Domain Glossary / Project Context) and `.specs/codebase/` (Technical Map).
-3. **Check Knowledge Base**: Read `.specs/knowledge/<type>s/<slug>.md` for known patterns/anti-patterns.
-4. **Check Design System (Frontend/UI)**: If the project or task involves Frontend, UI, CSS, or UX, read `DESIGN.md` at the project root for design tokens, typography, colors, and component styles.
-5. **Evaluate Context State**:
+2. **Read Project Context & Glossary**: Check `.specs/project/CONTEXT.md` (Domain Glossary) and `.specs/codebase/` (Technical Map).
+3. **Operational State & Roadmap**: Read `.specs/project/STATE.md` and `.specs/project/ROADMAP.md` to identify active blockers, pending feature tasks, and current milestone targets.
+4. **ADR Consistency & Decision Tree**: Inspect `.specs/project/ADRs/` to verify active vs. superseded architectural decisions. Never alter or contradict structural decisions without an ADR.
+5. **Run SDD Integrity Sensor**: Run `node .agents/scripts/verify-sdd-integrity.js` to ensure 100% structural and schema integrity across the specification tree.
+6. **Check Knowledge Base & Design System**: Read `.specs/knowledge/<type>s/<slug>.md` for known patterns/anti-patterns. If the task touches UI/Frontend, read `DESIGN.md` at project root.
+7. **Evaluate Context State**:
    - **If `.specs/project/CONTEXT.md` does not exist or has empty placeholders `<!-- PREENCHER ...`**:
      → Trigger **Auto-Discovery Protocol** (read-only discovery, generate context, confirm with user).
-   - **If context is complete**:
+   - **If context is complete and sensor passes**:
      → Proceed with standard SDD lifecycle.
 
 ---

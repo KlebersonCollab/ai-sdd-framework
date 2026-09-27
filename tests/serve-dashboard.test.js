@@ -434,4 +434,104 @@ test('HTTP Server: GET /api/terminal-config returns detected OS terminal font an
   }
 });
 
+test('HTTP Server: GET /api/project returns parsed project vision, roadmap, state, context, and ADRs', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/project`, (r) => {
+        let data = '';
+        r.on('data', chunk => data += chunk);
+        r.on('end', () => resolve({ status: r.statusCode, headers: r.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(res.status, 200, 'GET /api/project should return 200');
+    assert.ok(res.headers['content-type'].includes('application/json'));
+    const parsed = JSON.parse(res.body);
+    assert.ok(parsed.project, 'Must contain project vision');
+    assert.ok(parsed.roadmap, 'Must contain roadmap');
+    assert.ok(parsed.state, 'Must contain state');
+    assert.ok(parsed.context, 'Must contain context');
+    assert.ok(Array.isArray(parsed.adrs), 'Must contain adrs array');
+    assert.ok(parsed.adrs.length >= 3, 'Must contain at least 3 ADRs');
+    const adr0001 = parsed.adrs.find(a => a.id.includes('0001'));
+    assert.ok(adr0001, 'ADR 0001 must exist');
+    assert.strictEqual(adr0001.status, 'superseded', 'ADR 0001 status must be superseded');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: GET /api/codebase returns technical map, stack, architecture, conventions, and concerns', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/codebase`, (r) => {
+        let data = '';
+        r.on('data', chunk => data += chunk);
+        r.on('end', () => resolve({ status: r.statusCode, headers: r.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(res.status, 200, 'GET /api/codebase should return 200');
+    const parsed = JSON.parse(res.body);
+    assert.ok(parsed.stack, 'Must contain stack');
+    assert.ok(parsed.architecture, 'Must contain architecture');
+    assert.ok(parsed.conventions, 'Must contain conventions');
+    assert.ok(parsed.concerns, 'Must contain concerns');
+    assert.ok(parsed.technicalMap, 'Must contain technicalMap');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: GET /api/rules returns tier 1 prohibitions, quality enforcement, and token optimization', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/rules`, (r) => {
+        let data = '';
+        r.on('data', chunk => data += chunk);
+        r.on('end', () => resolve({ status: r.statusCode, headers: r.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(res.status, 200, 'GET /api/rules should return 200');
+    const parsed = JSON.parse(res.body);
+    assert.ok(parsed.prohibitions, 'Must contain prohibitions');
+    assert.ok(parsed.quality, 'Must contain quality');
+    assert.ok(parsed.tokenOptimization, 'Must contain tokenOptimization');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
+test('HTTP Server: GET /api/knowledge returns patterns and anti-patterns', async () => {
+  const serverInstance = await serveDashboard.startServer(0);
+  const port = serverInstance.address().port;
+
+  try {
+    const res = await new Promise((resolve, reject) => {
+      http.get(`http://localhost:${port}/api/knowledge`, (r) => {
+        let data = '';
+        r.on('data', chunk => data += chunk);
+        r.on('end', () => resolve({ status: r.statusCode, headers: r.headers, body: data }));
+      }).on('error', reject);
+    });
+
+    assert.strictEqual(res.status, 200, 'GET /api/knowledge should return 200');
+    const parsed = JSON.parse(res.body);
+    assert.ok(Array.isArray(parsed.patterns), 'Must contain patterns array');
+    assert.ok(Array.isArray(parsed.antiPatterns), 'Must contain antiPatterns array');
+  } finally {
+    await new Promise((resolve) => serverInstance.close(resolve));
+  }
+});
+
 

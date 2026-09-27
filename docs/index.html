@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-SDD Living Documentation</title>
+  <!-- DESIGN.md Linear Dark Tokens -->
+  <style>
+    :root {
+      --canvas: #010102;
+      --surface-1: #0f1011;
+      --surface-2: #16181a;
+      --surface-3: #1f2226;
+      --hairline: rgba(255, 255, 255, 0.08);
+      --hairline-strong: rgba(255, 255, 255, 0.16);
+      --primary: #5e6ad2;
+      --primary-hover: #717de0;
+      --success: #27a644;
+      --warning: #f59e0b;
+      --ink: #f7f8f8;
+      --ink-muted: #8a8f98;
+      --ink-subtle: #62666d;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      background-color: var(--surface-1);
+      border-bottom: 1px solid var(--hairline);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .brand { display: flex; align-items: center; gap: 0.75rem; }
+    .brand-logo { font-size: 1.25rem; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+    .brand-badge {
+      background: rgba(94, 106, 210, 0.15);
+      border: 1px solid rgba(94, 106, 210, 0.3);
+      color: var(--primary-hover);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+    }
+    nav.top-tabs { display: flex; gap: 0.5rem; }
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--ink-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { color: #fff; background: var(--surface-2); }
+    .tab-btn.active { color: #fff; background: var(--surface-2); border-color: var(--hairline-strong); }
+    main { max-width: 1200px; width: 100%; margin: 2rem auto; padding: 0 1.5rem; flex: 1; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .card {
+      background-color: var(--surface-1);
+      border: 1px solid var(--hairline);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    .card-header { margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--hairline); }
+    .card-title { font-weight: 600; font-size: 1rem; color: #fff; }
+    .card-subtitle { font-size: 0.8rem; color: var(--ink-muted); margin-left: 0.5rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .badge-success { background: rgba(39, 166, 68, 0.15); color: #4ade80; border: 1px solid rgba(39, 166, 68, 0.3); }
+    .badge-primary { background: rgba(94, 106, 210, 0.15); color: var(--primary-hover); border: 1px solid rgba(94, 106, 210, 0.3); }
+    .badge-muted { background: var(--surface-3); color: var(--ink-muted); border: 1px solid var(--hairline); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--warning); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .tasks-table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; font-size: 0.8rem; }
+    .tasks-table th, .tasks-table td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid var(--hairline); }
+    .tasks-table th { color: var(--ink-muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; font-family: var(--font-mono); }
+    code, pre { font-family: var(--font-mono); }
+    code.inline-code { background: var(--surface-3); padding: 0.15rem 0.35rem; border-radius: 4px; font-size: 0.85em; color: var(--primary-hover); }
+    pre { background: var(--surface-2); border: 1px solid var(--hairline); border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 0.75rem 0; font-size: 0.85rem; }
+    .search-input {
+      background: var(--surface-2);
+      border: 1px solid var(--hairline);
+      color: #fff;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-family: var(--font-mono);
+      width: 260px;
+    }
+    .search-input:focus { outline: none; border-color: var(--primary); }
+    .flex { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-4 { gap: 1rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .filter-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    footer { text-align: center; padding: 2rem; color: var(--ink-subtle); font-size: 0.8rem; border-top: 1px solid var(--hairline); }
+  </style>
+  <!-- Mermaid Support -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.mermaid) {
+        mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+      }
+    });
+  </script>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span class="brand-logo">AI-SDD Living Specs</span>
+      <span class="brand-badge">Offline Document</span>
+    </div>
+    <nav class="top-tabs">
+      <button class="tab-btn active" onclick="switchTab('specs')">📋 Features & Specs</button>
+      <button class="tab-btn" onclick="switchTab('architecture')">🏛️ Architecture</button>
+      <button class="tab-btn" onclick="switchTab('adrs')">📜 ADR Hub</button>
+      <button class="tab-btn" onclick="switchTab('glossary')">📖 Domain & Vision</button>
+      <button class="tab-btn" onclick="switchTab('rules')">🛡️ Rules</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TAB 1: FEATURES & SPECS -->
+    <section id="tab-specs" class="tab-content active">
+      <div class="filter-bar">
+        <h3 style="color:#fff;font-size:1.1rem;">Active Specifications (.specs/features)</h3>
+        <input type="text" class="search-input" placeholder="Filter features..." oninput="filterCards('.feature-card', this.value)">
+      </div>
+      <div class="features-list">
+        
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
+            <span class="card-title">Universal Living HTML Documentation Platform &amp; Standalone Static Exporter</span>
+            <span class="card-subtitle font-mono">living-html-docs</span>
+          </div>
+          <span class="task-count">9/9 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">In Spec Driven Development (SDD), the single source of truth is always Git-tracked Markdown and JSONL files.
+However, human stakeholders, tech leads, and developers often find navigating through dozens of nested markdown files in <code class="inline-code">.specs/project/</code>, <code class="inline-code">.specs/codebase/</code>, <code class="inline-code">.specs/features/</code>, <code class="inline-code">.specs/knowledge/</code>, and <code class="inline-code">.agents/rules/</code> fragmented and tedious.</p><p class="doc-p">Currently, the AI-SDD Cockpit (<code class="inline-code">serve-dashboard.js</code> + <code class="inline-code">packages/dashboard</code>) solves this only for active features and the memory graph. Over 75% of the framework&#039;s knowledge—architectural decisions (ADRs), brownfield maps, conventions, domain glossary, and governance rules—has no visual projection in the browser. Furthermore, sharing specifications with non-developer stakeholders currently requires them to clone the repository and launch a Node.js process.</p><p class="doc-p">We must empower the project with a <strong>Universal Living HTML Documentation Platform</strong>:
+1. Full 360° visibility over 100% of <code class="inline-code">.specs/</code> and <code class="inline-code">.agents/rules/</code> directly within the interactive Vue Cockpit.
+2. Real-time in-browser Mermaid diagram rendering for architecture diagrams and sequence flows.
+3. Interactive ADR Decision Hub with lifecycle filtering (<code class="inline-code">Accepted</code>, <code class="inline-code">Superseded</code>, <code class="inline-code">Proposed</code>) and cross-impact tracking.
+4. Instant search across domain glossary terms (<code class="inline-code">CONTEXT.md</code>).
+5. A zero-dependency standalone HTML exporter (<code class="inline-code">.agents/scripts/export-docs.js</code>) compiling the entire spec ecosystem into a single-file offline document (<code class="inline-code">docs/index.html</code>).</p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold test cases for documentation endpoints (`GET /api/project`, `/api/codebase`, `/api/rules`, `/api/knowledge`)</td>
+        <td class="files-col"><code>`tests/serve-dashboard.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement `/api/project`, `/api/codebase`, `/api/rules`, and `/api/knowledge` endpoints</td>
+        <td class="files-col"><code>`.agents/scripts/serve-dashboard.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold test suite for standalone static documentation exporter</td>
+        <td class="files-col"><code>`tests/export-docs.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement zero-dependency standalone HTML documentation exporter and add `docs:export` script</td>
+        <td class="files-col"><code>`.agents/scripts/export-docs.js`, `package.json`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Scaffold `LivingDocsView.vue` component with sub-navigation tabs (Architecture, ADRs, Glossary, Rules, Knowledge)</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/LivingDocsView.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement ADR Decision Hub and Domain Glossary sub-views with status filtering and instant search</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/LivingDocsView.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement Architecture &amp; System Map sub-view with in-browser Mermaid diagram rendering</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/LivingDocsView.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-08</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Integrate `LivingDocsView` into `Navbar.vue` and `App.vue`, wire SSE live reload, and compile production assets</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/Navbar.vue`, `packages/dashboard/src/App.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-09</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Run complete SDD sensor suite (`verify-sdd-integrity.js`, unit tests, spec drift check) and audit acceptance criteria</td>
+        <td class="files-col"><code>`tests/serve-dashboard.test.js`, `.agents/scripts/verify-sdd-integrity.js`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
+            <span class="card-title">Modular Vue 3 AI Agent Cockpit &amp; Interactive Human-AI Kanban</span>
+            <span class="card-subtitle font-mono">modular-vue-cockpit</span>
+          </div>
+          <span class="task-count">13/13 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">The current dashboard implementation in .agents/scripts/serve-dashboard.js uses inline HTML template strings and CDN libraries. While lightweight, it is read-only and lacks true componentization.
+In a real-world Spec Driven Development lifecycle, the relationship between the developer and AI agents is dynamic: the developer acts as the Tech Lead / Reviewer who assigns tasks, reviews PRs/deliveries, and rejects or reverts tasks back to earlier stages when tests or code quality are insufficient.
+The AI Agent Cockpit must empower this exact collaboration dynamic:
+1. Two-way interactive Kanban board where status changes update <code class="inline-code">tasks.md</code> on disk.
+2. Review &amp; Revert workflow: reject low-quality deliveries with feedback for the AI to address.
+3. 1-click Agent Dispatch: trigger or feed tasks directly into the embedded terminal or AI CLI.
+4. Embedded xterm.js terminal for running sensors and interacting with agent harnesses.
+5. Zero dependency pollution when imported into host repositories.</p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold test cases for task mutation endpoint (`PATCH /api/features/:id/tasks/:id`), static asset serving, and WebSocket terminal</td>
+        <td class="files-col"><code>`tests/serve-dashboard.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement `PATCH /api/features/:id/tasks/:id` with two-way markdown sync and task feedback recording</td>
+        <td class="files-col"><code>`.agents/scripts/serve-dashboard.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement static file serving for `.agents/dashboard/dist/` and WebSocket terminal bridge</td>
+        <td class="files-col"><code>`.agents/scripts/serve-dashboard.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Scaffold Vue 3 + Vite monorepo structure in `packages/dashboard` with Tailwind CSS and `DESIGN.md` tokens</td>
+        <td class="files-col"><code>`packages/dashboard/package.json`, `packages/dashboard/vite.config.js`, `packages/dashboard/tailwind.config.js`, `packages/dashboard/postcss.config.js`, `packages/dashboard/index.html`, `packages/dashboard/src/main.js`, `packages/dashboard/src/style.css`, `packages/dashboard/src/App.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement Top Navigation, Metrics, and `SpecsCascade.vue` component in `packages/dashboard/src`</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/Navbar.vue`, `packages/dashboard/src/components/MetricsHeader.vue`, `packages/dashboard/src/components/SpecsCascade.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement `KanbanBoard.vue` with drag-and-drop, two-way sync, Revert/Reject modal, and Agent Dispatch button</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/KanbanBoard.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement `TerminalDrawer.vue` with `xterm.js`, WebSocket streaming, and 1-click sensor trigger buttons</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/TerminalDrawer.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-08</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement `MemoryGraphView.vue` with vis-network force layout and node inspector drawer</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/MemoryGraphView.vue`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-09</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Configure Vite build target to emit assets to `.agents/dashboard/dist/` and add dashboard build script</td>
+        <td class="files-col"><code>`packages/dashboard/vite.config.js`, `package.json`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-10</code></td>
+        <td class="type-col"><span class="type-pill">refactor</span></td>
+        <td>Remove legacy embedded HTML template string and Bootstrap 5 CDN from `serve-dashboard.js`</td>
+        <td class="files-col"><code>`.agents/scripts/serve-dashboard.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-11</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Audit all acceptance criteria, verify zero spec drift, and run full test sensors</td>
+        <td class="files-col"><code>`tests/serve-dashboard.test.js`, `.agents/scripts/check-spec-drift.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-12</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement interactive line discipline, UTF-8 PowerShell console, history navigation, and OS font detection for embedded terminal</td>
+        <td class="files-col"><code>`packages/dashboard/src/components/TerminalDrawer.vue`, `.agents/scripts/serve-dashboard.js`, `packages/dashboard/src/style.css`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-13</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Update README.md with Cockpit architecture, zero host pollution runtime, interactive Kanban, embedded terminal, and framework scripts</td>
+        <td class="files-col"><code>`README.md`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+
+    <!-- TAB 2: ARCHITECTURE & CODEBASE -->
+    <section id="tab-architecture" class="tab-content">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Technical Map & Stack</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Consolidated Technical Map</h2></p><p class="doc-p"><h3 class="doc-h2">Executive Summary</h3>
+The AI-SDD Framework is a file-first agentic operating system enforcing determinism, persistent memory, and sensor-gated development across 13+ AI harnesses.
+<li class="doc-li"><strong>Stack</strong>: Node.js standard library, Git, Markdown, JSONL.</li>
+<li class="doc-li"><strong>Architecture</strong>: 5-layer SDD lifecycle (.agents/ + .specs/).</li>
+<li class="doc-li"><strong>Conventions</strong>: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria.</li>
+<li class="doc-li"><strong>Current Focus</strong>: Dashboard Reactivity Stabilization &amp; Universal Living HTML Documentation Platform.</li>
+</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">System Architecture</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">System Architecture</h2></p><p class="doc-p"><h3 class="doc-h2">Directory Organization</h3>
+<li class="doc-li"><code class="inline-code">.agents/</code>: Governance runtime, memory graph, system rules, sensor scripts, and skill definitions.</li>
+<li class="doc-li"><code class="inline-code">.specs/</code>: Living specifications partitioned across codebase reality, project vision, active features, and knowledge base.</li>
+<li class="doc-li">Root Standards: Central governance in <code class="inline-code">AGENTS.md</code>, design system in <code class="inline-code">DESIGN.md</code>, and skills/memory in <code class="inline-code">.agents/</code>.</li></p><p class="doc-p"><h3 class="doc-h2">Architectural Patterns</h3>
+<li class="doc-li"><strong>Spec Driven Development (SDD)</strong>: Strict 5-stage lifecycle (Memory -&gt; Explorer -&gt; Planner -&gt; Executor -&gt; Reviewer).</li>
+<li class="doc-li"><strong>File-First Single Source of Truth</strong>: All operational state and memory reside in git-tracked Markdown and JSONL.</li>
+<li class="doc-li"><strong>Sensor-Gated Verification</strong>: Commits and approvals strictly gated by empirical sensor execution.</li></p><p class="doc-p"><h3 class="doc-h2">Boundary Rules</h3>
+<li class="doc-li">Zero external database or cloud service dependencies for core governance.</li>
+<li class="doc-li">Test immutability: tests cannot be weakened or commented out to force a pass.</li>
+<li class="doc-li">Spec drift invariance: all code changes must be mapped to active feature tasks.</li>
+</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Stack & Dependencies</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Technology Stack</h2></p><p class="doc-p"><h3 class="doc-h2">Core Language &amp; Runtime</h3>
+<li class="doc-li"><strong>Language / Runtime</strong>: Node.js (&gt;= 18 LTS) — Standard Library CommonJS</li>
+<li class="doc-li"><strong>Document Formats</strong>: Markdown (GitHub Flavored), JSON Lines (.jsonl), YAML frontmatter</li>
+<li class="doc-li"><strong>Package Manager</strong>: Zero-dependency architecture (pure native standard library)</li></p><p class="doc-p"><h3 class="doc-h2">Dependencies</h3>
+<li class="doc-li"><strong>Production</strong>: Zero runtime dependencies (native fs, path, child_process)</li>
+<li class="doc-li"><strong>Development &amp; Tooling</strong>: Git version control, 13+ AI Agent Harness Bridges</li></p><p class="doc-p"><h3 class="doc-h2">Testing &amp; Sensor Infrastructure</h3>
+<li class="doc-li"><strong>Spec Drift Sensor</strong>: <code class="inline-code">node .agents/scripts/check-spec-drift.js</code></li>
+<li class="doc-li"><strong>Memory Compactor &amp; Linter</strong>: <code class="inline-code">node .agents/scripts/compact-memory.js</code></li>
+<li class="doc-li"><strong>Pre-commit Hook Installer</strong>: <code class="inline-code">node .agents/scripts/install-hooks.js</code></li>
+</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Conventions & Rules</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Code Conventions &amp; Idioms</h2></p><p class="doc-p"><h3 class="doc-h2">Naming Standards</h3>
+<li class="doc-li">Governance Scripts: <code class="inline-code">kebab-case.js</code></li>
+<li class="doc-li">Architecture &amp; Project Artifacts: <code class="inline-code">UPPERCASE.md</code> (e.g. <code class="inline-code">STACK.md</code>, <code class="inline-code">CONTEXT.md</code>)</li>
+<li class="doc-li">Feature Specifications: <code class="inline-code">plan.md</code>, <code class="inline-code">spec.md</code>, <code class="inline-code">tasks.md</code> in kebab-case feature folders</li>
+<li class="doc-li">Task Identifiers: <code class="inline-code">TASK-01</code>, <code class="inline-code">TASK-02</code>, ...</li>
+<li class="doc-li">Requirements &amp; ACs: <code class="inline-code">FR-XX</code>, <code class="inline-code">BR-XX</code>, <code class="inline-code">AC-XX</code></li></p><p class="doc-p"><h3 class="doc-h2">Task Schema Contract (MetaGPT SOP)</h3>
+<li class="doc-li">Strict 7-column table: Status | ID | Type | Description | Target Files | Dependencies | Evidence</li></p><p class="doc-p"><h3 class="doc-h2">Quality Invariants</h3>
+<li class="doc-li">Zero shortcuts, stubs, or placeholder implementations.</li>
+<li class="doc-li">Surgical contiguous block edits over whole-file rewrites.</li>
+</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: ADR HUB -->
+    <section id="tab-adrs" class="tab-content">
+      <div class="filter-bar">
+        <div class="flex items-center gap-2">
+          <button class="tab-btn active" onclick="filterAdrStatus('all', this)">All</button>
+          <button class="tab-btn" onclick="filterAdrStatus('accepted', this)">Accepted</button>
+          <button class="tab-btn" onclick="filterAdrStatus('superseded', this)">Superseded</button>
+          <button class="tab-btn" onclick="filterAdrStatus('proposed', this)">Proposed</button>
+        </div>
+        <input type="text" class="search-input" placeholder="Search decisions..." oninput="filterAdrText(this.value)">
+      </div>
+      <div class="adrs-list">
+        
+      <div class="card adr-card" data-status="superseded" data-title="adr 0001: native node.js server &amp; linear dark bootstrap architecture for specs dashboard">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-muted">SUPERSEDED</span>
+            <span class="card-title">ADR 0001: Native Node.js Server &amp; Linear Dark Bootstrap Architecture for Specs Dashboard</span>
+          </div>
+          <span class="card-date">2026-09-03</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0001: Native Node.js Server &amp; Linear Dark Bootstrap Architecture for Specs Dashboard</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Superseded by [ADR 0003: Modular Vue 3 Cockpit Dashboard](0003-modular-vue3-cockpit-dashboard.md)</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-09-03</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+The AI-SDD Framework organizes specifications in structured Markdown files under <code class="inline-code">.specs/features/&lt;id&gt;/</code>.
+Human developers and stakeholders require a high-level visual representation of feature progress, hierarchy (Feature -&gt; User Story -&gt; BDD Criteria -&gt; Tasks), and sensor health.</p><p class="doc-p">We evaluated three architectures for delivering this dashboard:
+1. <strong>Zero-dependency Native Node.js HTTP Server</strong> dynamically reading <code class="inline-code">.specs/</code> on demand.
+2. <strong>Static Single-File Generator</strong> compiling Markdown to a static HTML file on disk.
+3. <strong>SPA Frontend Framework (React/Vite/Next.js)</strong> requiring package management and build steps.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We chose <strong>Option 1: Zero-dependency Native Node.js HTTP Server</strong> (<code class="inline-code">.agents/scripts/serve-dashboard.js</code>) serving a responsive frontend built with <strong>Bootstrap 5 CDN + DESIGN.md Linear Dark tokens</strong>.</p><p class="doc-p"><h4 class="doc-h3">Key Architectural Choices:</h4>
+<li class="doc-li"><strong>Runtime</strong>: Native Node.js (<code class="inline-code">http</code>, <code class="inline-code">fs</code>, <code class="inline-code">path</code>, <code class="inline-code">url</code>) with 0 external npm dependencies (<code class="inline-code">npm install</code> not required).</li>
+<li class="doc-li"><strong>Dynamic Parsing</strong>: Parses Markdown files on demand upon client request, allowing real-time reflection of markdown edits upon page refresh without restarting or rebuilding.</li>
+<li class="doc-li"><strong>UI Styling</strong>: Bootstrap 5 grid and components styled with the framework&#039;s native Linear Dark design tokens (<code class="inline-code">#010102</code> canvas, <code class="inline-code">#0f1011</code> surface cards, <code class="inline-code">#23252a</code> hairline borders, and <code class="inline-code">#5e6ad2</code> lavender accent).</li>
+<li class="doc-li"><strong>Zero-Write Security</strong>: The server acts as a strictly read-only visualization layer, preventing accidental corruption of git-governed specification files.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li">Zero installation friction: Works immediately with <code class="inline-code">node .agents/scripts/serve-dashboard.js</code>.</li>
+<li class="doc-li">Real-time reactivity: Refreshing the browser instantly displays updated tasks and checkboxes.</li>
+<li class="doc-li">Visual alignment: High aesthetic consistency matching <code class="inline-code">DESIGN.md</code>.</li>
+<li class="doc-li">Safe: No risk of overwriting or drifting specs from browser input.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Requires an active terminal process while viewing (mitigated by instant startup &lt; 100ms).</li>
+<li class="doc-li">Port conflict if 3000 is occupied (mitigated by auto-fallback or <code class="inline-code">PORT</code> environment variable support).</li>
+</p></div>
+        </div>
+      </div>
+    
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0002: vis-network graph engine &amp; rest api for long-term memory visualization">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0002: Vis-Network Graph Engine &amp; REST API for Long-Term Memory Visualization</span>
+          </div>
+          <span class="card-date">2026-09-03</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0002: Vis-Network Graph Engine &amp; REST API for Long-Term Memory Visualization</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-09-03</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+The AI-SDD Framework maintains persistent long-term memory in <code class="inline-code">.agents/memory/memory_graph.jsonl</code> containing <code class="inline-code">entity</code>, <code class="inline-code">relation</code>, and <code class="inline-code">observation</code> records across development sessions (MemGPT / TiM protocol).
+Developers and operators need an interactive visual tool to explore the memory graph, inspect relationships, examine entity observations, and observe real-time agent memory ingestion.</p><p class="doc-p">We evaluated three visualization approaches:
+1. <strong>Vis-Network (vis.js) via CDN with Native Node.js Parser</strong>: Interactive physics-based canvas graph with zero npm dependencies and side inspector panel.
+2. <strong>Heavy SPA Graph Library (e.g. Cytoscape / React-Flow + Webpack/Vite)</strong>: Requires node_modules and build pipelines.
+3. <strong>Static SVG Graph Generator (Graphviz/Mermaid only)</strong>: Non-interactive, rigid layout without physics or node drill-down.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We chose <strong>Option 1: Vis-Network via CDN with Native Node.js Parser (<code class="inline-code">GET /api/memory</code>)</strong> integrated into the existing unified Specs Dashboard (<code class="inline-code">.agents/scripts/serve-dashboard.js</code>).</p><p class="doc-p"><h4 class="doc-h3">Key Architectural Choices:</h4>
+<li class="doc-li"><strong>Zero New Dependencies</strong>: Consumes <code class="inline-code">vis-network.min.js</code> via CDN, preserving the strict invariant of zero <code class="inline-code">node_modules</code>.</li>
+<li class="doc-li"><strong>Unified Dashboard Tabs</strong>: Top navbar navigation toggling between <code class="inline-code">[📋 Specifications]</code> and <code class="inline-code">[🧠 Memory Graph]</code> without separate servers or port conflicts.</li>
+<li class="doc-li"><strong>REST Endpoint (<code class="inline-code">GET /api/memory</code>)</strong>: Reads <code class="inline-code">.agents/memory/memory_graph.jsonl</code>, parses entities into graph nodes, relations into directed edges, and aggregates observations into node properties.</li>
+<li class="doc-li"><strong>Resilient Auto-Inference</strong>: If a relation references an entity that has not yet been declared explicitly, the parser infers a placeholder node (<code class="inline-code">entityType: &quot;inferred&quot;</code>) to prevent broken edges.</li>
+<li class="doc-li"><strong>Neo4j Bloom-style Inspector Drawer</strong>: Clicking any node opens a right-hand sidebar displaying entity metadata (role, status, confidence, namespace) and all chronological observations.</li>
+<li class="doc-li"><strong>Live Sync Continuity</strong>: The existing <code class="inline-code">fs.watch</code> is extended to watch both <code class="inline-code">.specs/</code> and <code class="inline-code">.agents/memory/</code>, triggering live updates when agents record new memories.</li>
+<li class="doc-li"><strong>Design System Invariance</strong>: Styled strictly using <code class="inline-code">DESIGN.md</code> Linear Dark tokens (Canvas <code class="inline-code">#010102</code>, Surface <code class="inline-code">#0f1011</code>, Accent <code class="inline-code">#5e6ad2</code>, Success <code class="inline-code">#27a644</code>).</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li">Interactive graph database experience (drag, zoom, physics, inspector).</li>
+<li class="doc-li">Seamless integration with the existing server and watch runtime.</li>
+<li class="doc-li">Real-time updates as agents converse and persist memory.</li>
+<li class="doc-li">Completely adheres to BR-1 (Zero Dependencies) and BR-4 (Linear Dark Design).</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Large graphs (&gt;1000 nodes) can stress browser canvas physics (mitigated by physics stabilization timeout and optional hierarchical layout).</li>
+</p></div>
+        </div>
+      </div>
+    
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0003: modular vue 3 cockpit dashboard with interactive human-ai kanban and embedded terminal">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0003: Modular Vue 3 Cockpit Dashboard with Interactive Human-AI Kanban and Embedded Terminal</span>
+          </div>
+          <span class="card-date">2026-09-11</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0003: Modular Vue 3 Cockpit Dashboard with Interactive Human-AI Kanban and Embedded Terminal</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted (Revised with Interactive Human-AI Dynamics)</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-09-11</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+The AI-SDD Framework requires a visual cockpit that not only observes specifications and memory, but actively facilitates the real-world collaboration loop between the human developer (acting as Tech Lead / Reviewer) and AI agents (acting as Implementers).
+Developers need to:
+1. Direct the AI agent to focus on specific tasks.
+2. Review deliverables and reject/revert tasks back to Pending or In Progress if the delivery does not meet quality expectations, appending structured feedback.
+3. Keep Markdown (<code class="inline-code">tasks.md</code>) as the ultimate git-tracked single source of truth without desynchronization.
+4. Execute sensors and interact with AI CLIs via an integrated terminal (xterm.js).
+5. Ensure zero dependency pollution when the framework is imported into foreign/brownfield host projects.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We adopt an <strong>Interactive Human-AI Cockpit Architecture</strong>:
+<li class="doc-li"><strong>Source Location</strong>: packages/dashboard/ developed with <strong>Vue 3</strong>, <strong>Vite</strong>, and styled with [DESIGN.md](../../../DESIGN.md) Linear Dark tokens.</li>
+<li class="doc-li"><strong>Delivery &amp; Serving</strong>: Production assets compiled to .agents/dashboard/dist/ and served statically by native Node.js (serve-dashboard.js).</li>
+<li class="doc-li"><strong>Interactive Two-Way Kanban Board</strong>:</li>
+<li class="doc-li">Drag-and-drop or card actions trigger PATCH /api/features/:featureId/tasks/:taskId, which surgically updates the status checkbox ([ ], [-], [x]) in the physical <code class="inline-code">tasks.md</code> file.</li>
+<li class="doc-li"><strong>Revert &amp; Quality Feedback Loop</strong>: Moving a card out of Done back to In Progress or Pending prompts for review feedback, appended to the task&#039;s context so the agent knows what to fix.</li>
+<li class="doc-li"><strong>Agent Dispatcher Action</strong>: Each card features a [⚡ Run with Agent] action that generates the exact task execution prompt and directly feeds it into the embedded terminal or clipboard.</li>
+<li class="doc-li"><strong>Embedded Terminal</strong>: xterm.js in a dockable drawer connected via WebSocket to a native shell process with quick-action sensor buttons.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>Real-World Team Dynamics</strong>: Seamless Tech Lead / Agent pairing with clear delegation, review, rejection, and approval cycles.</li>
+<li class="doc-li"><strong>Git-Governed Single Source of Truth</strong>: All UI changes write directly to Markdown (<code class="inline-code">tasks.md</code>), preserving full version control and spec immutability across multi-agent sessions.</li>
+<li class="doc-li"><strong>Immediate Agent Context</strong>: Rejection feedback written to <code class="inline-code">tasks.md</code> is immediately readable by any AI harness (Cursor, Claude Code, Antigravity, Windsurf).</li>
+<li class="doc-li"><strong>Non-Invasive</strong>: Host projects remain 100% free of frontend npm dependencies.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li"><strong>Concurrent File Writes</strong>: Fast UI edits could compete with agent edits. <em>Mitigation</em>: Atomic surgical regex replacement on <code class="inline-code">tasks.md</code> with SSE broadcast.</li>
+<li class="doc-li"><strong>Security</strong>: Terminal and mutation endpoints bind strictly to localhost.</li></p></div>
+        </div>
+      </div>
+    
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0004: universal living html documentation platform &amp; standalone static exporter">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0004: Universal Living HTML Documentation Platform &amp; Standalone Static Exporter</span>
+          </div>
+          <span class="card-date">2026-09-27</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0004: Universal Living HTML Documentation Platform &amp; Standalone Static Exporter</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-09-27</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+The AI-SDD Framework enforces a File-First Single Source of Truth where all specifications, brownfield realities, architecture maps, and governance rules reside in Git-tracked Markdown files (<code class="inline-code">.specs/</code> and <code class="inline-code">.agents/rules/</code>).</p><p class="doc-p">While structured Markdown is optimal for LLM comprehension and version control diffs, human developers, tech leads, and stakeholders face friction when navigating across nested folders:
+1. <strong>75% Blind Spot in Cockpit</strong>: The existing Cockpit dashboard only parses <code class="inline-code">.specs/features/</code> and memory graph, leaving project vision (<code class="inline-code">PROJECT.md</code>, <code class="inline-code">ROADMAP.md</code>), brownfield architecture (<code class="inline-code">.specs/codebase/</code>), governance rules (<code class="inline-code">.agents/rules/</code>), and decision records (<code class="inline-code">ADRs/</code>) unprojected in the browser.
+2. <strong>Static Dead Architecture</strong>: Architecture maps and component hierarchies stored as text lack interactive visual graph rendering (e.g. Mermaid diagram rendering).
+3. <strong>Sharing &amp; Offline Accessibility</strong>: Stakeholders and non-developer team members cannot view the specifications without cloning the repository and launching a Node.js process.</p><p class="doc-p">We evaluated two architectural strategies:
+<li class="doc-li"><strong>Strategy A: Dynamic-Only Expansion</strong>: Add more API endpoints to <code class="inline-code">serve-dashboard.js</code> and render in Vue 3 only.</li>
+<li class="doc-li"><strong>Strategy B: Dual-Projection (Dynamic Cockpit + Standalone Static Exporter)</strong>: Expand the native Node.js API and Vue 3 Cockpit for live local development, AND provide an automated zero-dependency static HTML compiler that bundles the entire specification corpus into a single standalone HTML document.</li></p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We adopt <strong>Strategy B: Dual-Projection Architecture for Universal Living Documentation</strong>:</p><p class="doc-p">1. <strong>Native Server Expansion (<code class="inline-code">serve-dashboard.js</code>)</strong>:
+<li class="doc-li">Add zero-dependency REST endpoints:</li>
+<li class="doc-li"><code class="inline-code">GET /api/project</code>: Parses <code class="inline-code">PROJECT.md</code>, <code class="inline-code">ROADMAP.md</code>, <code class="inline-code">STATE.md</code>, <code class="inline-code">CONTEXT.md</code>, and all <code class="inline-code">ADRs/</code> with status metadata.</li>
+<li class="doc-li"><code class="inline-code">GET /api/codebase</code>: Parses <code class="inline-code">STACK.md</code>, <code class="inline-code">ARCHITECTURE.md</code>, <code class="inline-code">CONVENTIONS.md</code>, <code class="inline-code">CONCERNS.md</code>, and <code class="inline-code">TECHNICAL-MAP.md</code>.</li>
+<li class="doc-li"><code class="inline-code">GET /api/rules</code>: Parses <code class="inline-code">TIER1_PROHIBITIONS.md</code>, <code class="inline-code">QUALITY_ENFORCEMENT.md</code>, and <code class="inline-code">TOKEN_OPTIMIZATION.md</code>.</li>
+<li class="doc-li"><code class="inline-code">GET /api/knowledge</code>: Parses patterns and anti-patterns from <code class="inline-code">.specs/knowledge/</code>.</li>
+<li class="doc-li">The existing debounced <code class="inline-code">fs.watch</code> on <code class="inline-code">.specs/</code> and <code class="inline-code">.agents/rules/</code> ensures immediate SSE live-sync upon saving any file.</li></p><p class="doc-p">2. <strong>Frontend Living Docs Explorer (<code class="inline-code">packages/dashboard</code>)</strong>:
+<li class="doc-li">New top-level navigation tab: <code class="inline-code">[📚 Living Docs]</code>.</li>
+<li class="doc-li">Sub-views:</li>
+<li class="doc-li"><strong>Architecture &amp; System Map</strong>: Interactive Mermaid diagram renderer + Stack badges + Conventions table.</li>
+<li class="doc-li"><strong>ADR Decision Hub</strong>: Filterable catalog (<code class="inline-code">Accepted</code>, <code class="inline-code">Superseded</code>, <code class="inline-code">Proposed</code>) with status badges and feature cross-links.</li>
+<li class="doc-li"><strong>Domain Glossary</strong>: Instant search across ubiquitous language terms in <code class="inline-code">CONTEXT.md</code>.</li>
+<li class="doc-li"><strong>Governance Hub</strong>: Visual matrix of Tier 1 Prohibitions and Quality Enforcement with code diff examples.</li>
+<li class="doc-li"><strong>Knowledge Base</strong>: Curated patterns and anti-patterns.</li></p><p class="doc-p">3. <strong>Standalone Zero-Dependency Static Exporter (<code class="inline-code">.agents/scripts/export-docs.js</code>)</strong>:
+<li class="doc-li">Script executable via <code class="inline-code">npm run docs:export</code>.</li>
+<li class="doc-li">Compiles 100% of <code class="inline-code">.specs/</code> and rules into a self-contained, single-file HTML (<code class="inline-code">docs/index.html</code> or <code class="inline-code">specs-live-book.html</code>).</li>
+<li class="doc-li">Includes embedded CSS (<code class="inline-code">DESIGN.md</code> Linear Dark tokens), client-side search, collapsibles, and CDN/inlined markdown + Mermaid renderers.</li>
+<li class="doc-li">Requires zero server runtime and can be hosted on GitHub Pages or shared offline via email.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>360° Living Visibility</strong>: Human leads inspect the entire project ecosystem in real time without digging through nested directories.</li>
+<li class="doc-li"><strong>Zero Host Pollution Preserved</strong>: The native server requires zero npm dependencies for host projects; the exporter runs via native Node.js.</li>
+<li class="doc-li"><strong>True Living Documentation</strong>: Any edit in Markdown instantly reflects in the browser without manual refresh.</li>
+<li class="doc-li"><strong>Zero-Friction Sharing</strong>: Standalone single-file export enables non-technical stakeholders to explore the full spec tree offline.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li"><strong>Bundle &amp; Asset Footprint</strong>: Adding Mermaid rendering in Vue and static export. <em>Mitigation</em>: Dynamically load Mermaid or use CDN/lightweight parser to keep footprint minimal.</li>
+</p></div>
+        </div>
+      </div>
+    
+      </div>
+    </section>
+
+    <!-- TAB 4: DOMAIN & GLOSSARY -->
+    <section id="tab-glossary" class="tab-content">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Project Vision</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project Vision: AI-SDD Framework</h2></p><p class="doc-p"><h3 class="doc-h2">Vision</h3>
+Eliminate unconstrained AI coding hallucinations, context drift, and silent degradation by enforcing a deterministic, file-first, sensor-gated Spec Driven Development lifecycle.</p><p class="doc-p"><h3 class="doc-h2">Target Audience</h3>
+<li class="doc-li">Software engineers, architects, and engineering teams using AI coding assistants (Antigravity, Claude, Cursor, Windsurf, Copilot, etc.).</li>
+</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Project Roadmap</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project Roadmap: AI-SDD Framework</h2></p><p class="doc-p"><h3 class="doc-h2">Strategic Objectives</h3>
+Establish the industry-standard Spec Driven Development (SDD) runtime and living governance operating system for autonomous and pair-programming AI coding assistants.</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">Milestones</h3></p><p class="doc-p"><h4 class="doc-h3">Milestone 1: Core Governance &amp; Multi-Harness Runtime (v0.1.0)</h4>
+<li class="doc-li">[x] Standardize 5-stage SDD lifecycle (<code class="inline-code">Memory -&gt; Explorer -&gt; Planner -&gt; Executor -&gt; Reviewer</code>).</li>
+<li class="doc-li">[x] Implement Tier 1 Absolute Prohibitions (<code class="inline-code">.agents/rules/TIER1_PROHIBITIONS.md</code>).</li>
+<li class="doc-li">[x] Implement Quality Enforcement Rules (<code class="inline-code">.agents/rules/QUALITY_ENFORCEMENT.md</code>).</li>
+<li class="doc-li">[x] Implement Token Optimization Rules (<code class="inline-code">.agents/rules/TOKEN_OPTIMIZATION.md</code>).</li>
+<li class="doc-li">[x] Long-Term Memory Graph (<code class="inline-code">.agents/memory/memory_graph.jsonl</code>) with namespace &amp; tenant isolation.</li></p><p class="doc-p"><h4 class="doc-h3">Milestone 2: Pre-Commit Spec Drift Sensor &amp; SOP Schema (v0.2.0)</h4>
+<li class="doc-li">[x] Constitutional Spec-Code Drift Sensor (<code class="inline-code">check-spec-drift.js</code>).</li>
+<li class="doc-li">[x] MetaGPT 7-column SOP tasks table standard.</li>
+<li class="doc-li">[x] BDD acceptance criteria schema with Given/When/Then contracts.</li>
+<li class="doc-li">[x] Native git pre-commit hook installer (<code class="inline-code">install-hooks.js</code>).</li></p><p class="doc-p"><h4 class="doc-h3">Milestone 3: Interactive AI Agent Cockpit &amp; Reactive Kanban (v0.3.0)</h4>
+<li class="doc-li">[x] Native zero-dependency Node.js HTTP/WS server (<code class="inline-code">serve-dashboard.js</code>).</li>
+<li class="doc-li">[x] Decoupled Vue 3 + Vite SPA in <code class="inline-code">packages/dashboard</code> with Linear Dark tokens.</li>
+<li class="doc-li">[x] Two-way interactive Kanban board syncing directly to <code class="inline-code">tasks.md</code>.</li>
+<li class="doc-li">[x] Embedded PTY terminal drawer with WebSocket streaming and sensor triggers.</li>
+<li class="doc-li">[x] Interactive property graph visualizer (<code class="inline-code">vis-network</code>) for memory recall.</li>
+<li class="doc-li">[x] Stabilize bidirectional reactivity &amp; SSE live-sync across all open tabs.</li>
+<li class="doc-li">[x] Automated SDD integrity sensor (<code class="inline-code">verify-sdd-integrity.js</code>).</li></p><p class="doc-p"><h4 class="doc-h3">Milestone 4: Canonical Living HTML Documentation Platform (v0.4.0)</h4>
+<li class="doc-li">[x] Universal specs explorer covering 100% of <code class="inline-code">.specs/</code> (<code class="inline-code">project/</code>, <code class="inline-code">codebase/</code>, <code class="inline-code">knowledge/</code>, <code class="inline-code">ADRs/</code>, <code class="inline-code">rules/</code>).</li>
+<li class="doc-li">[x] Real-time in-browser Mermaid diagram rendering for architecture graphs.</li>
+<li class="doc-li">[x] ADR catalog with status lifecycle (<code class="inline-code">Proposed</code> -&gt; <code class="inline-code">Accepted</code> -&gt; <code class="inline-code">Superseded</code>) and cross-impact links.</li>
+<li class="doc-li">[x] Interactive domain glossary search (<code class="inline-code">CONTEXT.md</code>).</li>
+<li class="doc-li">[x] Standalone single-file HTML exporter (<code class="inline-code">npm run docs:export</code>) for zero-server distribution.</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">Release Status Matrix</h3>
+| Milestone | Version | Status | Target Date |
+|---|---|---|---|
+| Milestone 1: Governance &amp; Rules | v0.1.0 | Released | 2026-08-25 |
+| Milestone 2: Spec Drift Engine | v0.2.0 | Released | 2026-08-31 |
+| Milestone 3: Cockpit &amp; Reactivity | v0.3.0 | Released | 2026-09-27 |
+| Milestone 4: Living HTML Docs | v0.4.0 | Released | 2026-09-27 |
+</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Domain Glossary & Ubiquitous Language</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project Context &amp; Domain Glossary</h2></p><p class="doc-p"><h3 class="doc-h2">Domain Terms</h3>
+<li class="doc-li"><strong>SDD (Spec Driven Development)</strong>: Software development lifecycle where executable and audited specifications precede code implementation.</li>
+<li class="doc-li"><strong>Feature Cascade</strong>: The top-down hierarchy: Feature (Epic/Capability) -&gt; Plan / User Stories (Intent) -&gt; Spec / Acceptance Criteria (BDD) -&gt; Tasks (Atomic execution).</li>
+<li class="doc-li"><strong>Spec Drift</strong>: Divergence between actual repository code modifications and declared feature tasks.</li>
+<li class="doc-li"><strong>Sensor Gate</strong>: Automated command-line checks (linter, unit tests, build, drift detection) that must pass before task completion or commit approval.</li>
+<li class="doc-li"><strong>Memory Graph</strong>: JSONL-based persistent associative memory tracking entities, relations, and observations across sessions.</li>
+<li class="doc-li"><strong>Canonical Governance</strong>: Unified standards defined via <code class="inline-code">AGENTS.md</code>, <code class="inline-code">DESIGN.md</code>, and <code class="inline-code">.agents/</code>, serving as the framework&#039;s single source of truth across all tools.</li>
+<li class="doc-li"><strong>Feature Dashboard</strong>: An interactive visual presentation tool parsing .specs/features/ to display feature progress, user stories, acceptance criteria, and task tables.</li>
+<li class="doc-li"><strong>AI Agent Cockpit</strong>: Modular web workspace (Vue 3 SPA) combining living specs, real-time Kanban task tracking, memory graph visualization, and an embedded terminal for sensor and agent execution.</li>
+<li class="doc-li"><strong>Reactive Kanban Board</strong>: Column-based task view dynamically driven by <code class="inline-code">tasks.md</code> status, updating automatically via SSE/WebSocket without destructive UI-induced drift.</li>
+<li class="doc-li"><strong>Embedded PTY Terminal</strong>: In-browser interactive terminal powered by <code class="inline-code">xterm.js</code> streaming to a local shell over WebSockets with 1-click trigger actions for SDD sensors.</li></p><p class="doc-p"></p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and audit of feature <code class="inline-code">living-html-docs</code> (Milestone 4: Universal Living HTML Documentation Platform &amp; Standalone Static Exporter).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 9/9 tasks executed under <code class="inline-code">sdd-executor</code> and audited under <code class="inline-code">sdd-review</code>. Integrated <code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, and <code class="inline-code">/api/knowledge</code> in <code class="inline-code">serve-dashboard.js</code>. Created <code class="inline-code">LivingDocsView.vue</code> with interactive sub-tabs for Architecture (with dynamic Mermaid rendering), ADR Decision Hub (with status filters), Domain Glossary (with instant search), Governance Rules, and Knowledge Base. Delivered zero-dependency single-file static HTML exporter (<code class="inline-code">export-docs.js</code> -&gt; <code class="inline-code">npm run docs:export</code> generating <code class="inline-code">docs/index.html</code>).</li>
+<li class="doc-li"><strong>Verification Sensors</strong>:</li>
+  1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 21/21 passing (100% in 135ms).
+  3. Spec Drift Sensor: <code class="inline-code">npm run check-drift</code> — 0 drifted files.
+  4. Dashboard Build: <code class="inline-code">npm run build:dashboard</code> — Clean build to <code class="inline-code">.agents/dashboard/dist/</code>.
+  5. Standalone HTML Export: <code class="inline-code">npm run docs:export</code> — Generated <code class="inline-code">docs/index.html</code> (85 KB).</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)</strong>: Formalized dual-projection living documentation strategy combining native Node.js endpoints (<code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, <code class="inline-code">/api/knowledge</code>), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (<code class="inline-code">export-docs.js</code>).</li>
+<li class="doc-li"><strong>2026-09-27 - SSE Reactivity Normalization</strong>: Standardized SSE payloads to transmit <code class="inline-code">{ type: &#039;reload&#039;, event: &#039;reload&#039;, timestamp }</code> and updated <code class="inline-code">App.vue</code> to handle both, eliminating the manual refresh requirement. Wired <code class="inline-code">fetchMemory</code> in <code class="inline-code">MemoryGraphView</code> and <code class="inline-code">fetchDocs</code> in <code class="inline-code">LivingDocsView</code> to live sync events.</li>
+<li class="doc-li"><strong>2026-09-27 - ADR Lifecycle &amp; Canonical Integrity</strong>: Enforced explicit ADR lifecycle (<code class="inline-code">Proposed</code> -&gt; <code class="inline-code">Accepted</code> -&gt; <code class="inline-code">Superseded</code>). Marked ADR 0001 as superseded by ADR 0003. Created <code class="inline-code">ROADMAP.md</code> to satisfy AGENTS.md requirements.</li>
+<li class="doc-li"><strong>2026-09-11 - Interactive Human-AI Cockpit (ADR 0003)</strong>: Decoupled Vue 3 + Vite SPA in <code class="inline-code">packages/dashboard</code> emitting pre-compiled production assets to <code class="inline-code">.agents/dashboard/dist/</code> served statically by native Node.js (<code class="inline-code">serve-dashboard.js</code>).</li>
+<li class="doc-li"><strong>2026-09-03 - Memory Graph Visualization (ADR 0002)</strong>: Selected Vis-Network via CDN integrated into unified Specs Dashboard with top navigation tabs, native <code class="inline-code">GET /api/memory</code>, and Neo4j-style side inspector drawer.</li>
+<li class="doc-li"><strong>2026-09-03 - Live Sync &amp; Auto-Reload</strong>: Implemented native Server-Sent Events (<code class="inline-code">/api/events</code>) with debounced (300ms) recursive <code class="inline-code">fs.watch</code> on <code class="inline-code">.specs/</code>.</li></p><p class="doc-p"><h3 class="doc-h2">🚧 Active Blockers</h3>
+<li class="doc-li">None currently blocking.</li></p><p class="doc-p"><h3 class="doc-h2">❄️ Deferred Ideas / Icebox</h3>
+<li class="doc-li">PDF generator export alongside HTML export.</li>
+<li class="doc-li">Auto-sync to GitHub Pages via GitHub Actions workflow.</li></p><p class="doc-p"><h3 class="doc-h2">⚠️ Known Technical Debts</h3>
+<li class="doc-li"><strong>Knowledge Base Content</strong>: Populate initial patterns (e.g. Zero Host Pollution, Dual-Projection Living Docs) in <code class="inline-code">.specs/knowledge/patterns/</code>.</li>
+</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: RULES -->
+    <section id="tab-rules" class="tab-content">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Tier 1 Absolute Prohibitions</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:START --&gt;
+<h2 class="doc-h1">Absolute Prohibitions (Tier 1 — Highest Precedence)</h2></p><p class="doc-p"><strong>These rules override ALL other rules. Violation = output rejected.</strong></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 1: No Shortcuts, Stubs, or Simplified Logic</h3></p><p class="doc-p"><strong>NEVER</strong> simplify logic, add TODO/FIXME/HACK, create stubs, use placeholders, alter existing logic to avoid complexity, reduce scope, skip edge cases, or deliver partial implementations.</p><p class="doc-p"><strong>Response time is IRRELEVANT. Quality is everything.</strong></p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
+<li class="doc-li"><code class="inline-code">// TODO</code> — unfinished work disguised as progress</li>
+<li class="doc-li"><code class="inline-code">// FIXME</code> — a known bug left for &quot;later&quot;</li>
+<li class="doc-li"><code class="inline-code">// HACK</code> — a shortcut that will haunt you</li>
+<li class="doc-li"><code class="inline-code">return 0; // placeholder</code> — a lie that compiles</li>
+<li class="doc-li"><code class="inline-code">/<em> stub </em>/</code> — an empty promise</li>
+<li class="doc-li">Simplified algorithms where the correct one is known</li>
+<li class="doc-li">Partial implementations (&quot;I&#039;ll add the rest later&quot;)</li>
+<li class="doc-li">Reduced scope without explicit approval</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4>
+<li class="doc-li"><strong>Research</strong> the correct approach before writing code</li>
+<li class="doc-li"><strong>Implement completely</strong> — every function, every edge case, every error path</li>
+<li class="doc-li"><strong>Take as long as needed</strong> — correct implementation &gt; fast delivery</li>
+<li class="doc-li"><strong>Ask if unsure</strong> — propose a plan, never silently simplify</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 2: No Destructive Git Operations Without Authorization</h3></p><p class="doc-p"><h4 class="doc-h3">Allowed (always safe)</h4>
+<li class="doc-li"><code class="inline-code">git status</code>, <code class="inline-code">git diff</code>, <code class="inline-code">git log</code>, <code class="inline-code">git blame</code></li>
+<li class="doc-li"><code class="inline-code">git add</code>, <code class="inline-code">git commit</code> (after quality checks)</li></p><p class="doc-p"><h4 class="doc-h3">Forbidden (require explicit user authorization)</h4>
+<li class="doc-li"><code class="inline-code">git stash</code> — can lose uncommitted work</li>
+<li class="doc-li"><code class="inline-code">git rebase</code> — rewrites history</li>
+<li class="doc-li"><code class="inline-code">git reset --hard</code> — destroys uncommitted changes</li>
+<li class="doc-li"><code class="inline-code">git checkout -- .</code> / <code class="inline-code">git restore .</code> — discards all changes</li>
+<li class="doc-li"><code class="inline-code">git revert</code> — creates new commits</li>
+<li class="doc-li"><code class="inline-code">git cherry-pick</code> — can cause conflicts</li>
+<li class="doc-li"><code class="inline-code">git merge</code> — can create conflicts</li>
+<li class="doc-li"><code class="inline-code">git branch -D</code> — deletes branch permanently</li>
+<li class="doc-li"><code class="inline-code">git push --force</code> — overwrites remote history</li>
+<li class="doc-li"><code class="inline-code">git clean -f</code> — deletes untracked files permanently</li>
+<li class="doc-li"><code class="inline-code">git checkout &lt;branch&gt;</code> / <code class="inline-code">git switch</code> — breaks concurrent sessions sharing the worktree</li></p><p class="doc-p"><strong>Why</strong>: Multiple AI sessions may share the same working tree. Destructive operations affect ALL concurrent sessions.</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 3: No Deletion Without Authorization</h3></p><p class="doc-p"><strong>NEVER</strong> run <code class="inline-code">rm</code>, <code class="inline-code">rm -rf</code>, <code class="inline-code">del</code>, or delete any existing project file, source file, config, or directory without explicit user authorization (&quot;yes, delete it&quot;).</p><p class="doc-p">This prohibition applies to:
+<li class="doc-li">Project files, directories, and documentation</li>
+<li class="doc-li">Cache files (they auto-invalidate — DO NOT manually delete)</li>
+<li class="doc-li">Backup files</li>
+<li class="doc-li">Build artifacts (use the build system&#039;s standard clean command)</li>
+<li class="doc-li">Lock files (investigate what holds the lock first)</li></p><p class="doc-p"><strong>Exception</strong>: Temporary scratchpad files created exclusively by the agent in the current session (e.g. within <code class="inline-code">scratch/</code> or ephemeral test scripts) MUST be cleaned up by the agent and do not require separate user approval.</p><p class="doc-p"><strong>Why</strong>: AI agents repeatedly delete important files during &quot;cleanup.&quot; The cost of an unauthorized deletion (hours rebuilding caches, lost data) always exceeds the cost of asking first.</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 4: Research Before Implementing — Never Guess</h3></p><p class="doc-p"><strong>NEVER</strong> guess at:
+<li class="doc-li">The cause of a bug</li>
+<li class="doc-li">How an API works</li>
+<li class="doc-li">What a function does based on its name</li>
+<li class="doc-li">What &quot;correct&quot; output looks like</li></p><p class="doc-p"><h4 class="doc-h3">Required Process</h4>
+1. <strong>State what you KNOW</strong> (from logs, debug output, code reading)
+2. <strong>State what you DON&#039;T KNOW</strong>
+3. <strong>Research</strong> the unknown (read source, check docs, use diagnostic tools)
+4. <strong>Only then</strong> implement the fix</p><p class="doc-p"><strong>&quot;I think this might be the problem&quot; is NOT acceptable.</strong>
+<strong>&quot;Source X does Y at file:line, we do Z, the difference causes W&quot; IS acceptable.</strong></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 5: Sequential File Editing</h3></p><p class="doc-p"><strong>ALWAYS</strong> edit files one at a time in sequence: Read file1 → Edit file1 → Read file2 → Edit file2.</p><p class="doc-p"><strong>NEVER</strong> batch-read multiple files then batch-edit them. By the time you edit file 3, the context from file 1 may be stale.</p><p class="doc-p">When a task touches 3+ files across subsystems:
+1. <strong>STOP</strong> — do not start implementing
+2. <strong>Plan</strong> the changes (list files, dependency order)
+3. <strong>Decompose</strong> into sub-tasks of 1-2 files each
+4. <strong>Execute</strong> sub-tasks in dependency order
+5. <strong>Build/test</strong> after each sub-task</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 6: No Deferred Tasks</h3></p><p class="doc-p">If a task is in the checklist, <strong>implement it</strong>. No exceptions.
+<li class="doc-li"><strong>NEVER</strong> mark tasks as &quot;Deferred&quot;</li>
+<li class="doc-li"><strong>NEVER</strong> write &quot;Deferred — requires X&quot;</li>
+<li class="doc-li"><strong>NEVER</strong> skip tasks with excuses</li>
+<li class="doc-li"><strong>NEVER</strong> deliver partial implementations with &quot;will do later&quot;</li></p><p class="doc-p">If a task has a genuine dependency:
+1. Implement the dependency FIRST
+2. Then implement the task
+3. Mark BOTH as done</p><p class="doc-p">If you truly cannot implement something, explain WHY in concrete terms and propose an alternative — do NOT just write &quot;Deferred.&quot;</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 7: Follow Task Sequence — No Reordering, No Cherry-Picking</h3></p><p class="doc-p">When a <code class="inline-code">tasks.md</code> checklist defines a sequence of items, <strong>execute them in EXACTLY that order</strong>.</p><p class="doc-p"><h4 class="doc-h3">Forbidden</h4>
+<li class="doc-li"><strong>NEVER</strong> skip ahead to &quot;easier&quot; or &quot;more interesting&quot; tasks</li>
+<li class="doc-li"><strong>NEVER</strong> reorder tasks because you think a different order is better</li>
+<li class="doc-li"><strong>NEVER</strong> cherry-pick tasks from the middle of a list</li>
+<li class="doc-li"><strong>NEVER</strong> decide which tasks are &quot;important enough&quot; to do — do ALL of them, in order</li>
+<li class="doc-li"><strong>NEVER</strong> group or batch tasks in a different sequence than listed</li>
+<li class="doc-li"><strong>NEVER</strong> start Phase N+1 before Phase N is 100% complete</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4></p><p class="doc-p">1. Read <code class="inline-code">tasks.md</code> from top to bottom
+2. Find the FIRST unchecked item (<code class="inline-code">- [ ]</code>)
+3. Implement THAT item — not the one you prefer
+4. Mark it <code class="inline-code">[x]</code> with what was done
+5. Move to the NEXT unchecked item
+6. Repeat until all items are checked</p><p class="doc-p"><h4 class="doc-h3">Why</h4></p><p class="doc-p">The human spent time defining the task sequence for a reason. The order reflects dependencies, priorities, and a deliberate implementation strategy. When AI agents skip around:
+<li class="doc-li">Dependencies break because upstream work wasn&#039;t done first</li>
+<li class="doc-li">The human loses track of what&#039;s actually complete</li>
+<li class="doc-li">Work has to be redone because it was built on missing foundations</li>
+<li class="doc-li">Trust erodes — the human defined a plan and the AI ignored it</li></p><p class="doc-p"><strong>The task list is an ORDER, not a MENU. Execute sequentially.</strong></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 8: Agent-Computer Interface (ACI) Protocol for Surgical File Manipulation (SWE-agent SOTA)</h3></p><p class="doc-p"><strong>NEVER</strong> blind-overwrite existing codebase files with full dumps (<code class="inline-code">write_to_file</code> with <code class="inline-code">Overwrite: true</code>) when performing targeted changes, bug fixes, or incremental feature additions.</p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
+<li class="doc-li">Overwriting a 500-line file to change 3 lines (risks line truncation and context loss).</li>
+<li class="doc-li">Executing unbounded shell commands that dump thousands of raw lines into agent context (causes context exhaustion and catastrophic forgetting).</li>
+<li class="doc-li">Blindly editing files without reading the exact line slice (<code class="inline-code">view_file</code> with <code class="inline-code">StartLine</code>/<code class="inline-code">EndLine</code>) immediately prior to the edit.</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4>
+<li class="doc-li"><strong>Surgical Edits</strong>: Use targeted chunk replacement (<code class="inline-code">replace_file_content</code>) with exact character matching and verified line numbers.</li>
+<li class="doc-li"><strong>Bounded Reading</strong>: Read slices of at most 200–300 lines around the target area before replacing content.</li>
+<li class="doc-li"><strong>Atomic Rollback</strong>: If a tool edit fails or creates lint errors, revert immediately and re-inspect before trying again.</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 9: Test Immutability and Decoupled Verification Gate (AgentCoder SOTA)</h3></p><p class="doc-p"><strong>NEVER</strong> alter, soften, comment out, or remove existing test assertions, BDD acceptance criteria, or test fixtures during the implementation phase to make a failing test suite pass.</p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
+<li class="doc-li">Modifying test expectations (e.g. changing <code class="inline-code">assert result == 200</code> to <code class="inline-code">assert result == 500</code> because the handler is returning 500).</li>
+<li class="doc-li">Deleting or skipping test cases (<code class="inline-code">@pytest.mark.skip</code>, <code class="inline-code">it.skip</code>, <code class="inline-code">// test removed</code>).</li>
+<li class="doc-li">Injecting conditional test mocks that bypass real business logic execution.</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4>
+<li class="doc-li"><strong>Fix Production Code, NOT the Test</strong>: When a test fails, the defect resides in the implementation code.</li>
+<li class="doc-li"><strong>Safety Valve Re-Plan</strong>: If a test assertion is genuinely invalid due to an outdated requirement or specification bug, you MUST STOP, trigger the Safety Valve, and request an official re-plan from <code class="inline-code">sdd-planner</code>. An executor is NEVER authorized to change tests unilaterally.</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 10: Architectural Decision Invariance &amp; ADR Lifecycle</h3></p><p class="doc-p"><strong>NEVER</strong> alter, contradict, or reverse structural technical decisions (frameworks, runtime protocols, monorepo structures, storage models) without an approved Architectural Decision Record (ADR) in <code class="inline-code">.specs/project/ADRs/</code>.</p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
+<li class="doc-li">Changing an architectural pattern established by an active ADR without recording a replacement ADR.</li>
+<li class="doc-li">Leaving a superseded ADR marked as <code class="inline-code">Accepted</code> when a new ADR replaces its decision.</li>
+<li class="doc-li">Introducing dependencies or architecture models that violate invariants recorded in <code class="inline-code">ADRs/</code> or <code class="inline-code">STACK.md</code>.</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4>
+<li class="doc-li"><strong>ADR Lifecycle Governance</strong>: When replacing or updating an architectural decision:</li>
+  1. Author a new ADR in <code class="inline-code">.specs/project/ADRs/</code> with sequential numbering (<code class="inline-code">000X-slug.md</code>).
+  2. Mark the status of the new ADR as <code class="inline-code">Accepted</code>.
+  3. Surgically update the predecessor ADR status to <code class="inline-code">Superseded by [ADR 000X: Title](000X-slug.md)</code>.
+  4. Ensure both ADRs cross-link each other.</p><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:END --&gt;</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Quality Enforcement</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p">&lt;!-- QUALITY_ENFORCEMENT:START --&gt;
+<h2 class="doc-h1">Quality Enforcement Rules</h2></p><p class="doc-p"><strong>CRITICAL</strong>: These rules are NON-NEGOTIABLE and MUST be followed without exception.</p><p class="doc-p"><h3 class="doc-h2">Absolute Prohibitions</h3></p><p class="doc-p"><h4 class="doc-h3">Test Bypassing - STRICTLY FORBIDDEN</h4>
+<li class="doc-li">NEVER use .skip(), .only(), or .todo() to bypass failing tests</li>
+<li class="doc-li">NEVER comment out failing tests</li>
+<li class="doc-li">NEVER use @ts-ignore, @ts-expect-error, or similar to hide test errors</li>
+<li class="doc-li">NEVER mock/stub functionality just to make tests pass without fixing root cause</li>
+<li class="doc-li">FIX the actual problem causing test failures</li></p><p class="doc-p"><h4 class="doc-h3">Git Hook Bypassing - STRICTLY FORBIDDEN  </h4>
+<li class="doc-li">NEVER use --no-verify flag on git commit</li>
+<li class="doc-li">NEVER use --no-verify flag on git push</li>
+<li class="doc-li">NEVER disable or skip pre-commit hooks</li>
+<li class="doc-li">NEVER disable or skip pre-push hooks</li>
+<li class="doc-li">FIX the issues that hooks are detecting</li></p><p class="doc-p"><h4 class="doc-h3">Test Implementation - STRICTLY FORBIDDEN</h4>
+<li class="doc-li">NEVER create boilerplate tests that don&#039;t actually test behavior</li>
+<li class="doc-li">NEVER write tests that always pass regardless of implementation</li>
+<li class="doc-li">NEVER write tests without assertions</li>
+<li class="doc-li">NEVER mock everything to avoid testing real behavior</li>
+<li class="doc-li">WRITE meaningful tests that verify actual functionality</li></p><p class="doc-p"><h4 class="doc-h3">Problem Solving Approach - REQUIRED</h4>
+<li class="doc-li">DO NOT seek the simplest bypass or workaround</li>
+<li class="doc-li">DO NOT be creative with shortcuts that compromise quality</li>
+<li class="doc-li">DO solve problems properly following best practices</li>
+<li class="doc-li">DO use proven, established solutions from decades of experience</li>
+<li class="doc-li">DO fix root causes, not symptoms</li></p><p class="doc-p"><h4 class="doc-h3">Temporary Files and Scripts - STRICTLY CONTROLLED</h4>
+<li class="doc-li"><strong>NEVER</strong> create temporary test files, log dumps, or ad-hoc debug files in the project root or source directories.</li>
+<li class="doc-li"><strong>NEVER</strong> leave temporary files after use — all agent-generated ephemeral files MUST be cleaned up immediately.</li>
+<li class="doc-li"><strong>ALWAYS</strong> store ephemeral scratch scripts in the agent&#039;s artifact <code class="inline-code">scratch/</code> directory or inside <code class="inline-code">/scripts</code> if the project uses a dedicated scripts directory.</li>
+<li class="doc-li"><strong>ALWAYS</strong> remove temporary debug files before completing a task or marking work as complete.</li></p><p class="doc-p"><strong>Why This Matters:</strong>
+LLM assistants often create temporary files for debugging but forget to remove them, accumulating junk files that pollute the repository. All scratch work MUST be done in isolated scratch/scripts paths and cleaned up immediately.</p><p class="doc-p"><strong>Examples:</strong>
+<li class="doc-li">❌ Creating <code class="inline-code">test.js</code>, <code class="inline-code">debug.log</code>, <code class="inline-code">temp.json</code> in project root or src/</li>
+<li class="doc-li">❌ Leaving test files after debugging</li>
+<li class="doc-li">✅ Using the agent&#039;s <code class="inline-code">scratch/</code> directory for ephemeral experiments</li>
+<li class="doc-li">✅ Cleaning up all temporary scratch files immediately after verification</li></p><p class="doc-p"><h4 class="doc-h3">Spec-Code Drift Prevention (Constitutional SDD) - STRICTLY ENFORCED</h4>
+<li class="doc-li"><strong>NEVER</strong> commit production code modifications, new source files, or route handlers that are not explicitly declared in an active feature specification under <code class="inline-code">.specs/features/&lt;feature-id&gt;/tasks.md</code>.</li>
+<li class="doc-li"><strong>NEVER</strong> bypass the Pre-Commit Spec Drift Sensor (<code class="inline-code">check-spec-drift.js</code>) using <code class="inline-code">--no-verify</code> or manual hook disabling.</li>
+<li class="doc-li"><strong>ALWAYS</strong> declare target file boundaries in <code class="inline-code">tasks.md</code> before executing implementation changes.</li>
+<li class="doc-li"><strong>ALWAYS</strong> ensure the pre-commit hook passes with 0 orphaned/drifting files.</li></p><p class="doc-p"><h3 class="doc-h2">Enforcement</h3></p><p class="doc-p">These rules apply to ALL implementations:
+<li class="doc-li">Bug fixes</li>
+<li class="doc-li">New features  </li>
+<li class="doc-li">Refactoring</li>
+<li class="doc-li">Documentation changes</li>
+<li class="doc-li">Any code modifications</li></p><p class="doc-p"><strong>Violation = Implementation Rejected</strong></p><p class="doc-p">&lt;!-- QUALITY_ENFORCEMENT:END --&gt;</p></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Token Optimization</span></div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p">---
+trigger: always_on
+---</p><p class="doc-p">&lt;!-- TOKEN_OPTIMIZATION:START --&gt;
+<h2 class="doc-h1">Token Optimization Rules</h2></p><p class="doc-p">Output verbosity rules calibrated by model capability tier.
+These rules ensure cost-efficient use of AI models without sacrificing quality.</p><p class="doc-p">&gt; <strong>Governance Exception</strong>: These brevity rules apply to conversational responses in chat. Formal SDD governance artifacts (such as <code class="inline-code">Verification Report</code> in <code class="inline-code">sdd-review</code>, <code class="inline-code">STATE.md</code> in <code class="inline-code">sdd-planner</code>, and AC tables) MUST preserve their full contract structure.</p><p class="doc-p"><h3 class="doc-h2">Output Rules by Tier</h3></p><p class="doc-p"><h4 class="doc-h3">Research Tier (cheapest — maximize context for work, not chatter)</h4>
+<li class="doc-li">Output code or diffs directly, avoid excessive narrative</li>
+<li class="doc-li">Minimal conversational status: concise summaries instead of verbose preamble</li>
+<li class="doc-li">No decorative markdown or emoji abuse in conversational chat</li>
+<li class="doc-li">Combine outputs into one response</li>
+<li class="doc-li">No unnecessary &quot;Next Steps&quot; sections in plain chat</li>
+<li class="doc-li">No repeating back what was asked</li></p><p class="doc-p"><h4 class="doc-h3">Standard Tier (balanced — brief summaries)</h4>
+<li class="doc-li">Brief summaries (2-3 sentences max) for status updates</li>
+<li class="doc-li">Code with inline comments (no separate redundant explanation blocks)</li>
+<li class="doc-li">Report only: what changed, what passed, what failed</li>
+<li class="doc-li">Skip conversational preamble and transitions</li></p><p class="doc-p"><h4 class="doc-h3">Core Tier (most capable — full reasoning when needed)</h4>
+<li class="doc-li">Full explanations welcome for complex decisions and architectural trade-offs</li>
+<li class="doc-li">Document reasoning for non-obvious choices</li>
+<li class="doc-li">Detailed analysis for bug investigations</li>
+<li class="doc-li">Maintain high precision without conversational filler</li></p><p class="doc-p">&lt;!-- TOKEN_OPTIMIZATION:END --&gt;</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>AI-SDD Framework · Spec Driven Development Lifecycle · Single-File Standalone Living Projection</p>
+  </footer>
+
+  <script>
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('nav.top-tabs .tab-btn').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById('tab-' + tabId);
+      if (target) target.classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    function filterCards(selector, query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll(selector).forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? 'block' : 'none';
+      });
+    }
+
+    function filterAdrStatus(status, btn) {
+      document.querySelectorAll('#tab-adrs .filter-bar .tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.adr-card').forEach(card => {
+        const cardStatus = card.getAttribute('data-status') || '';
+        if (status === 'all' || cardStatus === status) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    function filterAdrText(query) {
+      const q = query.toLowerCase().trim();
+      document.querySelectorAll('.adr-card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? 'block' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,10 +1,10 @@
-﻿# Plan: Modular Vue 3 AI Agent Cockpit & Interactive Human-AI Kanban
+# Plan: Modular Vue 3 AI Agent Cockpit & Interactive Human-AI Kanban
 
 ## 1. Problem Statement & Motivation
 The current dashboard implementation in .agents/scripts/serve-dashboard.js uses inline HTML template strings and CDN libraries. While lightweight, it is read-only and lacks true componentization.
 In a real-world Spec Driven Development lifecycle, the relationship between the developer and AI agents is dynamic: the developer acts as the Tech Lead / Reviewer who assigns tasks, reviews PRs/deliveries, and rejects or reverts tasks back to earlier stages when tests or code quality are insufficient.
 The AI Agent Cockpit must empower this exact collaboration dynamic:
-1. Two-way interactive Kanban board where status changes update 	asks.md on disk.
+1. Two-way interactive Kanban board where status changes update `tasks.md` on disk.
 2. Review & Revert workflow: reject low-quality deliveries with feedback for the AI to address.
 3. 1-click Agent Dispatch: trigger or feed tasks directly into the embedded terminal or AI CLI.
 4. Embedded xterm.js terminal for running sensors and interacting with agent harnesses.
@@ -16,13 +16,12 @@ The AI Agent Cockpit must empower this exact collaboration dynamic:
   - **Interactive Kanban Board**:
     - Columns: To Do (Pending), In Progress, Done (Verified).
     - Drag-and-drop or card action menu with status transitions.
-    - Two-way sync: writing status updates directly to 	asks.md via PATCH /api/features/:featureId/tasks/:taskId.
+    - Two-way sync: writing status updates directly to `tasks.md` via PATCH /api/features/:featureId/tasks/:taskId.
     - Revert / Reject flow with review feedback modal.
     - Agent Dispatch button ([⚡ Run with Agent]) injecting commands into the embedded terminal or clipboard.
   - **Embedded Terminal**:
     - Bottom dockable drawer with xterm.js and WebSocket backend in serve-dashboard.js.
-    - Quick-action buttons to run SDD sensors (check-spec-drift.js, 
-pm test, compact-memory.js).
+    - Quick-action buttons to run SDD sensors (`check-spec-drift.js`, `npm test`, `compact-memory.js`).
   - **Specs Cascade & Memory Graph**:
     - Living spec hierarchy (Plan -> User Stories -> BDD Scenarios -> Tasks).
     - Vis-network knowledge graph with side inspector drawer.
@@ -35,7 +34,7 @@ pm test, compact-memory.js).
 
 ## 3. High-Level Approach
 1. **Backend Endpoints & WebSocket Bridge**:
-   - Add PATCH /api/features/:featureId/tasks/:taskId to serve-dashboard.js to perform surgical updates on 	asks.md (updating checkboxes [ ], [-], [x]).
+   - Add PATCH /api/features/:featureId/tasks/:taskId to serve-dashboard.js to perform surgical updates on `tasks.md` (updating checkboxes [ ], [-], [x]).
    - Add WebSocket handler to stream bidirectional shell I/O for xterm.js.
    - Add static asset handler for .agents/dashboard/dist/.
 2. **Frontend Architecture**:

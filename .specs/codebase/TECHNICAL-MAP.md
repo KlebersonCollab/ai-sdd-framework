@@ -6,4 +6,4 @@ The AI-SDD Framework is a file-first agentic operating system enforcing determin
 - **Stack**: Node.js standard library, Git, Markdown, JSONL.
 - **Architecture**: 5-layer SDD lifecycle (.agents/ + .specs/).
 - **Conventions**: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria.
-- **Current Focus**: Visual Features & Specs Dashboard.
+- **Current Focus**: Dashboard Reactivity Stabilization & Universal Living HTML Documentation Platform.
