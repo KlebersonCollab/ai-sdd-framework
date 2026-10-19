@@ -161,6 +161,112 @@
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
             <span class="badge badge-success">100%</span>
+            <span class="card-title">Core Sensors Robustness &amp; Automation Tooling</span>
+            <span class="card-subtitle font-mono">core-sensors-and-automation</span>
+          </div>
+          <span class="task-count">9/9 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">The AI-SDD Framework core runtime relies on strict sensors (<code class="inline-code">verify-sdd-integrity.js</code> and <code class="inline-code">check-spec-drift.js</code>) and git hooks (<code class="inline-code">install-hooks.js</code>). However, several critical operational friction points exist:
+1. <strong>Bootstrap Deadlock</strong>: Running <code class="inline-code">verify-sdd-integrity.js</code> in a freshly installed repository fails immediately with exit code 1 because canonical <code class="inline-code">.specs/</code> files do not exist yet, preventing agents from reaching the Auto-Discovery stage.
+2. <strong>Spec Drift Sensor Blindspot</strong>: <code class="inline-code">check-spec-drift.js</code> only checks staged files (<code class="inline-code">git diff --cached</code>). If run during active development without staging, it returns a false-positive success. Furthermore, it lacks path normalization for <code class="inline-code">./</code> prefixes and glob support.
+3. <strong>Fragile Git Hook Installation</strong>: <code class="inline-code">install-hooks.js</code> assumes <code class="inline-code">.git</code> is always a directory, which fails in git worktrees and submodules where <code class="inline-code">.git</code> is a reference file. Additionally, the pre-commit hook only verifies spec drift, leaving SDD structural integrity unvalidated.
+4. <strong>Token-Heavy Manual Tasks</strong>: Agents spend significant token budget running exploratory commands to identify project stacks, author boilerplate feature specifications, and run multi-sensor review checklists. Deterministic CLI automation scripts will save &gt;70% of setup tokens.</p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold unit &amp; integration tests for sensors, hooks, and automation scripts</td>
+        <td class="files-col"><code>`tests/core-sensors-automation.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Enhance verify-sdd-integrity.js with --bootstrap mode and DAG dependency cycle validation</td>
+        <td class="files-col"><code>`.agents/scripts/verify-sdd-integrity.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Enhance check-spec-drift.js with working tree inspection, dot-slash normalization, and glob matching</td>
+        <td class="files-col"><code>`.agents/scripts/check-spec-drift.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Enhance install-hooks.js with worktree git path detection and dual-sensor pre-commit execution</td>
+        <td class="files-col"><code>`.agents/scripts/install-hooks.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement auto-discover.js for deterministic manifest scanning and codebase specs generation</td>
+        <td class="files-col"><code>`.agents/scripts/auto-discover.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement create-feature.js for canonical spec scaffolding (plan, spec, tasks)</td>
+        <td class="files-col"><code>`.agents/scripts/create-feature.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement run-sdd-review.js for unified sensor execution and Verification Report generation</td>
+        <td class="files-col"><code>`.agents/scripts/run-sdd-review.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-08</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Record ADR 0006, wire package.json scripts, and update project STATE.md</td>
+        <td class="files-col"><code>`.specs/project/ADRs/0006-core-sensors-robustness-and-automation-tooling.md`, `package.json`, `.specs/project/STATE.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-09</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Execute full test suite, verify spec drift invariance, and generate formal Verification Report</td>
+        <td class="files-col"><code>`tests/`, `.specs/project/STATE.md`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
             <span class="card-title">Unified Spec Execution Cascade &amp; Legacy Kanban Retirement</span>
             <span class="card-subtitle font-mono">enhanced-spec-cascade</span>
           </div>
@@ -783,6 +889,46 @@ We adopt <strong>Alternative B: Retire Legacy Kanban in favor of the Unified Spe
         </div>
       </div>
     
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0006: core sensors robustness, dual-mode verification &amp; productivity automation tooling">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0006: Core Sensors Robustness, Dual-Mode Verification &amp; Productivity Automation Tooling</span>
+          </div>
+          <span class="card-date">2026-10-18</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0006: Core Sensors Robustness, Dual-Mode Verification &amp; Productivity Automation Tooling</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-10-18</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+As the AI-SDD Framework expanded across multiple codebases and agent harnesses, four core operational challenges emerged:
+1. <strong>Bootstrap Deadlock in Canonical Integrity</strong>: The SDD Integrity Sensor (<code class="inline-code">verify-sdd-integrity.js</code>) enforced presence of all 11 core files, which blocked the Auto-Discovery protocol when initializing a fresh project before <code class="inline-code">.specs/</code> was generated.
+2. <strong>Spec Drift False-Negative in Working Tree</strong>: <code class="inline-code">check-spec-drift.js</code> strictly inspected <code class="inline-code">git diff --cached</code> (staged files). During rapid agent development before <code class="inline-code">git add</code> was invoked, drift checks returned false-positive passes.
+3. <strong>Fragile Pre-commit Installation Across Worktrees</strong>: <code class="inline-code">install-hooks.js</code> assumed <code class="inline-code">.git</code> was always a folder, failing on git worktrees and submodules where <code class="inline-code">.git</code> is a reference file. Furthermore, the pre-commit hook only checked spec drift, omitting integrity sensor verification.
+4. <strong>Token-Heavy Manual Boilerplate</strong>: Agents burned thousands of prompt tokens repeatedly inspecting project manifests to deduce tech stacks, scaffolding feature files from scratch, and manually assembling verification report tables.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We adopt <strong>Core Sensors Robustness &amp; Productivity Automation Tooling</strong>:</p><p class="doc-p">1. <strong>Dual-Mode SDD Integrity Sensor (<code class="inline-code">verify-sdd-integrity.js</code>)</strong>:
+<li class="doc-li">Introduce <code class="inline-code">--bootstrap</code> flag.</li>
+<li class="doc-li">When <code class="inline-code">--bootstrap</code> is supplied, absence of <code class="inline-code">.specs/</code> files is logged as informational initialization targets rather than triggering fatal exit code 1.</li>
+<li class="doc-li">Introduce DFS-based Directed Acyclic Graph (DAG) cycle and missing-ID validator (<code class="inline-code">validateTaskDependencies</code>) verifying task dependency integrity across all active features.</li></p><p class="doc-p">2. <strong>Working-Tree Aware Spec Drift Sensor (<code class="inline-code">check-spec-drift.js</code>)</strong>:
+<li class="doc-li">Introduce <code class="inline-code">--working-tree</code> mode and automatic working-tree fallback when staging is empty.</li>
+<li class="doc-li">Implement porcelain regex parsing and path normalization (stripping <code class="inline-code">./</code> and backslashes).</li>
+<li class="doc-li">Implement glob matching (e.g. <code class="inline-code">tests/*<em>/</em>.test.js</code>, <code class="inline-code">src/<em>.ts</code>).</li></p><p class="doc-p">3. <strong>Worktree-Resilient Pre-commit Hook (<code class="inline-code">install-hooks.js</code>)</strong>:
+<li class="doc-li">Query <code class="inline-code">git rev-parse --git-path hooks</code> to support standard repos, worktrees, and submodules.</li>
+<li class="doc-li">Install a dual-sensor pre-commit hook enforcing both <code class="inline-code">verify-sdd-integrity.js</code> and <code class="inline-code">check-spec-drift.js</code>.</li></p><p class="doc-p">4. <strong>Productivity Automation Tooling</strong>:
+<li class="doc-li"><strong><code class="inline-code">auto-discover.js</code></strong>: Deterministic manifest scanner (Node.js, Python, Rust, Go) generating <code class="inline-code">STACK.md</code>, <code class="inline-code">ARCHITECTURE.md</code>, <code class="inline-code">CONVENTIONS.md</code>, <code class="inline-code">CONCERNS.md</code>, and <code class="inline-code">TECHNICAL-MAP.md</code> with zero LLM inference token consumption.</li>
+<li class="doc-li"><strong><code class="inline-code">create-feature.js</code></strong>: Instant scaffolding of <code class="inline-code">.specs/features/&lt;feature-id&gt;/</code> (<code class="inline-code">plan.md</code>, <code class="inline-code">spec.md</code>, <code class="inline-code">tasks.md</code>) with valid MetaGPT 7-column schema.</li>
+<li class="doc-li"><strong><code class="inline-code">run-sdd-review.js</code></strong>: Automated sensor runner for Reviewer agent executing drift, integrity, and test sensors with git test diff immutability auditing and markdown Verification Report generation.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>Instant Project Bootstrapping</strong>: Eliminates the bootstrap paradox; projects can run integrity validation safely during initialization.</li>
+<li class="doc-li"><strong>Continuous Drift Protection</strong>: Unstaged and staged code modifications are audited reliably.</li>
+<li class="doc-li"><strong>Git Worktree Compatibility</strong>: Hooks install seamlessly across worktrees and submodules.</li>
+<li class="doc-li"><strong>Massive Token Reduction</strong>: Scaffolding, tech stack discovery, and review reporting are executed in &lt;100ms via native Node.js scripts without burning LLM inference tokens.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Pre-commit hook runs two sensors instead of one. </em>Mitigation*: Both sensors run in &lt;70ms combined, ensuring zero perceptible latency during git commit operations.</li>
+</p></div>
+        </div>
+      </div>
+    
       </div>
     </section>
 
@@ -852,14 +998,14 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">enhanced-spec-cascade</code> (Unified Spec Execution Cascade &amp; Legacy Kanban Retirement).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 7/7 tasks completed. Retired <code class="inline-code">KanbanBoard.vue</code> and Kanban navigation tab. Elevated <code class="inline-code">SpecsCascade.vue</code> with real-time topological dependency resolution (DAG), Next Actionable Task pulse highlight (<code class="inline-code">⚡ PRÓXIMA</code>), dynamic dependency status badges (<code class="inline-code">✓</code>/<code class="inline-code">○</code>) with jump-to-row scrolling, inline task actions (<code class="inline-code">⚡ Delegar</code> with structured prompt copy, <code class="inline-code">↩ Rejeitar</code> with feedback modal and two-way sync), target files chips, and BDD Acceptance Criteria traceability glow. ADR 0005 accepted; ADR 0003 superseded.</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">core-sensors-and-automation</code> (Phases 2 &amp; 3: Sensor Robustness, Dual-Mode Verification &amp; Productivity Automation Tooling).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 9/9 tasks completed. Delivered <code class="inline-code">--bootstrap</code> support and DAG cycle validation in <code class="inline-code">verify-sdd-integrity.js</code>, working-tree drift inspection and glob matching in <code class="inline-code">check-spec-drift.js</code>, worktree-resilient dual-sensor pre-commit hook in <code class="inline-code">install-hooks.js</code>, <code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>, wired <code class="inline-code">package.json</code> scripts, and recorded ADR 0006.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
   1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 21/21 passing (100% in 139ms).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 29/29 passing (100% in 170ms).
   3. Spec Drift Sensor: <code class="inline-code">npm run check-drift</code> — 0 drifted files.
-  4. Dashboard Build: <code class="inline-code">npm run build:dashboard</code> — Clean build to <code class="inline-code">.agents/dashboard/dist/</code>.
-  5. Standalone HTML Export: <code class="inline-code">npm run docs:export</code> — Generated <code class="inline-code">docs/index.html</code> (99 KB).</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+  4. SDD Review Runner: <code class="inline-code">npm run review</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-10-18 - Core Sensors Robustness &amp; Productivity Automation Tooling (ADR 0006)</strong>: Introduced dual-mode verification (<code class="inline-code">--bootstrap</code> vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (<code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>). Accepted ADR 0006.</li>
 <li class="doc-li"><strong>2026-09-27 - Unified Spec Execution Cascade &amp; Kanban Retirement (ADR 0005)</strong>: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside <code class="inline-code">SpecsCascade.vue</code> featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline <code class="inline-code">Delegar</code>/<code class="inline-code">Rejeitar</code> actions, and clickable dependency badges. Superseded ADR 0003.</li>
 <li class="doc-li"><strong>2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)</strong>: Formalized dual-projection living documentation strategy combining native Node.js endpoints (<code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, <code class="inline-code">/api/knowledge</code>), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (<code class="inline-code">export-docs.js</code>).</li>
 <li class="doc-li"><strong>2026-09-27 - SSE Reactivity Normalization</strong>: Standardized SSE payloads to transmit <code class="inline-code">{ type: &#039;reload&#039;, event: &#039;reload&#039;, timestamp }</code> and updated <code class="inline-code">App.vue</code> to handle both, eliminating the manual refresh requirement. Wired <code class="inline-code">fetchMemory</code> in <code class="inline-code">MemoryGraphView</code> and <code class="inline-code">fetchDocs</code> in <code class="inline-code">LivingDocsView</code> to live sync events.</li>

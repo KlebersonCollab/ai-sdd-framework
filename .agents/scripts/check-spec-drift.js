@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Spec Drift Detector — Pre-Commit & Audit Sensor
+ * Spec Drift Detector — Pre-Commit & Working Tree Audit Sensor
  * Enforces Constitutional Spec-Driven Development (CSDD).
  * 
- * Verifies that all staged code modifications are explicitly declared in
+ * Verifies that staged or working tree code modifications are explicitly declared in
  * an active feature task specification under `.specs/features/<id>/tasks.md`.
  */
 
@@ -37,8 +37,16 @@ const EXEMPT_PATTERNS = [
   /^\.openhands/
 ];
 
+function normalizePath(filePath) {
+  if (!filePath) return '';
+  return filePath
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '');
+}
+
 function isExempt(filePath) {
-  const normalized = filePath.replace(/\\/g, '/');
+  const normalized = normalizePath(filePath);
   return EXEMPT_PATTERNS.some(pattern => pattern.test(normalized));
 }
 
@@ -46,10 +54,83 @@ function getStagedFiles() {
   try {
     const output = execSync('git diff --cached --name-only', { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
     if (!output) return [];
-    return output.split('\n').map(f => f.trim()).filter(Boolean);
+    return output.split('\n').map(f => normalizePath(f)).filter(Boolean);
   } catch (err) {
     return [];
   }
+}
+
+function getWorkingTreeFiles() {
+  try {
+    const diffOutput = execSync('git diff --name-only', { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+    const statusOutput = execSync('git status --porcelain -uall', { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+    const files = new Set();
+
+    if (diffOutput) {
+      diffOutput.split('\n').forEach(f => {
+        const clean = normalizePath(f);
+        if (clean) files.add(clean);
+      });
+    }
+
+    if (statusOutput) {
+      statusOutput.split('\n').forEach(line => {
+        if (!line) return;
+        const filePath = line.replace(/^[ MADRCU?!]{1,3}\s+/, '').trim();
+        const clean = normalizePath(filePath);
+        if (clean) files.add(clean);
+      });
+    }
+
+    return Array.from(files);
+  } catch (err) {
+    return [];
+  }
+}
+
+function isFileCovered(filePath, declaredTargets) {
+  const normalizedFile = normalizePath(filePath);
+
+  for (const declaredRaw of declaredTargets) {
+    const declared = normalizePath(declaredRaw);
+    if (!declared) continue;
+
+    // 1. Exact match
+    if (declared === normalizedFile) {
+      return true;
+    }
+
+    // 2. Directory prefix match (e.g. src/ or src/services/)
+    if (declared.endsWith('/') && normalizedFile.startsWith(declared)) {
+      return true;
+    }
+    if (normalizedFile.startsWith(declared + '/')) {
+      return true;
+    }
+
+    // 3. Glob matching (e.g. tests/**/*.test.js or src/*.ts)
+    if (declared.includes('*')) {
+      const regexPattern = '^' + declared
+        .replace(/[.+^${}()|[\]\\]/g, '\\$&')
+        .replace(/\*\*/g, '.*')
+        .replace(/(?<!\.)\*/g, '[^/]*') + '$';
+      try {
+        const regex = new RegExp(regexPattern);
+        if (regex.test(normalizedFile)) {
+          return true;
+        }
+      } catch (e) {
+        // Fallback to substring
+      }
+    }
+
+    // 4. Suffix match (e.g. item.ts inside src/models/item.ts)
+    if (normalizedFile.endsWith('/' + declared) || normalizedFile === declared) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 function getDeclaredTargetFiles() {
@@ -71,8 +152,6 @@ function getDeclaredTargetFiles() {
       if (!trimmed.startsWith('|') || trimmed.includes('Target Files') || trimmed.includes('---')) continue;
       const columns = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
       
-      // In 7-column schema: Status (0), ID (1), Type (2), Description (3), Target Files (4), Dependencies (5), Evidence (6)
-      // In 5-column schema: Status (0), ID (1), Description (2), Target Files (3), Evidence (4)
       let targetColumn = '';
       if (columns.length >= 7) {
         targetColumn = columns[4];
@@ -84,12 +163,12 @@ function getDeclaredTargetFiles() {
         const matches = targetColumn.match(/`([^`]+)`/g);
         if (matches) {
           matches.forEach(m => {
-            const cleanPath = m.replace(/`/g, '').trim().replace(/\\/g, '/');
+            const cleanPath = normalizePath(m.replace(/`/g, ''));
             if (cleanPath) declaredFiles.add(cleanPath);
           });
         } else {
           targetColumn.split(',').forEach(p => {
-            const cleanPath = p.trim().replace(/\\/g, '/');
+            const cleanPath = normalizePath(p);
             if (cleanPath) declaredFiles.add(cleanPath);
           });
         }
@@ -100,58 +179,75 @@ function getDeclaredTargetFiles() {
   return declaredFiles;
 }
 
-function checkSpecDrift() {
-  console.log('\n🔍 [SPEC DRIFT SENSOR] Verificando conformidade entre código e especificações...');
+function checkSpecDrift(options = {}) {
+  const isWorkingTreeMode = Boolean(
+    options.workingTree ||
+    (typeof process !== 'undefined' && process.argv && process.argv.includes('--working-tree'))
+  );
+
+  console.log(`\n🔍 [SPEC DRIFT SENSOR] Verificando conformidade entre código e especificações${isWorkingTreeMode ? ' (WORKING TREE)' : ''}...`);
+
+  let targetFilesToCheck = [];
   const stagedFiles = getStagedFiles();
 
-  if (stagedFiles.length === 0) {
-    console.log('ℹ️ Nenhum arquivo staged no Git. Verificação ignorada.\n');
-    process.exit(0);
+  if (isWorkingTreeMode || stagedFiles.length === 0) {
+    const workingTreeFiles = getWorkingTreeFiles();
+    const combined = new Set([...stagedFiles, ...workingTreeFiles]);
+    targetFilesToCheck = Array.from(combined);
+  } else {
+    targetFilesToCheck = stagedFiles;
   }
 
-  const codeFiles = stagedFiles.filter(f => !isExempt(f));
+  if (targetFilesToCheck.length === 0) {
+    console.log('ℹ️ Nenhum arquivo alterado no repositório. Verificação concluída com sucesso.\n');
+    return { ok: true, driftingFiles: [] };
+  }
+
+  const codeFiles = targetFilesToCheck.filter(f => !isExempt(f));
 
   if (codeFiles.length === 0) {
     console.log('✅ [SPEC DRIFT OK] Apenas artefatos de governança/specs/docs foram alterados.\n');
-    process.exit(0);
+    return { ok: true, driftingFiles: [] };
   }
 
   const declaredTargets = getDeclaredTargetFiles();
   const driftingFiles = [];
 
   for (const file of codeFiles) {
-    const normalizedFile = file.replace(/\\/g, '/');
-    let isCovered = false;
-
-    for (const declared of declaredTargets) {
-      if (declared.endsWith('/') && normalizedFile.startsWith(declared)) {
-        isCovered = true;
-        break;
-      }
-      if (declared === normalizedFile || normalizedFile.endsWith(declared)) {
-        isCovered = true;
-        break;
-      }
-    }
-
-    if (!isCovered) {
+    if (!isFileCovered(file, declaredTargets)) {
       driftingFiles.push(file);
     }
   }
 
   if (driftingFiles.length > 0) {
-    console.error('\n❌ [SPEC DRIFT DETECTADO] Commit bloqueado!');
+    console.error('\n❌ [SPEC DRIFT DETECTADO] Arquivos de código órfãos encontrados!');
     console.error('Os seguintes arquivos de implementação NÃO estão declarados em nenhum tasks.md ativo em .specs/features/:');
     driftingFiles.forEach(f => console.error(`   - ${f}`));
     console.error('\n📋 Como Resolver:');
     console.error('   1. Use o skill `sdd-planner` para criar ou atualizar a especificação da feature em `.specs/features/<feature-id>/`.');
     console.error('   2. Adicione os arquivos acima na coluna `Target Files` do arquivo `tasks.md`.');
-    console.error('   3. Faça o stage do `tasks.md` atualizado e repita o commit.\n');
-    process.exit(1);
+    console.error('   3. Faça o stage do `tasks.md` atualizado e repita a verificação.\n');
+
+    if (!options.silentFail && typeof process !== 'undefined' && process.exit) {
+      process.exit(1);
+    }
+    return { ok: false, driftingFiles };
   }
 
   console.log('✅ [SPEC DRIFT OK] Todos os arquivos alterados estão devidamente cobertos pelas especificações ativas.\n');
-  process.exit(0);
+  return { ok: true, driftingFiles: [] };
 }
 
-checkSpecDrift();
+if (require.main === module) {
+  checkSpecDrift();
+}
+
+module.exports = {
+  normalizePath,
+  isExempt,
+  isFileCovered,
+  getStagedFiles,
+  getWorkingTreeFiles,
+  getDeclaredTargetFiles,
+  checkSpecDrift
+};

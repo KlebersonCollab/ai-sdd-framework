@@ -87,6 +87,8 @@ Each feature MUST move through the following phases:
 Feature artifacts MUST be stored in:
 `.specs/features/<feature-id>/`
 
+> **Automated Scaffolding**: Use `node .agents/scripts/create-feature.js <feature-id> --title "<Feature Title>"` (or `npm run create-feature <id>`) to instantly scaffold canonical `plan.md`, `spec.md`, and `tasks.md` with the strict 7-column SOP table and BDD templates.
+
 Structure:
 ```
 .specs/features/

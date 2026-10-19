@@ -19,14 +19,17 @@ Provide a deterministic, empirical audit of completed features and issue a forma
 
 ## The 5-Stage Audit Gate
 
+> **Unified Sensor Runner**: You can execute stages 1 and 2 automatically by running `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which runs drift, integrity, and test sensors, audits test diffs, and outputs the baseline Verification Report.
+
 The Reviewer MUST execute the audit through 5 strict sequential stages:
 
 ### Stage 1: Hard Sensors & Spec Drift Gate
 Execute all required automated sensors and record raw outputs:
-1. **Constitutional Spec Drift Sensor**: Run `node .agents/scripts/check-spec-drift.js`. Must pass with 0 orphaned/drifting files.
-2. **Linter Check**: Run the project linter. Must pass with 0 errors and 0 warnings.
-3. **Test Suite**: Run the test runner for the affected subsystems. Must pass with 100% success rate.
-4. **Build Check**: Run the compilation/build command. Must exit with code 0.
+1. **Constitutional Spec Drift Sensor**: Run `node .agents/scripts/check-spec-drift.js --working-tree`. Must pass with 0 orphaned/drifting files.
+2. **SDD Canonical Integrity Sensor**: Run `node .agents/scripts/verify-sdd-integrity.js`. Must pass with 0 schema violations.
+3. **Linter Check**: Run the project linter. Must pass with 0 errors and 0 warnings.
+4. **Test Suite**: Run the test runner for the affected subsystems. Must pass with 100% success rate.
+5. **Build Check**: Run the compilation/build command. Must exit with code 0.
 
 ### Stage 2: Test Integrity & Immutability Audit (AgentCoder Protocol — Prohibition 9)
 Inspect `git diff` on test files (`git diff HEAD~N -- tests/` or similar):

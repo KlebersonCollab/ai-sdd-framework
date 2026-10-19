@@ -1,16 +1,16 @@
 # Project State & Context
 
 ## 🏁 Session Status
-- **Current Task**: Completed implementation and verification of feature `enhanced-spec-cascade` (Unified Spec Execution Cascade & Legacy Kanban Retirement).
-- **Progress**: Phase 4 (Verified & Complete) — 7/7 tasks completed. Retired `KanbanBoard.vue` and Kanban navigation tab. Elevated `SpecsCascade.vue` with real-time topological dependency resolution (DAG), Next Actionable Task pulse highlight (`⚡ PRÓXIMA`), dynamic dependency status badges (`✓`/`○`) with jump-to-row scrolling, inline task actions (`⚡ Delegar` with structured prompt copy, `↩ Rejeitar` with feedback modal and two-way sync), target files chips, and BDD Acceptance Criteria traceability glow. ADR 0005 accepted; ADR 0003 superseded.
+- **Current Task**: Completed implementation and verification of feature `core-sensors-and-automation` (Phases 2 & 3: Sensor Robustness, Dual-Mode Verification & Productivity Automation Tooling).
+- **Progress**: Phase 4 (Verified & Complete) — 9/9 tasks completed. Delivered `--bootstrap` support and DAG cycle validation in `verify-sdd-integrity.js`, working-tree drift inspection and glob matching in `check-spec-drift.js`, worktree-resilient dual-sensor pre-commit hook in `install-hooks.js`, `auto-discover.js`, `create-feature.js`, `run-sdd-review.js`, wired `package.json` scripts, and recorded ADR 0006.
 - **Verification Sensors**:
   1. SDD Integrity Sensor: `node .agents/scripts/verify-sdd-integrity.js` — 100% pass (0 violations).
-  2. Unit & Integration Tests: `npm test` — 21/21 passing (100% in 139ms).
+  2. Unit & Integration Tests: `npm test` — 29/29 passing (100% in 170ms).
   3. Spec Drift Sensor: `npm run check-drift` — 0 drifted files.
-  4. Dashboard Build: `npm run build:dashboard` — Clean build to `.agents/dashboard/dist/`.
-  5. Standalone HTML Export: `npm run docs:export` — Generated `docs/index.html` (99 KB).
+  4. SDD Review Runner: `npm run review` — VERDICT: APPROVED.
 
 ## 💡 Decisions Log
+- **2026-10-18 - Core Sensors Robustness & Productivity Automation Tooling (ADR 0006)**: Introduced dual-mode verification (`--bootstrap` vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (`auto-discover.js`, `create-feature.js`, `run-sdd-review.js`). Accepted ADR 0006.
 - **2026-09-27 - Unified Spec Execution Cascade & Kanban Retirement (ADR 0005)**: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside `SpecsCascade.vue` featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline `Delegar`/`Rejeitar` actions, and clickable dependency badges. Superseded ADR 0003.
 - **2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)**: Formalized dual-projection living documentation strategy combining native Node.js endpoints (`/api/project`, `/api/codebase`, `/api/rules`, `/api/knowledge`), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (`export-docs.js`).
 - **2026-09-27 - SSE Reactivity Normalization**: Standardized SSE payloads to transmit `{ type: 'reload', event: 'reload', timestamp }` and updated `App.vue` to handle both, eliminating the manual refresh requirement. Wired `fetchMemory` in `MemoryGraphView` and `fetchDocs` in `LivingDocsView` to live sync events.

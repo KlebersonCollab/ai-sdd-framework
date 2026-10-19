@@ -33,11 +33,16 @@ const REQUIRED_FILES = [
 
 const VALID_ADR_STATUSES = ['proposed', 'accepted', 'superseded', 'deprecated'];
 
-function checkRequiredFiles() {
+function checkRequiredFiles(options = {}) {
+  const isBootstrap = Boolean(options.bootstrap || (typeof process !== 'undefined' && process.argv && process.argv.includes('--bootstrap')));
   const missing = [];
   for (const relPath of REQUIRED_FILES) {
     const fullPath = path.join(REPO_ROOT, relPath);
     if (!fs.existsSync(fullPath)) {
+      // In bootstrap mode, missing .specs files are not treated as fatal errors
+      if (isBootstrap && relPath.startsWith('.specs/')) {
+        continue;
+      }
       missing.push(relPath);
     }
   }
@@ -75,6 +80,76 @@ function checkAdrs() {
   return issues;
 }
 
+function validateTaskDependencies(tasks) {
+  if (!Array.isArray(tasks) || tasks.length === 0) {
+    return { valid: true };
+  }
+
+  const taskIds = new Set(tasks.map(t => (t.id || '').toUpperCase()).filter(Boolean));
+  const adj = new Map();
+
+  for (const t of tasks) {
+    const id = (t.id || '').toUpperCase();
+    if (!id) continue;
+    adj.set(id, []);
+    const rawDeps = t.dependencies || '';
+    if (!rawDeps || rawDeps.toLowerCase() === 'none') continue;
+
+    const depList = rawDeps.split(',').map(d => d.trim().toUpperCase()).filter(Boolean);
+    for (const dep of depList) {
+      if (!taskIds.has(dep)) {
+        return {
+          valid: false,
+          error: `Task ${id} references non-existent dependency '${dep}'`
+        };
+      }
+      if (dep === id) {
+        return {
+          valid: false,
+          error: `Task ${id} has a self-referencing dependency cycle`
+        };
+      }
+      adj.get(id).push(dep);
+    }
+  }
+
+  // Cycle detection via DFS (0 = unvisited, 1 = visiting, 2 = visited)
+  const state = new Map();
+  for (const id of taskIds) state.set(id, 0);
+
+  function hasCycle(node, pathArr) {
+    state.set(node, 1);
+    pathArr.push(node);
+    const neighbors = adj.get(node) || [];
+    for (const n of neighbors) {
+      if (state.get(n) === 1) {
+        return { cycle: true, cyclePath: [...pathArr, n] };
+      }
+      if (state.get(n) === 0) {
+        const res = hasCycle(n, pathArr);
+        if (res.cycle) return res;
+      }
+    }
+    pathArr.pop();
+    state.set(node, 2);
+    return { cycle: false };
+  }
+
+  for (const id of taskIds) {
+    if (state.get(id) === 0) {
+      const res = hasCycle(id, []);
+      if (res.cycle) {
+        return {
+          valid: false,
+          error: `Circular dependency cycle detected: ${res.cyclePath.join(' -> ')}`
+        };
+      }
+    }
+  }
+
+  return { valid: true };
+}
+
 function checkTasksTables() {
   const featuresDir = path.join(REPO_ROOT, '.specs', 'features');
   const issues = [];
@@ -87,6 +162,7 @@ function checkTasksTables() {
 
     const content = fs.readFileSync(tasksPath, 'utf8');
     const lines = content.split('\n');
+    const featureTasks = [];
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -109,6 +185,16 @@ function checkTasksTables() {
       if (!/^\[\s*[xX\->.]?\s*\]$/.test(rawStatus)) {
         issues.push(`${dir.name}/tasks.md#L${i + 1}: Invalid status marker '${rawStatus}' (must be [ ], [-], or [x])`);
       }
+
+      // 7-column schema has dependencies at index 5
+      const dependencies = columns.length >= 7 ? columns[5] : 'None';
+      featureTasks.push({ id, dependencies });
+    }
+
+    // Validate DAG dependencies across all tasks in this feature
+    const depCheck = validateTaskDependencies(featureTasks);
+    if (!depCheck.valid) {
+      issues.push(`${dir.name}/tasks.md: ${depCheck.error}`);
     }
   }
 
@@ -166,19 +252,25 @@ function checkCorruptedEscapes() {
   return issues;
 }
 
-function runIntegrityAudit() {
-  console.log('\n🛡️  [SDD INTEGRITY SENSOR] Iniciando auditoria canônica das especificações...');
+function runIntegrityAudit(options = {}) {
+  const isBootstrap = Boolean(options.bootstrap || (typeof process !== 'undefined' && process.argv && process.argv.includes('--bootstrap')));
+
+  console.log(`\n🛡️  [SDD INTEGRITY SENSOR] Iniciando auditoria canônica das especificações${isBootstrap ? ' (MODO BOOTSTRAP)' : ''}...`);
 
   let hasErrors = false;
 
   // 1. Required Files
-  const missingFiles = checkRequiredFiles();
+  const missingFiles = checkRequiredFiles({ bootstrap: isBootstrap });
   if (missingFiles.length > 0) {
     console.error('\n❌ Arquivos canônicos obrigatórios ausentes:');
     missingFiles.forEach(f => console.error(`   - ${f}`));
     hasErrors = true;
   } else {
-    console.log('✅ [CANONICAL FILES] Todos os 11 arquivos estruturais presentes.');
+    if (isBootstrap) {
+      console.log('✅ [CANONICAL FILES] Arquivos essenciais presentes (specs estruturais flexibilizadas para bootstrap).');
+    } else {
+      console.log('✅ [CANONICAL FILES] Todos os 11 arquivos estruturais presentes.');
+    }
   }
 
   // 2. ADR Consistency
@@ -198,7 +290,7 @@ function runIntegrityAudit() {
     taskIssues.forEach(i => console.error(`   - ${i}`));
     hasErrors = true;
   } else {
-    console.log('✅ [SOP SCHEMA] Tabelas de tarefas em conformidade com MetaGPT SOP.');
+    console.log('✅ [SOP SCHEMA] Tabelas de tarefas em conformidade com MetaGPT SOP e DAG acyclic.');
   }
 
   // 4. Memory Graph
@@ -223,11 +315,14 @@ function runIntegrityAudit() {
 
   if (hasErrors) {
     console.error('\n🚫 [SDD INTEGRITY FAIL] Falha na validação de integridade. Corrija os desvios acima.\n');
-    process.exit(1);
+    if (!options.silentFail) {
+      process.exit(1);
+    }
+    return false;
   }
 
   console.log('\n🎉 [SDD INTEGRITY OK] Ecossistema SDD 100% íntegro e aderente às regras canônicas.\n');
-  process.exit(0);
+  return true;
 }
 
 if (require.main === module) {
@@ -235,9 +330,11 @@ if (require.main === module) {
 }
 
 module.exports = {
+  REQUIRED_FILES,
   checkRequiredFiles,
   checkAdrs,
   checkTasksTables,
+  validateTaskDependencies,
   checkMemoryGraph,
   checkCorruptedEscapes,
   runIntegrityAudit

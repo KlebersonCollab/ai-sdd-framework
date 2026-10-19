@@ -25,10 +25,11 @@ Generate or update files in `.specs/codebase/`:
 
 ## Analysis Protocol
 Follow the [Brownfield Mapping Guide](references/brownfield-mapping.md) for detailed templates:
-1. **Scan Roots**: Identify manifests to define the Stack.
-2. **Trace Logic**: Follow a primary request to map the Architecture.
-3. **Sample Code**: Analyze 5-10 files to extract Conventions.
-4. **Audit Risks**: Flag "TODOs" and complex legacy areas for Critical Risks.
+1. **Automated Discovery**: Run `node .agents/scripts/auto-discover.js` (or `npm run auto-discover`) to deterministically extract the baseline stack, dependencies, scripts, and folder layout into `.specs/codebase/`.
+2. **Scan Roots & Manifests**: Verify detected manifests and runtime configurations.
+3. **Trace Logic**: Follow a primary request to map decoupled application architecture.
+4. **Sample Code**: Analyze 5-10 files to extract concrete coding conventions.
+5. **Audit Risks**: Flag "TODOs", complex legacy paths, and fragile integrations for Critical Risks.
 
 ## Quality Rules
 - **Reality First**: Document what IS, not what SHOULD BE.
