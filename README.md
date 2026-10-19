@@ -195,10 +195,13 @@ ai-sdd-framework/
 │   ├── scripts/                        # Governance, server & sensor scripts (Zero-Dependency)
 │   │   ├── serve-dashboard.js          # Native HTTP & RFC 6455 WebSocket gateway & 360° Living Specs API
 │   │   ├── export-docs.js              # Standalone single-file HTML documentation compiler
-│   │   ├── verify-sdd-integrity.js     # SDD Canonical Integrity & Schema Sensor
-│   │   ├── check-spec-drift.js         # Pre-commit Spec Drift Sensor (Constitutional SDD)
+│   │   ├── verify-sdd-integrity.js     # SDD Canonical Integrity & Schema Sensor (with --bootstrap & DAG checks)
+│   │   ├── check-spec-drift.js         # Spec Drift Sensor with working-tree & glob matching
 │   │   ├── compact-memory.js           # Memory graph maintenance & compaction
-│   │   └── install-hooks.js            # Git pre-commit hook installer
+│   │   ├── install-hooks.js            # Worktree-resilient dual-sensor pre-commit hook installer
+│   │   ├── auto-discover.js            # Deterministic project stack detection & codebase specs generator
+│   │   ├── create-feature.js           # Canonical feature scaffolder (plan, spec, 7-column tasks)
+│   │   └── run-sdd-review.js           # Unified Reviewer sensor gate & Verification Report compiler
 │   └── skills/                         # Specialized Agent Skills & Protocols (Open Format)
 │       ├── sdd-memory/                 # Long-term recall & graph maintenance
 │       ├── sdd-explorer/               # Codebase discovery & technical mapping
@@ -214,7 +217,7 @@ ai-sdd-framework/
 ├── .specs/                             # Living Specifications (Created per project)
 │   ├── codebase/                       # Physical code architecture & stack maps (STACK, ARCHITECTURE, CONVENTIONS, CONCERNS, TECHNICAL-MAP)
 │   ├── project/                        # Product vision, roadmap, session state & ADRs (PROJECT, ROADMAP, STATE, CONTEXT, ADRs/)
-│   ├── features/                       # Active feature specifications (modular-vue-cockpit, living-html-docs)
+│   ├── features/                       # Active feature specifications (core-sensors-and-automation, enhanced-spec-cascade)
 │   └── knowledge/                      # Curated patterns and anti-patterns
 ├── docs/                               # Exported Standalone Living Documentation
 │   └── index.html                      # Single-file offline documentation (100% serverless)
@@ -222,7 +225,8 @@ ai-sdd-framework/
 │   └── dashboard/                      # Modular Vue 3 + Vite + Tailwind source code for Cockpit UI
 ├── tests/
 │   ├── serve-dashboard.test.js         # Server & Living Docs API test suite (19 unit & integration tests)
-│   └── export-docs.test.js             # Standalone static exporter test suite (2 tests)
+│   ├── export-docs.test.js             # Standalone static exporter test suite (2 tests)
+│   └── core-sensors-automation.test.js # Sensors robustness & CLI automation test suite (8 tests)
 ├── .cursorrules                        # Universal Cursor AI directive referencing AGENTS.md
 ├── .windsurfrules                      # Universal Windsurf AI directive referencing AGENTS.md
 ├── .clinerules                         # Universal Cline / RooCode directive referencing AGENTS.md
@@ -249,8 +253,8 @@ cp -r .agents/ AGENTS.md DESIGN.md /path/to/your/project/
 ### 2. Auto-Discovery Protocol
 Start your AI session in any supported tool. The agent will execute the **Blocking Gate**:
 1. Check `.agents/memory/memory_graph.jsonl` for past session memory.
-2. If `.specs/project/CONTEXT.md` is empty or missing, it triggers **Auto-Discovery** (scans package manifests, directory trees, configs, and coding conventions).
-3. Generates the initial codebase map in `.specs/codebase/` and confirms domain assumptions with you.
+2. If `.specs/project/CONTEXT.md` is empty or missing, it triggers **Auto-Discovery** via `node .agents/scripts/auto-discover.js` (or `npm run auto-discover`) to scan package manifests (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), directory trees, configs, and coding conventions deterministically.
+3. Generates or updates codebase maps in `.specs/codebase/` (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `CONCERNS.md`, `TECHNICAL-MAP.md`) and confirms domain assumptions with you.
 
 ### 3. Build Features with SDD
 Request a new feature:
@@ -258,9 +262,9 @@ Request a new feature:
 "Planeje a feature de autenticação JWT com refresh token seguindo o SDD."
 ```
 The agent will execute:
-1. `sdd-planner` (with `grill-me`) → drafts `plan.md`, `spec.md` with BDD scenarios, and atomic `tasks.md`.
-2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence.
-3. `sdd-review` → audits sensors (lint, test, build) and generates a formal Verification Report.
+1. `sdd-planner` (with `grill-me`) → scaffolds feature directory via `node .agents/scripts/create-feature.js <feature-id> --title "<Title>"` (or `npm run create-feature <id>`), drafting `plan.md`, `spec.md` with BDD scenarios, and atomic DAG-mapped `tasks.md`.
+2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence and validating drift via `node .agents/scripts/check-spec-drift.js --working-tree` (or `npm run check-drift`).
+3. `sdd-review` → runs the unified review sensor gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <id>`), auditing all sensors (lint, test, build, drift) and diff immutability to compile a formal Verification Report.
 
 ### 4. Interactive Human-AI Cockpit & Universal Living Docs
 Launch the Cockpit web workspace (Vue 3 SPA + Embedded Terminal):
@@ -279,12 +283,13 @@ Open [http://localhost:3000](http://localhost:3000) to access:
   - **📖 Domain & Vision**: Instant search across ubiquitous domain terms in `CONTEXT.md`, executive vision (`PROJECT.md`), and strategic milestones (`ROADMAP.md`).
   - **🛡️ Governance & Rules**: Visual reference for Tier 1 Absolute Prohibitions, Quality Enforcement, and Token Optimization.
   - **🧠 Knowledge Base**: Curated architectural patterns and anti-patterns.
-- **📋 Interactive Human-AI Kanban**:
-  - Drag-and-drop tasks or use quick-action menus with **two-way git sync** directly to physical `.specs/features/<id>/tasks.md`.
-  - **Review & Quality Rejection**: Moving a card back from Done prompts for structured review feedback, automatically recorded in Markdown for the agent to fix.
-  - **Agent Dispatcher**: 1-click `[⚡ Delegar]` button that generates task-specific context prompts and copies them to the clipboard or terminal.
-- ** cascaded Feature Specifications**:
-  - Vertical cascade from Problem Statements to User Stories (Role/Action/Benefit), BDD Criteria (Given/When/Then), and MetaGPT atomic task tables.
+- **⚡ Unified Spec Execution Cascade (ADR 0005)**:
+  - **Hierarchical Vertical Cascade**: Connects Problem Statements (`plan.md`) to User Stories & BDD Scenarios (`spec.md`) and MetaGPT 7-Column Task Matrices (`tasks.md`).
+  - **Topological DAG Dependency Resolution**: Real-time evaluation of task dependencies (`Depends On`), labeling tasks as Ready vs. Blocked (`🔒 Bloqueada`) with tooltips.
+  - **Next Actionable Task Badge**: Automatically identifies and highlights the first unblocked task with a pulse badge (`⚡ PRÓXIMA / NEXT ACTIONABLE`).
+  - **Inline Agent Dispatcher & Rejection**: 1-click `[⚡ Delegar]` button that generates and copies context-rich agent prompts, and `[↩ Rejeitar]` to send tasks back with recorded Markdown feedback.
+  - **Interactive Dependency Badges**: Clickable dependency tags (green check `✓` or amber circle `○`) that immediately scroll to and highlight target tasks.
+  - **Two-Way Git Sync**: Live bidirectional sync with physical `.specs/features/<id>/tasks.md` via Server-Sent Events (SSE).
 - **🧠 Interactive Memory Graph**:
   - Force-directed network diagram (`vis-network`) visualizing all entities, relationships, and observations from `memory_graph.jsonl` with an interactive side inspector drawer.
 - **💻 Embedded Terminal Drawer (`xterm.js`)**:
@@ -305,12 +310,16 @@ Emits **`docs/index.html`** (~85 KB) with embedded CSS, client-side search, tabs
 | Command | Purpose |
 | :--- | :--- |
 | `npm run dashboard` | Starts the native Cockpit server on port 3000 with real-time SSE live-sync |
-| `npm test` | Runs the 21-test sensor suite preceded by the SDD Canonical Integrity Sensor |
-| `npm run verify-sdd` | Fast (<50ms) sensor auditing required canonical files, ADR statuses, schemas, and escape integrity |
+| `npm test` | Runs the 29-test sensor suite preceded by the SDD Canonical Integrity Sensor |
+| `npm run verify-sdd` | Fast (<50ms) sensor auditing required canonical files, ADR statuses, schemas, and DAG acyclicity |
+| `npm run check-drift` | Pre-commit Spec Drift Sensor validating working tree or staged git code against active `tasks.md` |
+| `npm run auto-discover` | Deterministic brownfield stack scanner producing `.specs/codebase/` and `.specs/project/CONTEXT.md` |
+| `npm run create-feature <id>` | Scaffolds canonical `.specs/features/<id>/` (`plan.md`, `spec.md`, 7-column `tasks.md`) |
+| `npm run review <id>` | Unified Reviewer gate executing all 4 sensors, diff immutability check, and generating Verification Report |
+| `npm run install-hooks` | Installs worktree-resilient dual-sensor pre-commit hook (`verify-sdd` + `check-drift`) |
 | `npm run docs:export` | Compiles 100% of `.specs/` and rules into a standalone offline `docs/index.html` |
-| `npm run check-drift` | Pre-commit Spec Drift Sensor validating staged git code against active `tasks.md` |
-| `npm run build:dashboard` | Recompiles the Vue 3 frontend from `packages/dashboard/` into `.agents/dashboard/dist/` |
 | `npm run compact-memory` | Compacts and resolves superseded entities in `memory_graph.jsonl` |
+| `npm run build:dashboard` | Recompiles the Vue 3 frontend from `packages/dashboard/` into `.agents/dashboard/dist/` |
 
 ---
 
