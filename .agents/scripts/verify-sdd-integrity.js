@@ -252,6 +252,39 @@ function checkCorruptedEscapes() {
   return issues;
 }
 
+function checkKnowledgeBase() {
+  const kbDir = path.join(REPO_ROOT, '.specs', 'knowledge');
+  const patternsDir = path.join(kbDir, 'patterns');
+  const antiPatternsDir = path.join(kbDir, 'anti-patterns');
+
+  const issues = [];
+  if (!fs.existsSync(kbDir)) {
+    issues.push('.specs/knowledge: Diretório ausente');
+    return { issues, patternsCount: 0, antiPatternsCount: 0, patterns: [], antiPatterns: [] };
+  }
+  if (!fs.existsSync(patternsDir)) {
+    issues.push('.specs/knowledge/patterns: Diretório ausente');
+  }
+  if (!fs.existsSync(antiPatternsDir)) {
+    issues.push('.specs/knowledge/anti-patterns: Diretório ausente');
+  }
+
+  const patterns = fs.existsSync(patternsDir)
+    ? fs.readdirSync(patternsDir).filter(f => f.endsWith('.md'))
+    : [];
+  const antiPatterns = fs.existsSync(antiPatternsDir)
+    ? fs.readdirSync(antiPatternsDir).filter(f => f.endsWith('.md'))
+    : [];
+
+  return {
+    issues,
+    patternsCount: patterns.length,
+    antiPatternsCount: antiPatterns.length,
+    patterns,
+    antiPatterns
+  };
+}
+
 function runIntegrityAudit(options = {}) {
   const isBootstrap = Boolean(options.bootstrap || (typeof process !== 'undefined' && process.argv && process.argv.includes('--bootstrap')));
 
@@ -313,6 +346,22 @@ function runIntegrityAudit(options = {}) {
     console.log('✅ [ESCAPE INTEGRITY] Zero caracteres corrompidos em arquivos .specs.');
   }
 
+  // 6. Knowledge Base Structure & Active Patterns
+  const kbResult = checkKnowledgeBase();
+  if (kbResult.issues.length > 0) {
+    console.error('\n❌ Estrutura do Knowledge Base (.specs/knowledge) inválida:');
+    kbResult.issues.forEach(i => console.error(`   - ${i}`));
+    hasErrors = true;
+  } else {
+    const pInfo = kbResult.patternsCount > 0
+      ? `${kbResult.patternsCount} pattern(s): [${kbResult.patterns.map(f => f.replace(/\.md$/, '')).join(', ')}]`
+      : '0 patterns';
+    const apInfo = kbResult.antiPatternsCount > 0
+      ? `${kbResult.antiPatternsCount} anti-pattern(s): [${kbResult.antiPatterns.map(f => f.replace(/\.md$/, '')).join(', ')}]`
+      : '0 anti-patterns';
+    console.log(`✅ [KNOWLEDGE BASE] Base íntegra (${pInfo} | ${apInfo}).`);
+  }
+
   if (hasErrors) {
     console.error('\n🚫 [SDD INTEGRITY FAIL] Falha na validação de integridade. Corrija os desvios acima.\n');
     if (!options.silentFail) {
@@ -337,5 +386,6 @@ module.exports = {
   validateTaskDependencies,
   checkMemoryGraph,
   checkCorruptedEscapes,
+  checkKnowledgeBase,
   runIntegrityAudit
 };

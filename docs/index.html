@@ -1027,7 +1027,9 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
       <div class="card">
         <div class="card-header"><span class="card-title">Tier 1 Absolute Prohibitions</span></div>
         <div class="card-body">
-          <div class="md-body"><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:START --&gt;
+          <div class="md-body"><p class="doc-p">---
+trigger: always_on
+---</p><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:START --&gt;
 <h2 class="doc-h1">Absolute Prohibitions (Tier 1 — Highest Precedence)</h2></p><p class="doc-p"><strong>These rules override ALL other rules. Violation = output rejected.</strong></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 1: No Shortcuts, Stubs, or Simplified Logic</h3></p><p class="doc-p"><strong>NEVER</strong> simplify logic, add TODO/FIXME/HACK, create stubs, use placeholders, alter existing logic to avoid complexity, reduce scope, skip edge cases, or deliver partial implementations.</p><p class="doc-p"><strong>Response time is IRRELEVANT. Quality is everything.</strong></p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
 <li class="doc-li"><code class="inline-code">// TODO</code> — unfinished work disguised as progress</li>
 <li class="doc-li"><code class="inline-code">// FIXME</code> — a known bug left for &quot;later&quot;</li>
@@ -1113,13 +1115,21 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
   1. Author a new ADR in <code class="inline-code">.specs/project/ADRs/</code> with sequential numbering (<code class="inline-code">000X-slug.md</code>).
   2. Mark the status of the new ADR as <code class="inline-code">Accepted</code>.
   3. Surgically update the predecessor ADR status to <code class="inline-code">Superseded by [ADR 000X: Title](000X-slug.md)</code>.
-  4. Ensure both ADRs cross-link each other.</p><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:END --&gt;</p></div>
+  4. Ensure both ADRs cross-link each other.</p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">PROHIBITION 11: Knowledge Base Invariance &amp; Anti-Pattern Compliance</h3></p><p class="doc-p"><strong>NEVER</strong> implement code, architecture, or configurations that reproduce a documented anti-pattern in <code class="inline-code">.specs/knowledge/anti-patterns/</code>, and <strong>NEVER</strong> ignore established patterns in <code class="inline-code">.specs/knowledge/patterns/</code> when addressing known domains.</p><p class="doc-p"><h4 class="doc-h3">Forbidden Patterns</h4>
+<li class="doc-li">Re-introducing a bug, race condition, code smell, or flawed design explicitly documented in <code class="inline-code">.specs/knowledge/anti-patterns/</code>.</li>
+<li class="doc-li">Reinventing an ad-hoc solution when a standard pattern already exists in <code class="inline-code">.specs/knowledge/patterns/</code>.</li>
+<li class="doc-li">Skipping the consultation of <code class="inline-code">.specs/knowledge/</code> before planning, executing, or debugging in recurring subsystems.</li></p><p class="doc-p"><h4 class="doc-h3">Required Behavior</h4>
+<li class="doc-li"><strong>Consult Knowledge Base First</strong>: Before designing a feature or writing code in a subsystem, scan <code class="inline-code">.specs/knowledge/patterns/</code> and <code class="inline-code">.specs/knowledge/anti-patterns/</code>.</li>
+<li class="doc-li"><strong>Anti-Pattern Veto</strong>: If an implementation approach matches an entry in <code class="inline-code">.specs/knowledge/anti-patterns/</code>, immediately reject that approach and select or design an alternative.</li>
+<li class="doc-li"><strong>Continuous Knowledge Distillation</strong>: When a significant architectural lesson, recurring bug, or new anti-pattern is discovered during debugging or post-implementation review, record it under <code class="inline-code">.specs/knowledge/</code> for future sessions.</li></p><p class="doc-p">&lt;!-- TIER1_PROHIBITIONS:END --&gt;</p></div>
         </div>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">Quality Enforcement</span></div>
         <div class="card-body">
-          <div class="md-body"><p class="doc-p">&lt;!-- QUALITY_ENFORCEMENT:START --&gt;
+          <div class="md-body"><p class="doc-p">---
+trigger: always_on
+---</p><p class="doc-p">&lt;!-- QUALITY_ENFORCEMENT:START --&gt;
 <h2 class="doc-h1">Quality Enforcement Rules</h2></p><p class="doc-p"><strong>CRITICAL</strong>: These rules are NON-NEGOTIABLE and MUST be followed without exception.</p><p class="doc-p"><h3 class="doc-h2">Absolute Prohibitions</h3></p><p class="doc-p"><h4 class="doc-h3">Test Bypassing - STRICTLY FORBIDDEN</h4>
 <li class="doc-li">NEVER use .skip(), .only(), or .todo() to bypass failing tests</li>
 <li class="doc-li">NEVER comment out failing tests</li>
@@ -1153,7 +1163,10 @@ LLM assistants often create temporary files for debugging but forget to remove t
 <li class="doc-li"><strong>NEVER</strong> commit production code modifications, new source files, or route handlers that are not explicitly declared in an active feature specification under <code class="inline-code">.specs/features/&lt;feature-id&gt;/tasks.md</code>.</li>
 <li class="doc-li"><strong>NEVER</strong> bypass the Pre-Commit Spec Drift Sensor (<code class="inline-code">check-spec-drift.js</code>) using <code class="inline-code">--no-verify</code> or manual hook disabling.</li>
 <li class="doc-li"><strong>ALWAYS</strong> declare target file boundaries in <code class="inline-code">tasks.md</code> before executing implementation changes.</li>
-<li class="doc-li"><strong>ALWAYS</strong> ensure the pre-commit hook passes with 0 orphaned/drifting files.</li></p><p class="doc-p"><h3 class="doc-h2">Enforcement</h3></p><p class="doc-p">These rules apply to ALL implementations:
+<li class="doc-li"><strong>ALWAYS</strong> ensure the pre-commit hook passes with 0 orphaned/drifting files.</li></p><p class="doc-p"><h4 class="doc-h3">Knowledge Base &amp; Anti-Pattern Invariance - STRICTLY ENFORCED</h4>
+<li class="doc-li"><strong>NEVER</strong> re-introduce solutions, designs, or code structures cataloged in <code class="inline-code">.specs/knowledge/anti-patterns/</code>.</li>
+<li class="doc-li"><strong>ALWAYS</strong> inspect <code class="inline-code">.specs/knowledge/patterns/</code> and <code class="inline-code">.specs/knowledge/anti-patterns/</code> before implementing or planning changes in known subsystems.</li>
+<li class="doc-li"><strong>ALWAYS</strong> apply approved patterns from <code class="inline-code">.specs/knowledge/patterns/</code> when addressing recurring architectural or algorithmic requirements.</li></p><p class="doc-p"><h3 class="doc-h2">Enforcement</h3></p><p class="doc-p">These rules apply to ALL implementations:
 <li class="doc-li">Bug fixes</li>
 <li class="doc-li">New features  </li>
 <li class="doc-li">Refactoring</li>

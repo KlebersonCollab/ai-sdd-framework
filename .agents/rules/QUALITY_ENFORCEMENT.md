@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 <!-- QUALITY_ENFORCEMENT:START -->
 # Quality Enforcement Rules
 
@@ -53,6 +57,11 @@ LLM assistants often create temporary files for debugging but forget to remove t
 - **NEVER** bypass the Pre-Commit Spec Drift Sensor (`check-spec-drift.js`) using `--no-verify` or manual hook disabling.
 - **ALWAYS** declare target file boundaries in `tasks.md` before executing implementation changes.
 - **ALWAYS** ensure the pre-commit hook passes with 0 orphaned/drifting files.
+
+### Knowledge Base & Anti-Pattern Invariance - STRICTLY ENFORCED
+- **NEVER** re-introduce solutions, designs, or code structures cataloged in `.specs/knowledge/anti-patterns/`.
+- **ALWAYS** inspect `.specs/knowledge/patterns/` and `.specs/knowledge/anti-patterns/` before implementing or planning changes in known subsystems.
+- **ALWAYS** apply approved patterns from `.specs/knowledge/patterns/` when addressing recurring architectural or algorithmic requirements.
 
 ## Enforcement
 

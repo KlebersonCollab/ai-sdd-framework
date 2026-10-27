@@ -45,7 +45,8 @@ For every item declared in `.specs/features/<feature-id>/spec.md`:
    - **Input & Validation Scenarios**: Verify negative/boundary inputs are rejected with exact error contracts.
    - **Edge Cases & Exceptions**: Verify system resilience and graceful failure handling.
 3. **Test Data Matrix**: Verify boundary values from the matrix are covered in the test suite.
-4. **Evidence Requirement**: Provide concrete clickable links with exact line ranges (`file:///absolute/path/to/file#L10-L30`).
+4. **Knowledge Base Compliance**: Verify that the implementation does not introduce any pattern documented in `.specs/knowledge/anti-patterns/`, and aligns with applicable `.specs/knowledge/patterns/`.
+5. **Evidence Requirement**: Provide concrete clickable links with exact line ranges (`file:///absolute/path/to/file#L10-L30`).
 
 ### Stage 4: Task Execution & Evidence Audit (MetaGPT SOP)
 Inspect `.specs/features/<feature-id>/tasks.md`:
@@ -106,8 +107,9 @@ The Reviewer MUST output a structured Verification Report in the chat:
 
 ### If APPROVED:
 1. **Update State**: Update `.specs/project/STATE.md` to reflect the feature as `Completed`.
-2. **Session Knowledge Recall**: Persist reusable patterns, architectural observations, or user preferences to `.agents/memory/memory_graph.jsonl` using `sdd-memory`.
-3. **Notify User**: Present the approval summary and invite the user to test or plan the next milestone.
+2. **Knowledge Base Distillation**: If any recurring architectural pattern, subtle bug fix, or new anti-pattern was learned during development, document it under `.specs/knowledge/patterns/<slug>.md` or `.specs/knowledge/anti-patterns/<slug>.md`.
+3. **Session Knowledge Recall**: Persist reusable patterns, architectural observations, or user preferences to `.agents/memory/memory_graph.jsonl` using `sdd-memory`.
+4. **Notify User**: Present the approval summary and invite the user to test or plan the next milestone.
 
 ### If REQUESTS CHANGES:
 1. **Actionable Feedback**: List explicit failing items with exact file, line number, and sensor failure logs.

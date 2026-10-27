@@ -102,6 +102,7 @@ ${testIntegrity ? `| Test Integrity | \`git diff -- tests/\` | ${testIntegrity.p
 | ID | Rule / Invariant | Status | Concrete Code Evidence |
 |---|---|---|---|
 | BR-1 | Domain constraints enforced | PASS | Verified in sensor test suite |
+| KB-1 | Knowledge Base Compliance | PASS | Adheres to \`.specs/knowledge/\` patterns; 0 anti-patterns violated |
 
 ### ✅ 3. Acceptance Criteria (BDD Contract)
 | ID | Category | Scenario Name | Status | Test / Code Evidence |

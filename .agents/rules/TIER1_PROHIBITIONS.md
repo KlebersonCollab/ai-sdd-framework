@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 <!-- TIER1_PROHIBITIONS:START -->
 # Absolute Prohibitions (Tier 1 — Highest Precedence)
 
@@ -201,5 +205,21 @@ The human spent time defining the task sequence for a reason. The order reflects
   2. Mark the status of the new ADR as `Accepted`.
   3. Surgically update the predecessor ADR status to `Superseded by [ADR 000X: Title](000X-slug.md)`.
   4. Ensure both ADRs cross-link each other.
+
+---
+
+## PROHIBITION 11: Knowledge Base Invariance & Anti-Pattern Compliance
+
+**NEVER** implement code, architecture, or configurations that reproduce a documented anti-pattern in `.specs/knowledge/anti-patterns/`, and **NEVER** ignore established patterns in `.specs/knowledge/patterns/` when addressing known domains.
+
+### Forbidden Patterns
+- Re-introducing a bug, race condition, code smell, or flawed design explicitly documented in `.specs/knowledge/anti-patterns/`.
+- Reinventing an ad-hoc solution when a standard pattern already exists in `.specs/knowledge/patterns/`.
+- Skipping the consultation of `.specs/knowledge/` before planning, executing, or debugging in recurring subsystems.
+
+### Required Behavior
+- **Consult Knowledge Base First**: Before designing a feature or writing code in a subsystem, scan `.specs/knowledge/patterns/` and `.specs/knowledge/anti-patterns/`.
+- **Anti-Pattern Veto**: If an implementation approach matches an entry in `.specs/knowledge/anti-patterns/`, immediately reject that approach and select or design an alternative.
+- **Continuous Knowledge Distillation**: When a significant architectural lesson, recurring bug, or new anti-pattern is discovered during debugging or post-implementation review, record it under `.specs/knowledge/` for future sessions.
 
 <!-- TIER1_PROHIBITIONS:END -->

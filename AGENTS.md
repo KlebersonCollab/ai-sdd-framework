@@ -18,7 +18,10 @@ The objective is to enforce a **Spec Driven Development (SDD)** lifecycle and pr
 3. **Operational State & Roadmap**: Read `.specs/project/STATE.md` and `.specs/project/ROADMAP.md` to identify active blockers, pending feature tasks, and current milestone targets.
 4. **ADR Consistency & Decision Tree**: Inspect `.specs/project/ADRs/` to verify active vs. superseded architectural decisions. Never alter or contradict structural decisions without an ADR.
 5. **Run SDD Integrity Sensor**: Run `node .agents/scripts/verify-sdd-integrity.js` (use `node .agents/scripts/verify-sdd-integrity.js --bootstrap` if initializing a new repository) to ensure 100% structural, DAG dependency, and schema integrity across the specification tree.
-6. **Check Knowledge Base & Design System**: Read `.specs/knowledge/<type>s/<slug>.md` for known patterns/anti-patterns. If the task touches UI/Frontend, read `DESIGN.md` at project root.
+6. **Check Knowledge Base & Design System**:
+   - Scan `.specs/knowledge/patterns/` and `.specs/knowledge/anti-patterns/` for documented patterns and known anti-patterns.
+   - Mandatorily inspect any pattern/anti-pattern relevant to the subsystem or domain being addressed before proceeding.
+   - If the task touches UI/Frontend, read `DESIGN.md` at project root.
 7. **Evaluate Context State**:
    - **If `.specs/project/CONTEXT.md` does not exist or has empty placeholders `<!-- PREENCHER ...`**:
      → Trigger **Auto-Discovery Protocol** via `node .agents/scripts/auto-discover.js` (or `npm run auto-discover`).
@@ -113,9 +116,10 @@ If a task involves research, investigation, comparative analysis, or architectur
 If a task involves writing code, refactoring, feature implementation, bug fixing, or API changes:
 * **MUST FIRST USE**: `skill: sdd-planner` (supported by `grill-me` in Phase 0).
 * **Responsibilities**: Define scope (`plan.md`), BDD acceptance criteria with sensors (`spec.md`), and strict 7-column atomic tasks with DAG dependency mapping (`tasks.md`) under `.specs/features/<feature-id>/`. Create numbered ADRs in `.specs/project/ADRs/` for structural choices.
+* **Knowledge Base Alignment**: Verify proposed architecture against `.specs/knowledge/anti-patterns/` to avoid recurring pitfalls, and leverage `.specs/knowledge/patterns/` for established domain solutions.
 * **Automation**: Scaffold canonical feature directories using `node .agents/scripts/create-feature.js <feature-id> --title "<Feature Title>"` (or `npm run create-feature <id>`).
 * **Reference Templates**: Consult [plan-template.md](.agents/skills/sdd-planner/references/plan-template.md), [spec-template.md](.agents/skills/sdd-planner/references/spec-template.md), [task-template.md](.agents/skills/sdd-planner/references/task-template.md), [grilling-session.md](.agents/skills/sdd-planner/references/grilling-session.md).
-* **Forbidden**: Direct execution without approved planning (`User Request → sdd-executor` is strictly invalid).
+* **Forbidden**: Direct execution without approved planning (`User Request → sdd-executor` is strictly invalid); introducing architecture matching documented anti-patterns.
 
 ---
 
@@ -123,19 +127,20 @@ If a task involves writing code, refactoring, feature implementation, bug fixing
 Only after planning is established may implementation proceed:
 * **MUST USE**: `skill: sdd-executor` (supported by `refactor` and `debug`).
 * **Responsibilities**: Follow `tasks.md` sequentially, apply TDD cycle, use surgical contiguous block replacement (`replace_file_content`), run sensors (lint, test, build, `node .agents/scripts/check-spec-drift.js --working-tree`), record commit/test evidence.
+* **Knowledge Base Verification**: Consult `.specs/knowledge/patterns/` and strictly avoid any pattern cataloged in `.specs/knowledge/anti-patterns/`.
 * **Test Immutability**: The executor is strictly forbidden from weakening, altering, or commenting out test assertions to pass failing tests (Prohibition 9).
 * **Reference Principles**: Consult [Coding Principles](.agents/skills/sdd-executor/references/coding-principles.md).
 * **Safety Valve**: If a task touches >3 files unexpectedly or hits critical risk paths, PAUSE and request a replan from `sdd-planner`.
-* **Forbidden**: Modifying `plan.md` or `spec.md` directly; blind-overwriting entire files (Prohibition 8); marking tasks complete without sensor evidence.
+* **Forbidden**: Modifying `plan.md` or `spec.md` directly; blind-overwriting entire files (Prohibition 8); marking tasks complete without sensor evidence; reintroducing documented anti-patterns (Prohibition 11).
 
 ---
 
 ## Rule 4 — Review is Mandatory After Development (Pre-Commit Spec Drift Sensor)
 After any implementation activity:
 * **MUST USE**: `skill: sdd-review`.
-* **Responsibilities**: Run the unified Review Sensor Gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which automatically executes all sensors (Spec Drift Sensor, Linter, Test Suite, Build), audits test diff integrity against assertion tampering, audits each AC against concrete code lines (`file:///...`), and generates the formal Verification Report with Verdict (`APPROVED` / `REQUESTS CHANGES`).
+* **Responsibilities**: Run the unified Review Sensor Gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which automatically executes all sensors (Spec Drift Sensor, Linter, Test Suite, Build), audits test diff integrity against assertion tampering, audits each AC against concrete code lines (`file:///...`), audits compliance against `.specs/knowledge/anti-patterns/`, and generates the formal Verification Report with Verdict (`APPROVED` / `REQUESTS CHANGES`).
 * **Reference Standards**: Consult [BDD Guide](.agents/skills/sdd-review/references/bdd-guide.md).
-* **Forbidden**: Approving work without sensor evidence, approving when spec drift is detected, or skipping edge-case checks.
+* **Forbidden**: Approving work without sensor evidence, approving when spec drift is detected, approving code that introduces a documented anti-pattern, or skipping edge-case checks.
 
 ---
 
@@ -182,3 +187,4 @@ When handling complex tasks, use subagents strategically:
 5. **Clean Scripts & Scratchpad**: Use isolated scratch directories for ephemeral tests and clean them up immediately.
 6. **Design System Invariance**: Whenever writing UI code, CSS, or frontend components, strictly adhere to tokens, typography, colors, and layout scales defined in `DESIGN.md`. Never invent arbitrary hex codes or uncalibrated styles.
 7. **Constitutional Spec Drift Invariance**: Every production code modification must be explicitly mapped in an active `.specs/features/<id>/tasks.md` and validated by the pre-commit spec drift sensor (`check-spec-drift.js`).
+8. **Knowledge Base Invariance**: Never reintroduce an anti-pattern documented in `.specs/knowledge/anti-patterns/`. Always apply known patterns from `.specs/knowledge/patterns/` when solving recurring domain problems.

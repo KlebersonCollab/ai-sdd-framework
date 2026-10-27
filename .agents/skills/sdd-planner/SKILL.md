@@ -47,6 +47,7 @@ Actions to do:
 - Clarify constraints
 - Execute challenge questions (Grilling Session)
 - Detect hidden requirements
+- Scan `.specs/knowledge/` (patterns and anti-patterns) to prevent known pitfalls and leverage proven patterns
 
 ### 1 - Specification Core
 - **Domain Alignment**: All requirements must use the exact terms defined in `CONTEXT.md`.
@@ -79,6 +80,7 @@ Actions to do:
 
 ### 4 - Validation
 - **Alignment Check**: Verify that the `plan.md` is not a "mini-spec". It must focus on **What** and **Why**, not **How**.
+- **Knowledge Base Compliance**: Verify that proposed technical solutions do not repeat patterns from `.specs/knowledge/anti-patterns/` and align with `.specs/knowledge/patterns/`.
 - **Schema Validation**: Reject any task list missing required columns, dependency links, or file boundaries.
 - **Glossary Sync**: Ensure any new terms used in the plan are present in `CONTEXT.md`.
 
