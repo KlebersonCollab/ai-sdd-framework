@@ -360,6 +360,93 @@
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
             <span class="badge badge-success">100%</span>
+            <span class="card-title">GitHub One-Liner Installer &amp; Quickstart Docs</span>
+            <span class="card-subtitle font-mono">github-one-liner-installer</span>
+          </div>
+          <span class="task-count">7/7 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">Adopting the AI-SDD Framework across existing (brownfield) and new (greenfield) projects previously required manually copying and pasting the <code class="inline-code">.agents/</code> folder, <code class="inline-code">AGENTS.md</code>, and assorted markdown files into the project root. This manual workflow introduces critical friction:
+<li class="doc-li"><strong>High cognitive load and friction</strong>: Developers must remember which folders and files to copy and how to wire scripts and hooks.</li>
+<li class="doc-li"><strong>Multi-stack repo pollution</strong>: For non-Node projects (Python, Go, Rust, Java, C#), manual pasting causes confusion and inconsistent setups.</li>
+<li class="doc-li"><strong>Update drift</strong>: As the core framework runtime, sensors, and Cockpit evolve, downstream projects have no straightforward mechanism to pull updates without manual folder diffs.</li></p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Create automated installer test suite covering script existence, syntax, zip extraction logic, and update-safety invariants</td>
+        <td class="files-col"><code>`tests/installer.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement Windows PowerShell one-liner installer with selective extraction, auto-discover fallback, and update safety</td>
+        <td class="files-col"><code>`setup.ps1`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement POSIX Bash one-liner installer with curl/wget, unzip fallback, auto-discover, and hook installation</td>
+        <td class="files-col"><code>`setup.sh`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Wire `tests/installer.test.js` into package.json test script and verify all unit/integration tests pass</td>
+        <td class="files-col"><code>`package.json`, `tests/installer.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Author ADR 0007 documenting the one-liner GitHub installer architecture and update project state</td>
+        <td class="files-col"><code>`.specs/project/ADRs/0007-github-one-liner-installer-architecture.md`, `.specs/project/STATE.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Update README.md with comprehensive, user-friendly Quickstart instructions for greenfield, brownfield, and update workflows</td>
+        <td class="files-col"><code>`README.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Execute unified SDD Review sensor gate and verify zero spec drift and test immutability</td>
+        <td class="files-col"><code>`.specs/features/github-one-liner-installer/tasks.md`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
             <span class="card-title">Universal Living HTML Documentation Platform &amp; Standalone Static Exporter</span>
             <span class="card-subtitle font-mono">living-html-docs</span>
           </div>
@@ -929,6 +1016,45 @@ We adopt <strong>Core Sensors Robustness &amp; Productivity Automation Tooling</
         </div>
       </div>
     
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0007: github one-liner installer architecture &amp; update-safe distribution">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0007: GitHub One-Liner Installer Architecture &amp; Update-Safe Distribution</span>
+          </div>
+          <span class="card-date">2026-11-02</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0007: GitHub One-Liner Installer Architecture &amp; Update-Safe Distribution</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-11-02</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+Adopting the AI-SDD Framework across existing (brownfield) and new (greenfield) projects previously required manually copying and pasting the <code class="inline-code">.agents/</code> directory, <code class="inline-code">AGENTS.md</code>, <code class="inline-code">DESIGN.md</code>, and rule files. This workflow caused significant friction:
+1. <strong>Manual Overhead &amp; Onboarding Friction</strong>: Developers had to navigate folder trees, manually copy assets, and configure hooks and scripts by hand.
+2. <strong>Multi-Stack Project Clutter</strong>: In non-Node projects (Python, Rust, Go, Java, C#), manual pasting created ambiguity around what was engine code versus project code.
+3. <strong>Update Drift &amp; Maintenance Friction</strong>: Downstream projects could not receive framework enhancements, sensor bugfixes, or Cockpit updates without manual directory diffing and re-copying.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3>
+We adopt a <strong>Zero-Dependency One-Liner Installer Architecture</strong> distributed directly from GitHub:</p><p class="doc-p">1. <strong>Dual-Platform Shell Launchers</strong>:
+<li class="doc-li"><code class="inline-code">setup.ps1</code> for Windows PowerShell (<code class="inline-code">irm ... | iex</code>).</li>
+<li class="doc-li"><code class="inline-code">setup.sh</code> for POSIX environments (<code class="inline-code">curl -fsSL ... | bash</code>).</li></p><p class="doc-p">2. <strong>Native GitHub Archive Ingestion</strong>:
+<li class="doc-li">Downloads the latest branch or release zipball from <code class="inline-code">https://github.com/KlebersonCollab/ai-sdd-framework/archive/refs/heads/main.zip</code> directly into a temporary folder using platform standard utilities (<code class="inline-code">Invoke-WebRequest</code> / <code class="inline-code">curl</code> / <code class="inline-code">wget</code>).</li>
+<li class="doc-li">Extracts runtime files using native platform tools (<code class="inline-code">Expand-Archive</code> / <code class="inline-code">unzip</code> / <code class="inline-code">python3 -m zipfile</code>).</li></p><p class="doc-p">3. <strong>Selective Runtime Extraction</strong>:
+<li class="doc-li">Copies runtime governance assets: <code class="inline-code">.agents/</code> (scripts, rules, skills, and pre-compiled <code class="inline-code">.agents/dashboard/dist/</code>), <code class="inline-code">AGENTS.md</code>, <code class="inline-code">DESIGN.md</code>, and agent directives (<code class="inline-code">.cursorrules</code>, <code class="inline-code">.windsurfrules</code>, <code class="inline-code">.clinerules</code>, <code class="inline-code">.github/copilot-instructions.md</code>).</li>
+<li class="doc-li">Omits framework internal development artifacts (<code class="inline-code">node_modules/</code>, <code class="inline-code">packages/dashboard/src/</code>, internal test files, docs, git metadata).</li></p><p class="doc-p">4. <strong>Update-Safe &amp; Preservation Invariance</strong>:
+<li class="doc-li">The installer is fully idempotent. If <code class="inline-code">.specs/</code> or <code class="inline-code">.agents/memory/memory_graph.jsonl</code> exist in the target project, they are strictly protected and never overwritten. Users can run the installer repeatedly to upgrade the framework without losing business specifications or memory.</li></p><p class="doc-p">5. <strong>Intelligent Greenfield &amp; Brownfield Bootstrapping</strong>:
+<li class="doc-li">Automatically executes <code class="inline-code">git init</code> if <code class="inline-code">.git</code> is absent.</li>
+<li class="doc-li">If existing project manifests (<code class="inline-code">package.json</code>, <code class="inline-code">Cargo.toml</code>, <code class="inline-code">pyproject.toml</code>, <code class="inline-code">go.mod</code>, etc.) are detected, triggers <code class="inline-code">node .agents/scripts/auto-discover.js</code> to map the codebase.</li>
+<li class="doc-li">If clean greenfield, triggers <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js --bootstrap</code>.</li>
+<li class="doc-li">Installs pre-commit drift and integrity hooks via <code class="inline-code">node .agents/scripts/install-hooks.js</code>.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3>
+<h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>Single-Command Onboarding</strong>: Bootstraps full SDD governance into any repository in seconds.</li>
+<li class="doc-li"><strong>Zero Host Package Pollution</strong>: Requires zero host npm dependencies.</li>
+<li class="doc-li"><strong>Seamless Upgrades</strong>: Safe re-execution enables instant upstream upgrades.</li>
+<li class="doc-li"><strong>Universal Multi-Agent Support</strong>: Installs canonical rules for Antigravity, Cursor, Windsurf, Cline, and Copilot.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Requires Node.js (v18+) and Git on the host machine. <em>Mitigation</em>: Node.js and Git are industry standards; framework sensors execute in &lt;70ms with zero host npm dependencies.</li>
+</p></div>
+        </div>
+      </div>
+    
       </div>
     </section>
 
@@ -998,13 +1124,14 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">core-sensors-and-automation</code> (Phases 2 &amp; 3: Sensor Robustness, Dual-Mode Verification &amp; Productivity Automation Tooling).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 9/9 tasks completed. Delivered <code class="inline-code">--bootstrap</code> support and DAG cycle validation in <code class="inline-code">verify-sdd-integrity.js</code>, working-tree drift inspection and glob matching in <code class="inline-code">check-spec-drift.js</code>, worktree-resilient dual-sensor pre-commit hook in <code class="inline-code">install-hooks.js</code>, <code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>, wired <code class="inline-code">package.json</code> scripts, and recorded ADR 0006.</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">github-one-liner-installer</code> (Zero-Dependency GitHub One-Liner Installer &amp; Quickstart Docs).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 7/7 tasks completed. Delivered <code class="inline-code">setup.ps1</code>, <code class="inline-code">setup.sh</code>, comprehensive test suite in <code class="inline-code">tests/installer.test.js</code> (33/33 tests passing), ADR 0007, updated README Quickstart guide, and zero-drift review approval.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
   1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 29/29 passing (100% in 170ms).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 33/33 passing across 4 test suites (100% in ~230ms).
   3. Spec Drift Sensor: <code class="inline-code">npm run check-drift</code> — 0 drifted files.
-  4. SDD Review Runner: <code class="inline-code">npm run review</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+  4. SDD Review Runner: <code class="inline-code">npm run review github-one-liner-installer</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-11-02 - GitHub One-Liner Installer &amp; Update-Safe Distribution (ADR 0007)</strong>: Implemented dual-platform zero-dependency one-liner installers (<code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code>) pulling directly from GitHub archive. Enforced update-safety invariance protecting <code class="inline-code">.specs/</code> and <code class="inline-code">memory_graph.jsonl</code>, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.</li>
 <li class="doc-li"><strong>2026-10-18 - Core Sensors Robustness &amp; Productivity Automation Tooling (ADR 0006)</strong>: Introduced dual-mode verification (<code class="inline-code">--bootstrap</code> vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (<code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>). Accepted ADR 0006.</li>
 <li class="doc-li"><strong>2026-09-27 - Unified Spec Execution Cascade &amp; Kanban Retirement (ADR 0005)</strong>: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside <code class="inline-code">SpecsCascade.vue</code> featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline <code class="inline-code">Delegar</code>/<code class="inline-code">Rejeitar</code> actions, and clickable dependency badges. Superseded ADR 0003.</li>
 <li class="doc-li"><strong>2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)</strong>: Formalized dual-projection living documentation strategy combining native Node.js endpoints (<code class="inline-code">/api/project</code>, <code class="inline-code">/api/codebase</code>, <code class="inline-code">/api/rules</code>, <code class="inline-code">/api/knowledge</code>), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (<code class="inline-code">export-docs.js</code>).</li>

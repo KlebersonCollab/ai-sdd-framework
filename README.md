@@ -226,7 +226,8 @@ ai-sdd-framework/
 ├── tests/
 │   ├── serve-dashboard.test.js         # Server & Living Docs API test suite (19 unit & integration tests)
 │   ├── export-docs.test.js             # Standalone static exporter test suite (2 tests)
-│   └── core-sensors-automation.test.js # Sensors robustness & CLI automation test suite (8 tests)
+│   ├── core-sensors-automation.test.js # Sensors robustness & CLI automation test suite (8 tests)
+│   └── installer.test.js               # One-Liner Installer & Update-Safe test suite (4 tests)
 ├── .cursorrules                        # Universal Cursor AI directive referencing AGENTS.md
 ├── .windsurfrules                      # Universal Windsurf AI directive referencing AGENTS.md
 ├── .clinerules                         # Universal Cline / RooCode directive referencing AGENTS.md
@@ -234,44 +235,88 @@ ai-sdd-framework/
 │   └── copilot-instructions.md         # GitHub Copilot instructions referencing AGENTS.md
 ├── AGENTS.md                           # 🏛️ Master Operating Manual & Skill Routing Matrix
 ├── DESIGN.md                           # 🎨 Linear-inspired Design Tokens & UI Specification
+├── setup.ps1                           # 🚀 Windows PowerShell Universal One-Liner Installer
+├── setup.sh                            # 🚀 POSIX Bash Universal One-Liner Installer
 └── README.md                           # Official Documentation
 ```
 
 ---
 
-## 🚀 Quickstart: Bootstrapping a Project
+## 🚀 Quickstart: Bootstrapping Any Project
 
-### 1. Integrate into your workspace
-Copy the `.agents/`, `AGENTS.md`, and `DESIGN.md` into the root of your project:
+You **never need to manually copy and paste folders or markdown files**. You can bootstrap or update the AI-SDD Framework in any repository (new or existing) with a single command pulled directly from GitHub.
 
-```bash
-cp -r .agents/ AGENTS.md DESIGN.md /path/to/your/project/
+### 1. One-Liner Bootstrap (Universal GitHub Archive)
+
+Open your terminal in your project's root directory and run:
+
+#### Windows (PowerShell):
+```powershell
+irm https://raw.githubusercontent.com/KlebersonCollab/ai-sdd-framework/main/setup.ps1 | iex
 ```
 
-> **Zero Host Pollution**: Host projects require **zero npm dependencies**. The server runtime (`serve-dashboard.js`) and governance sensors run purely on native Node.js standard libraries (`http`, `fs`, `crypto`, `child_process`).
+#### Linux / macOS / WSL / Git Bash:
+```bash
+curl -fsSL https://raw.githubusercontent.com/KlebersonCollab/ai-sdd-framework/main/setup.sh | bash
+```
 
-### 2. Auto-Discovery Protocol
-Start your AI session in any supported tool. The agent will execute the **Blocking Gate**:
-1. Check `.agents/memory/memory_graph.jsonl` for past session memory.
-2. If `.specs/project/CONTEXT.md` is empty or missing, it triggers **Auto-Discovery** via `node .agents/scripts/auto-discover.js` (or `npm run auto-discover`) to scan package manifests (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`), directory trees, configs, and coding conventions deterministically.
-3. Generates or updates codebase maps in `.specs/codebase/` (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `CONCERNS.md`, `TECHNICAL-MAP.md`) and confirms domain assumptions with you.
+> **Zero Host Pollution**: The target project requires **zero npm dependencies**. The runtime sensors (`verify-sdd-integrity.js`, `check-spec-drift.js`) and the Cockpit server (`serve-dashboard.js`) run purely on native Node.js standard libraries (`http`, `fs`, `crypto`, `child_process`). Requires only Node.js (v18+) and Git.
+
+---
+
+### 2. Supported Workflows
+
+#### 🟢 Scenario A: New Project from Scratch (Greenfield)
+1. Create and enter your empty project directory:
+   ```bash
+   mkdir my-new-app && cd my-new-app
+   ```
+2. Run the one-liner command above.
+3. The installer automatically:
+   - Initializes Git (`git init`) if not already present.
+   - Extracts the core governance engine (`.agents/`, `AGENTS.md`, `DESIGN.md`, `.cursorrules`, `.windsurfrules`, `.clinerules`).
+   - Runs `verify-sdd-integrity.js --bootstrap` to scaffold the canonical living specification skeleton in `.specs/`.
+   - Installs pre-commit drift and integrity hooks in `.git/hooks/pre-commit`.
+4. Open your AI coding assistant (Antigravity, Cursor, Windsurf, Claude Code, Cline, Copilot) and start planning your first feature!
+
+#### 🟡 Scenario B: Existing Project in Any Language (Brownfield)
+*Works seamlessly with Node.js, Python, Rust, Go, Java, C#, PHP, Ruby, etc.*
+
+1. Open your terminal in the root of your existing project:
+   ```bash
+   cd /path/to/my-existing-project
+   ```
+2. Run the one-liner command.
+3. The installer detects existing manifest files (`package.json`, `Cargo.toml`, `pyproject.toml`, `go.mod`, `pom.xml`, etc.) and automatically:
+   - Synchronizes `.agents/`, `AGENTS.md`, and agent directives.
+   - Triggers the **Auto-Discovery Engine** (`auto-discover.js`), deterministically mapping your actual stack, test runners, folder organization, and conventions into `.specs/codebase/`.
+   - Creates `.specs/project/CONTEXT.md` with your initial domain glossary.
+   - Activates worktree-resilient git pre-commit hooks.
+4. Your AI agent immediately has full context of your existing codebase without hallucination.
+
+#### 🔄 Scenario C: Upgrading an Existing SDD Project (Update-Safe)
+Whenever new sensors, Cockpit updates, or rule improvements are pushed to this repository:
+1. Re-run the one-liner in your project directory at any time.
+2. **Invariance Guarantee**: The installer **never overwrites** your existing business specs (`.specs/`) or your historical memory graph (`.agents/memory/memory_graph.jsonl`). It surgically upgrades the framework engine, scripts, and rules while keeping 100% of your project specifications intact.
+
+---
 
 ### 3. Build Features with SDD
-Request a new feature:
+Once installed, interact with your AI assistant normally. For any new feature or refactor, request:
 ```text
 "Planeje a feature de autenticação JWT com refresh token seguindo o SDD."
 ```
-The agent will execute:
-1. `sdd-planner` (with `grill-me`) → scaffolds feature directory via `node .agents/scripts/create-feature.js <feature-id> --title "<Title>"` (or `npm run create-feature <id>`), drafting `plan.md`, `spec.md` with BDD scenarios, and atomic DAG-mapped `tasks.md`.
-2. `sdd-executor` → implements sequentially via TDD, logging sensor evidence and validating drift via `node .agents/scripts/check-spec-drift.js --working-tree` (or `npm run check-drift`).
-3. `sdd-review` → runs the unified review sensor gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <id>`), auditing all sensors (lint, test, build, drift) and diff immutability to compile a formal Verification Report.
+The agent executes the mandatory 5-phase lifecycle:
+1. **`sdd-planner`** (with `grill-me`) → scaffolds feature directory via `node .agents/scripts/create-feature.js <feature-id> --title "<Title>"`, drafting `plan.md`, `spec.md` with BDD scenarios, and atomic DAG-mapped `tasks.md`.
+2. **`sdd-executor`** → implements sequentially via TDD, logging sensor evidence and validating drift via `node .agents/scripts/check-spec-drift.js --working-tree`.
+3. **`sdd-review`** → runs the unified review sensor gate via `node .agents/scripts/run-sdd-review.js <feature-id>`, auditing all sensors (lint, test, build, drift) and diff immutability to compile a formal Verification Report.
+
+---
 
 ### 4. Interactive Human-AI Cockpit & Universal Living Docs
 Launch the Cockpit web workspace (Vue 3 SPA + Embedded Terminal):
 
 ```bash
-npm run dashboard
-# Or directly with zero dependencies:
 node .agents/scripts/serve-dashboard.js
 ```
 

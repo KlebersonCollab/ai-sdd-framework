@@ -1,15 +1,16 @@
 # Project State & Context
 
 ## 🏁 Session Status
-- **Current Task**: Completed implementation and verification of feature `core-sensors-and-automation` (Phases 2 & 3: Sensor Robustness, Dual-Mode Verification & Productivity Automation Tooling).
-- **Progress**: Phase 4 (Verified & Complete) — 9/9 tasks completed. Delivered `--bootstrap` support and DAG cycle validation in `verify-sdd-integrity.js`, working-tree drift inspection and glob matching in `check-spec-drift.js`, worktree-resilient dual-sensor pre-commit hook in `install-hooks.js`, `auto-discover.js`, `create-feature.js`, `run-sdd-review.js`, wired `package.json` scripts, and recorded ADR 0006.
+- **Current Task**: Completed implementation and verification of feature `github-one-liner-installer` (Zero-Dependency GitHub One-Liner Installer & Quickstart Docs).
+- **Progress**: Phase 4 (Verified & Complete) — 7/7 tasks completed. Delivered `setup.ps1`, `setup.sh`, comprehensive test suite in `tests/installer.test.js` (33/33 tests passing), ADR 0007, updated README Quickstart guide, and zero-drift review approval.
 - **Verification Sensors**:
   1. SDD Integrity Sensor: `node .agents/scripts/verify-sdd-integrity.js` — 100% pass (0 violations).
-  2. Unit & Integration Tests: `npm test` — 29/29 passing (100% in 170ms).
+  2. Unit & Integration Tests: `npm test` — 33/33 passing across 4 test suites (100% in ~230ms).
   3. Spec Drift Sensor: `npm run check-drift` — 0 drifted files.
-  4. SDD Review Runner: `npm run review` — VERDICT: APPROVED.
+  4. SDD Review Runner: `npm run review github-one-liner-installer` — VERDICT: APPROVED.
 
 ## 💡 Decisions Log
+- **2026-11-02 - GitHub One-Liner Installer & Update-Safe Distribution (ADR 0007)**: Implemented dual-platform zero-dependency one-liner installers (`setup.ps1` and `setup.sh`) pulling directly from GitHub archive. Enforced update-safety invariance protecting `.specs/` and `memory_graph.jsonl`, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.
 - **2026-10-18 - Core Sensors Robustness & Productivity Automation Tooling (ADR 0006)**: Introduced dual-mode verification (`--bootstrap` vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (`auto-discover.js`, `create-feature.js`, `run-sdd-review.js`). Accepted ADR 0006.
 - **2026-09-27 - Unified Spec Execution Cascade & Kanban Retirement (ADR 0005)**: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside `SpecsCascade.vue` featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline `Delegar`/`Rejeitar` actions, and clickable dependency badges. Superseded ADR 0003.
 - **2026-09-27 - Universal Living HTML Docs Architecture (ADR 0004)**: Formalized dual-projection living documentation strategy combining native Node.js endpoints (`/api/project`, `/api/codebase`, `/api/rules`, `/api/knowledge`), in-browser Mermaid diagram rendering in Vue 3 Cockpit, and a standalone zero-dependency static HTML exporter (`export-docs.js`).

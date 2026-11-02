@@ -5,7 +5,7 @@
   "scripts": {
     "dashboard": "node --watch .agents/scripts/serve-dashboard.js",
     "build:dashboard": "npm --prefix packages/dashboard run build",
-    "test": "node .agents/scripts/verify-sdd-integrity.js && node tests/serve-dashboard.test.js && node tests/export-docs.test.js && node tests/core-sensors-automation.test.js",
+    "test": "node .agents/scripts/verify-sdd-integrity.js && node tests/serve-dashboard.test.js && node tests/export-docs.test.js && node tests/core-sensors-automation.test.js && node tests/installer.test.js",
     "docs:export": "node .agents/scripts/export-docs.js",
     "verify-sdd": "node .agents/scripts/verify-sdd-integrity.js",
     "check-drift": "node .agents/scripts/check-spec-drift.js",
