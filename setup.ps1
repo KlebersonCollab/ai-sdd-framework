@@ -110,7 +110,7 @@ try {
     }
 
     # Copiar arquivos de governança para raiz
-    $canonicalRootFiles = @("AGENTS.md", "DESIGN.md", ".cursorrules", ".windsurfrules", ".clinerules")
+    $canonicalRootFiles = @("AGENTS.md", "DESIGN.md", "CLAUDE.md", ".cursorrules", ".windsurfrules", ".clinerules")
     foreach ($file in $canonicalRootFiles) {
         $srcFile = Join-Path $sourceRoot $file
         if (Test-Path $srcFile) {
@@ -180,6 +180,8 @@ Write-Host "Comandos úteis para o seu projeto:" -ForegroundColor Cyan
 Write-Host "  • Iniciar Cockpit Web:     node .agents/scripts/serve-dashboard.js" -ForegroundColor White
 Write-Host "  • Auditar Integridade:     node .agents/scripts/verify-sdd-integrity.js" -ForegroundColor White
 Write-Host "  • Verificar Spec Drift:    node .agents/scripts/check-spec-drift.js --working-tree" -ForegroundColor White
+Write-Host "  • Relatório de Drift:      node .agents/scripts/generate-drift-report.js <id>" -ForegroundColor White
+Write-Host "  • Revisão Fria (Goldfish): node .agents/scripts/run-spec-review.js <id>" -ForegroundColor White
 Write-Host "  • Criar Nova Feature:      node .agents/scripts/create-feature.js <id> --title '<Título>'" -ForegroundColor White
 Write-Host ""
 Write-Host "Agora inicie seu assistente de IA (Antigravity, Cursor, Windsurf, Claude Code)." -ForegroundColor Yellow

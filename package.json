@@ -5,10 +5,12 @@
   "scripts": {
     "dashboard": "node --watch .agents/scripts/serve-dashboard.js",
     "build:dashboard": "npm --prefix packages/dashboard run build",
-    "test": "node .agents/scripts/verify-sdd-integrity.js && node tests/serve-dashboard.test.js && node tests/export-docs.test.js && node tests/core-sensors-automation.test.js && node tests/installer.test.js",
+    "test": "node .agents/scripts/verify-sdd-integrity.js && node tests/serve-dashboard.test.js && node tests/export-docs.test.js && node tests/core-sensors-automation.test.js && node tests/installer.test.js && node tests/egm-multi-harness-drift.test.js",
     "docs:export": "node .agents/scripts/export-docs.js",
     "verify-sdd": "node .agents/scripts/verify-sdd-integrity.js",
     "check-drift": "node .agents/scripts/check-spec-drift.js",
+    "drift-report": "node .agents/scripts/generate-drift-report.js",
+    "spec-review": "node .agents/scripts/run-spec-review.js",
     "compact-memory": "node .agents/scripts/compact-memory.js",
     "auto-discover": "node .agents/scripts/auto-discover.js",
     "create-feature": "node .agents/scripts/create-feature.js",

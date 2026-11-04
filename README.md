@@ -301,15 +301,16 @@ Whenever new sensors, Cockpit updates, or rule improvements are pushed to this r
 
 ---
 
-### 3. Build Features with SDD
+### 3. Build Features with SDD (Elephant-Goldfish Model — EGM)
 Once installed, interact with your AI assistant normally. For any new feature or refactor, request:
 ```text
 "Planeje a feature de autenticação JWT com refresh token seguindo o SDD."
 ```
-The agent executes the mandatory 5-phase lifecycle:
-1. **`sdd-planner`** (with `grill-me`) → scaffolds feature directory via `node .agents/scripts/create-feature.js <feature-id> --title "<Title>"`, drafting `plan.md`, `spec.md` with BDD scenarios, and atomic DAG-mapped `tasks.md`.
-2. **`sdd-executor`** → implements sequentially via TDD, logging sensor evidence and validating drift via `node .agents/scripts/check-spec-drift.js --working-tree`.
-3. **`sdd-review`** → runs the unified review sensor gate via `node .agents/scripts/run-sdd-review.js <feature-id>`, auditing all sensors (lint, test, build, drift) and diff immutability to compile a formal Verification Report.
+The agent executes the mandatory EGM lifecycle:
+1. **`sdd-planner`** (with `grill-me` in Phase 0 Align) → scaffolds feature directory via `node .agents/scripts/create-feature.js <feature-id> --title "<Title>"`, drafting `plan.md`, `spec.md` with BDD scenarios, and atomic DAG-mapped `tasks.md`.
+2. **`sdd-spec-review`** (The Goldfish Swarm) → runs cold adversarial spec review via `node .agents/scripts/run-spec-review.js <feature-id>` (or `npm run spec-review`) to catch unstated assumptions and ambiguous metrics before code is written.
+3. **`sdd-executor`** → implements sequentially via TDD, logging sensor evidence and validating pre-commit file boundaries via `node .agents/scripts/check-spec-drift.js --working-tree`.
+4. **`sdd-review`** → executes unified audit gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review`), verifying sensors, test immutability, and running the deep **Semantic Spec Drift Engine** (`generate-drift-report.js` / `npm run drift-report`) to ensure 0 missing features, 0 incomplete models, and 0 logic shortcuts.
 
 ---
 

@@ -17,11 +17,11 @@ Provide a deterministic, empirical audit of completed features and issue a forma
 
 ---
 
-## The 5-Stage Audit Gate
+## The 6-Stage Audit Gate
 
-> **Unified Sensor Runner**: You can execute stages 1 and 2 automatically by running `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which runs drift, integrity, and test sensors, audits test diffs, and outputs the baseline Verification Report.
+> **Unified Sensor Runner**: You can execute stages 1 and 2 automatically by running `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which runs drift, integrity, test, and semantic drift sensors, audits test diffs, and outputs the baseline Verification Report.
 
-The Reviewer MUST execute the audit through 5 strict sequential stages:
+The Reviewer MUST execute the audit through 6 strict sequential stages:
 
 ### Stage 1: Hard Sensors & Spec Drift Gate
 Execute all required automated sensors and record raw outputs:
@@ -30,6 +30,7 @@ Execute all required automated sensors and record raw outputs:
 3. **Linter Check**: Run the project linter. Must pass with 0 errors and 0 warnings.
 4. **Test Suite**: Run the test runner for the affected subsystems. Must pass with 100% success rate.
 5. **Build Check**: Run the compilation/build command. Must exit with code 0.
+6. **Semantic Spec Drift Sensor (Video 4:13–4:38 & ADR 0008)**: Run `node .agents/scripts/generate-drift-report.js <feature-id>`. Must pass with 0 discrepancies across Missing Features, Incomplete Models, Logic Shortcuts, and Architectural Divergences.
 
 ### Stage 2: Test Integrity & Immutability Audit (AgentCoder Protocol — Prohibition 9)
 Inspect `git diff` on test files (`git diff HEAD~N -- tests/` or similar):
@@ -73,6 +74,7 @@ The Reviewer MUST output a structured Verification Report in the chat:
 | Sensor | Command / Target | Status | Output / Signal |
 |---|---|---|---|
 | Spec Drift | `node .agents/scripts/check-spec-drift.js` | [PASS / FAIL] | [0 drifting files / Orphaned files detected] |
+| Semantic Drift | `node .agents/scripts/generate-drift-report.js` | [PASS / FAIL] | [0 discrepancies detected / Discrepancies count] |
 | Linter | `npm run lint` | [PASS / FAIL] | [0 errors, 0 warnings / Log snippet] |
 | Test Suite | `npm test` | [PASS / FAIL] | [X passed, 0 failed] |
 | Build | `npm run build` | [PASS / FAIL] | [Clean exit code 0 / Error output] |

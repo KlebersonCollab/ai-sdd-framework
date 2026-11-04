@@ -80,7 +80,9 @@ Use this matrix to route every user request to the appropriate skill:
 | **Feature Implementation (TDD)** | `sdd-executor` | `refactor`, `debug`, `check-spec-drift.js --working-tree` | Source code, test files, `tasks.md` (Evidence column) |
 | **Bug Investigation / Diagnosis** | `debug` | `search`, `run_command` | Root cause analysis → Feeds `sdd-planner` if replan needed |
 | **Code Restructuring / Clean Code** | `refactor` | `sdd-executor` | Source code with non-regression tests |
-| **Specification & Quality Audit** | `sdd-review` | `run-sdd-review.js`, test runner, linter, build sensors | Formal Verification Report with Verdict in chat |
+| **Specification & Quality Audit** | `sdd-review` | `run-sdd-review.js`, `generate-drift-report.js`, test runner, linter, build sensors | Formal Verification Report with Verdict in chat |
+| **Goldfish Spec Review (Pre-Code)** | `sdd-spec-review` | `run-spec-review.js`, `invoke_subagent`, `Task tool` | `.specs/features/<id>/spec-review-report.md` |
+| **Semantic Drift Report (Post-Code)** | `sdd-review` | `generate-drift-report.js`, `npm run drift-report` | `.specs/features/<id>/drift-report.md` |
 | **UI / Frontend / Design System** | `sdd-executor` / `sdd-planner` | `DESIGN.md`, `view_file` | Source code matching `DESIGN.md` tokens |
 | **Specs & Feature Dashboard** | `sdd-executor` / `sdd-planner` | `serve-dashboard.js`, `DESIGN.md` | Interactive UI at `http://localhost:3000` |
 | **Symbol & Pattern Lookup** | `search` | `grep_search`, `find_by_name` | Direct file:line references |
@@ -89,16 +91,18 @@ Use this matrix to route every user request to the appropriate skill:
 
 ---
 
-# Global Execution Rules (Strict SDD Lifecycle)
+# Global Execution Rules (Strict SDD Lifecycle & EGM 5 Phases)
 
 ## Priority Order & Execution Flow
 
 ```text
-0. sdd-memory   (Load at session start; persist insights at session end)
-1. sdd-explorer (Brownfield discovery via auto-discover.js & codebase mapping)
-2. sdd-planner  (Feature planning: scaffold via create-feature.js; plan.md, spec.md, tasks.md)
-3. sdd-executor (Atomic TDD implementation, SWE-agent ACI & AgentCoder test immutability)
-4. sdd-review   (Sensor audit via run-sdd-review.js, Spec Drift check, AC verification & verdict)
+0. sdd-memory      (Load at session start; persist insights at session end)
+1. Bootstrap       (sdd-explorer: brownfield discovery via auto-discover.js & codebase mapping)
+2. Brainstorm      (grill-me: Phase 0 ALIGN with critical inquest under strict Zero-Code Invariance)
+3. Draft           (sdd-planner: scaffold via create-feature.js; plan.md, spec.md, tasks.md in sections)
+4. Spec Review     (sdd-spec-review: cold adversarial Goldfish review swarm via run-spec-review.js)
+5. Execution (TDD) (sdd-executor: atomic implementation, SWE-agent ACI & test immutability)
+6. Review & Drift  (sdd-review: run-sdd-review.js + generate-drift-report.js semantic spec-vs-code audit)
 ```
 
 ---
@@ -118,6 +122,7 @@ If a task involves writing code, refactoring, feature implementation, bug fixing
 * **Responsibilities**: Define scope (`plan.md`), BDD acceptance criteria with sensors (`spec.md`), and strict 7-column atomic tasks with DAG dependency mapping (`tasks.md`) under `.specs/features/<feature-id>/`. Create numbered ADRs in `.specs/project/ADRs/` for structural choices.
 * **Knowledge Base Alignment**: Verify proposed architecture against `.specs/knowledge/anti-patterns/` to avoid recurring pitfalls, and leverage `.specs/knowledge/patterns/` for established domain solutions.
 * **Automation**: Scaffold canonical feature directories using `node .agents/scripts/create-feature.js <feature-id> --title "<Feature Title>"` (or `npm run create-feature <id>`).
+* **Pre-Code Spec Review Gate**: Before code implementation begins, execute cold adversarial spec review via `node .agents/scripts/run-spec-review.js <feature-id>` (or `npm run spec-review <id>`) or dispatch subagent with `sdd-spec-review` skill to eliminate ambiguity and unstated assumptions.
 * **Reference Templates**: Consult [plan-template.md](.agents/skills/sdd-planner/references/plan-template.md), [spec-template.md](.agents/skills/sdd-planner/references/spec-template.md), [task-template.md](.agents/skills/sdd-planner/references/task-template.md), [grilling-session.md](.agents/skills/sdd-planner/references/grilling-session.md).
 * **Forbidden**: Direct execution without approved planning (`User Request → sdd-executor` is strictly invalid); introducing architecture matching documented anti-patterns.
 
@@ -138,7 +143,7 @@ Only after planning is established may implementation proceed:
 ## Rule 4 — Review is Mandatory After Development (Pre-Commit Spec Drift Sensor)
 After any implementation activity:
 * **MUST USE**: `skill: sdd-review`.
-* **Responsibilities**: Run the unified Review Sensor Gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which automatically executes all sensors (Spec Drift Sensor, Linter, Test Suite, Build), audits test diff integrity against assertion tampering, audits each AC against concrete code lines (`file:///...`), audits compliance against `.specs/knowledge/anti-patterns/`, and generates the formal Verification Report with Verdict (`APPROVED` / `REQUESTS CHANGES`).
+* **Responsibilities**: Run the unified Review Sensor Gate via `node .agents/scripts/run-sdd-review.js <feature-id>` (or `npm run review <feature-id>`), which automatically executes all sensors (Spec Drift Sensor, Linter, Test Suite, Build, and Semantic Spec Drift Sensor via `generate-drift-report.js` / `npm run drift-report <feature-id>`), audits test diff integrity against assertion tampering, audits each AC against concrete code lines (`file:///...`), audits compliance against `.specs/knowledge/anti-patterns/`, and generates the formal Verification Report with Verdict (`APPROVED` / `REQUESTS CHANGES`).
 * **Reference Standards**: Consult [BDD Guide](.agents/skills/sdd-review/references/bdd-guide.md).
 * **Forbidden**: Approving work without sensor evidence, approving when spec drift is detected, approving code that introduces a documented anti-pattern, or skipping edge-case checks.
 
@@ -154,6 +159,8 @@ All agents across any AI harness MUST leverage these zero-dependency native scri
 | `node .agents/scripts/check-spec-drift.js [--working-tree]` | Detects undeclared code modifications against active `tasks.md` | Pre-commit hook & after every implementation task in Executor. |
 | `node .agents/scripts/auto-discover.js [--dry-run]` | Deterministically scans manifests & directory layouts to populate `.specs/codebase/` | Gate 7 Auto-Discovery & initial project bootstrapping. |
 | `node .agents/scripts/create-feature.js <id> [--title "..."]` | Scaffolds `.specs/features/<id>/` (`plan.md`, `spec.md`, `tasks.md`) | Starting a new feature plan in Planner (Rule 2). |
+| `node .agents/scripts/generate-drift-report.js [id]` | Semantic drift audit comparing spec.md vs. code reality (Video 4:13–4:38) | Post-implementation review gate & pre-release check. |
+| `node .agents/scripts/run-spec-review.js [id]` | Cold adversarial spec audit detecting ambiguities and incomplete BDD | Pre-implementation spec approval gate (Rule 2). |
 | `node .agents/scripts/run-sdd-review.js [id]` | Unified sensor runner & test immutability audit producing Verification Report | Feature completion audit in Reviewer (Rule 4). |
 | `node .agents/scripts/install-hooks.js` | Installs worktree-resilient dual-sensor (`verify-sdd` + `check-drift`) hook | Project setup & onboarding. |
 | `node .agents/scripts/serve-dashboard.js` | Launches native Cockpit server (port 3000) with SSE live-sync | Visualizing cascade, living docs, and terminal. |
@@ -162,17 +169,29 @@ All agents across any AI harness MUST leverage these zero-dependency native scri
 
 ---
 
-# Subagent Delegation Strategy
+# Multi-Harness Subagent Invocation & Delegation Strategy
 
-When handling complex tasks, use subagents strategically:
+When handling complex tasks, use subagents strategically across your active AI assistant environment:
 
-1. **Subagent `research` (Read-only)**:
+### Multi-Harness Invocation Matrix
+| AI Assistant / IDE | Discovery Mechanism | Subagent Invocation Method | Target Scope |
+| :--- | :--- | :--- | :--- |
+| **Google Antigravity** | `.agents/skills/` & `AGENTS.md` | `invoke_subagent` (`TypeName: "research"`, `Role: "Goldfish Spec Reviewer"`) | Cold spec review, codebase exploration |
+| **Anthropic Claude Code** | `.agents/skills/` (Agent Skills Standard) | `Task` tool spawning stateless worker referencing `sdd-spec-review` | Cold spec review without chat history bias |
+| **OpenAI Codex** | `AGENTS.md` & `.agents/skills/` | Multi-thread execution (`agents.max_threads`) via isolated worker | Parallel test and spec auditing |
+| **Universal CLI** | `package.json` & `.agents/scripts/` | `npm run spec-review <id>` / `npm run drift-report <id>` | Deterministic zero-dependency CLI execution |
+
+### Subagent Personas & Roles
+1. **Goldfish Reviewer (`sdd-spec-review`, Read-only)**:
+   - Evaluates specifications cold with zero conversational memory.
+   - Attacks ambiguities ("fast", "simple", "robust") and verifies BDD Given/When/Then completeness.
+2. **Subagent `research` (Read-only)**:
    - Use for extensive codebase exploration, searching external documentation, or surveying large modules.
    - Keeps the main context clean from intermediate search dumps.
-2. **Subagent `self` (Full capability)**:
+3. **Subagent `self` (Full capability)**:
    - Use for isolated iterative TDD loops in `sdd-executor` or heavy refactoring sub-tasks.
-3. **Main Context Execution**:
-   - Use for planning alignment (`sdd-planner`, `grill-me`), interactive review verdicts (`sdd-review`), and user communications.
+4. **Main Context Execution (The Elephant)**:
+   - Long-horizon planning alignment (`sdd-planner`, `grill-me`), interactive review verdicts (`sdd-review`), and user communications. Strict rule: **writes zero production code during upstream phases**.
 
 ---
 

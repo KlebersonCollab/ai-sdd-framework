@@ -156,6 +156,15 @@ function runReview(featureId, options = {}) {
     }
   }
 
+  // Semantic Drift Sensor Gate (spec.md vs. code reality — ADR 0008)
+  const driftScriptPath = path.join(REPO_ROOT, '.agents', 'scripts', 'generate-drift-report.js');
+  if (fs.existsSync(driftScriptPath) && featureId) {
+    sensors.push({
+      name: 'Semantic Drift',
+      command: `node .agents/scripts/generate-drift-report.js ${cleanId}`
+    });
+  }
+
   const executedSensors = [];
   let allSensorsPassed = true;
 

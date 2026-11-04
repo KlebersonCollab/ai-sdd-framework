@@ -122,7 +122,7 @@ else
 fi
 
 # Copiar arquivos de governança canônica na raiz
-ROOT_FILES=("AGENTS.md" "DESIGN.md" ".cursorrules" ".windsurfrules" ".clinerules")
+ROOT_FILES=("AGENTS.md" "DESIGN.md" "CLAUDE.md" ".cursorrules" ".windsurfrules" ".clinerules")
 for f in "${ROOT_FILES[@]}"; do
     if [ -f "${SRC_ROOT}/${f}" ]; then
         cp -f "${SRC_ROOT}/${f}" "${TARGET_DIR}/${f}"
@@ -178,6 +178,8 @@ echo -e "${CYAN}Comandos úteis para o seu projeto:${NC}"
 echo -e "  • Iniciar Cockpit Web:     node .agents/scripts/serve-dashboard.js"
 echo -e "  • Auditar Integridade:     node .agents/scripts/verify-sdd-integrity.js"
 echo -e "  • Verificar Spec Drift:    node .agents/scripts/check-spec-drift.js --working-tree"
+echo -e "  • Relatório de Drift:      node .agents/scripts/generate-drift-report.js <id>"
+echo -e "  • Revisão Fria (Goldfish): node .agents/scripts/run-spec-review.js <id>"
 echo -e "  • Criar Nova Feature:      node .agents/scripts/create-feature.js <id> --title '<Título>'"
 echo -e ""
 echo -e "${YELLOW}Agora inicie seu assistente de IA (Antigravity, Cursor, Windsurf, Claude Code).${NC}"

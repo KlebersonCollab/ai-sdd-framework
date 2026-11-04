@@ -267,6 +267,104 @@
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
             <span class="badge badge-success">100%</span>
+            <span class="card-title">Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Sensor</span>
+            <span class="card-subtitle font-mono">egm-multi-harness-drift</span>
+          </div>
+          <span class="task-count">8/8 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">Modern Spec-Driven Development (SDD) with autonomous and pair-programming AI coding agents faces two critical failure modes:
+1. <strong>Conversational Sycophancy &amp; Confirmation Bias</strong>: When a single LLM session brainstorms, specifies, and reviews its own design, it develops conversational bias—glossing over its own ambiguities and unstated assumptions. Solving this requires strict role decoupling:
+<li class="doc-li"><strong>The Elephant</strong>: Context-rich, long-horizon session for ideation and formal specifications. Strictly <strong>writes zero production code</strong>.</li>
+<li class="doc-li"><strong>The Goldfish Swarm</strong>: Stateless, zero-context subagents with fresh context windows that attack the specification cold before implementation begins.</li>
+2. <strong>Semantic Spec-Code Drift (Video 4:13 - 4:38)</strong>: Traditional git pre-commit hooks and file-boundary sensors only verify that modified file paths match task declarations. They fail to detect whether actual production code omitted required business rules, truncated data models, took shortcuts (hardcoded values, stubs, unhandled errors), or introduced architectural divergence.
+3. <strong>Repository Directory Sprawl vs. Open Standards</strong>: Rather than fragmenting the repository with vendor-specific folders (<code class="inline-code">.claude/</code>, <code class="inline-code">.codex/</code>), we adhere to Anthropic&#039;s open <strong>Agent Skills specification</strong> ([agentskills.io](https://agentskills.io)) and the Linux Foundation&#039;s <strong><code class="inline-code">AGENTS.md</code> standard</strong>, maintaining <code class="inline-code">.agents/</code> as the single source of truth across all tools.</p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold unit &amp; integration tests covering semantic drift engine, spec review runner, skill manifest integrity, and package script integration</td>
+        <td class="files-col"><code>`tests/egm-multi-harness-drift.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement native zero-dependency Semantic Drift Engine classifying discrepancies into 4 categories</td>
+        <td class="files-col"><code>`.agents/scripts/generate-drift-report.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement stateless Goldfish Spec Review Runner evaluating pre-code ambiguity and BDD completeness</td>
+        <td class="files-col"><code>`.agents/scripts/run-spec-review.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Create canonical Agent Skill following Anthropic Agent Skills open specification</td>
+        <td class="files-col"><code>`.agents/skills/sdd-spec-review/SKILL.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Integrate semantic drift engine into unified SDD Review Runner as Stage 6 sensor gate</td>
+        <td class="files-col"><code>`.agents/scripts/run-sdd-review.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Register drift-report and spec-review npm scripts in package.json</td>
+        <td class="files-col"><code>`package.json`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Update AGENTS.md and sdd-review SKILL.md with 5-phase EGM lifecycle, multi-harness routing matrix, and subagent invocation cheat-sheet</td>
+        <td class="files-col"><code>`AGENTS.md`, `.agents/skills/sdd-review/SKILL.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-08</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Audit implementation against BDD acceptance criteria, run all sensors, and compile verification report</td>
+        <td class="files-col"><code>`.specs/features/egm-multi-harness-drift/tasks.md`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
             <span class="card-title">Unified Spec Execution Cascade &amp; Legacy Kanban Retirement</span>
             <span class="card-subtitle font-mono">enhanced-spec-cascade</span>
           </div>
@@ -1055,6 +1153,63 @@ We adopt a <strong>Zero-Dependency One-Liner Installer Architecture</strong> dis
         </div>
       </div>
     
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0008: canonical egm lifecycle, agent skills convention &amp; semantic drift engine">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0008: Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine</span>
+          </div>
+          <span class="card-date">2026-11-03</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0008: Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-11-03</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+As AI coding assistants have evolved, our existing SDD runtime (<code class="inline-code">ai-sdd-framework</code>) effectively solved structural integrity, pre-commit file boundaries (<code class="inline-code">check-spec-drift.js</code>), and long-term memory (<code class="inline-code">memory_graph.jsonl</code>). However, modern engineering with autonomous agents introduces critical challenges highlighted by Google&#039;s Elephant-Goldfish Model (EGM) and Dave Rensin&#039;s research:</p><p class="doc-p">1. <strong>Conversational Sycophancy &amp; Context Degradation</strong>:
+   When a single AI session brainstorms, specifies, and audits its own plans, it develops conversational bias—glossing over its own ambiguities and unstated assumptions. Solving this requires strict role decoupling:
+<li class="doc-li"><strong>The Elephant</strong>: Context-rich, long-horizon session for ideation and formal specifications. Strictly <strong>writes zero production code</strong>.</li>
+<li class="doc-li"><strong>The Goldfish Swarm</strong>: Stateless, zero-context subagents with fresh context windows that attack the specification cold before implementation begins.</li></p><p class="doc-p">2. <strong>File Boundary Drift vs. Semantic Requirement Drift (Video 4:13–4:38)</strong>:
+   Our existing <code class="inline-code">check-spec-drift.js</code> validates that modified files were declared in <code class="inline-code">tasks.md</code>. While critical for file-boundary discipline, it does not analyze <strong>semantic requirement compliance</strong>:
+<li class="doc-li">Missing features and omitted acceptance criteria.</li>
+<li class="doc-li">Incomplete data models and interface schemas.</li>
+<li class="doc-li">Logic shortcuts (hardcoded stubs, unhandled error branches, temporary mocks).</li>
+<li class="doc-li">Architectural divergences from the design contract.</li></p><p class="doc-p">3. <strong>Vendor Fragmentation vs. Open <code class="inline-code">.agents/</code> Standard</strong>:
+   Different tools historically proposed proprietary directories (e.g. <code class="inline-code">.claude/</code>, <code class="inline-code">.codex/</code>, <code class="inline-code">.cursor/</code>). However, Anthropic&#039;s open <strong>Agent Skills specification</strong> ([agentskills.io](https://agentskills.io)) and the Linux Foundation&#039;s <strong><code class="inline-code">AGENTS.md</code> standard</strong> establish <code class="inline-code">.agents/</code> as the universal single source of truth across all modern AI coding assistants (Claude Code, OpenAI Codex, Antigravity, Cursor, Windsurf, Copilot). Introducing tool-specific folders would violate the framework&#039;s core architectural principle of Zero Vendor Pollution.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3></p><p class="doc-p">We adopt a <strong>Unified EGM Lifecycle &amp; Semantic Drift Architecture</strong> built entirely on the open <code class="inline-code">.agents/</code> and <code class="inline-code">AGENTS.md</code> conventions:</p><p class="doc-p"><h4 class="doc-h3">1. 5-Phase SDD Lifecycle Formalization</h4>
+We standardize the SDD lifecycle across all harnesses into 5 sequential phases documented in <code class="inline-code">AGENTS.md</code>:
+1. <strong>Bootstrap</strong>: Spatial repository mapping via <code class="inline-code">auto-discover.js</code> and <code class="inline-code">sdd-explorer</code>.
+2. <strong>Brainstorm</strong>: Conceptual exploration under strict <strong>Zero-Code Invariance</strong> with Goldfish adversarial shootdowns.
+3. <strong>Draft</strong>: Progressive specification authoring (<code class="inline-code">plan.md</code>, <code class="inline-code">spec.md</code>, <code class="inline-code">tasks.md</code>) with explicit section checkpoints.
+4. <strong>Review (Pre-Implementation)</strong>: Cold-context Goldfish review swarm auditing for unstated assumptions and edge cases before coding.
+5. <strong>Drift Report (Post-Implementation)</strong>: Deep semantic analysis comparing <code class="inline-code">spec.md</code> vs. actual code diffs to classify divergences.</p><p class="doc-p"><h4 class="doc-h3">2. Single Source of Truth: <code class="inline-code">.agents/skills/sdd-spec-review/</code></h4>
+Rather than creating fragmented vendor directories, we implement the Goldfish adversarial reviewer as a canonical Agent Skill following Anthropic&#039;s open standard:
+<li class="doc-li"><code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>: Declarative metadata frontmatter, strict read-only tool boundaries, and adversarial audit instructions.</li>
+<li class="doc-li">Auto-discovered natively by Claude Code, Codex, Antigravity, and Cursor from <code class="inline-code">.agents/skills/</code>.</li>
+<li class="doc-li">In <code class="inline-code">AGENTS.md</code>, we provide explicit multi-harness invocation guidelines for:</li>
+<li class="doc-li"><strong>Antigravity</strong>: via <code class="inline-code">invoke_subagent</code> (<code class="inline-code">Role: &quot;Goldfish Spec Reviewer&quot;</code>, <code class="inline-code">TypeName: &quot;research&quot;</code>).</li>
+<li class="doc-li"><strong>Claude Code</strong>: natively via the Agent Skills discovery in <code class="inline-code">.agents/skills/</code> and <code class="inline-code">Task</code> tool.</li>
+<li class="doc-li"><strong>OpenAI Codex</strong>: natively via <code class="inline-code">AGENTS.md</code> and multi-thread execution.</li>
+<li class="doc-li"><strong>Universal CLI Fallback</strong>: Standalone runner <code class="inline-code">node .agents/scripts/run-spec-review.js [feature-id]</code> (and <code class="inline-code">npm run spec-review</code>).</li></p><p class="doc-p"><h4 class="doc-h3">3. Native Zero-Dependency Semantic Drift Engine</h4>
+We implement <code class="inline-code">node .agents/scripts/generate-drift-report.js [feature-id]</code> (and <code class="inline-code">npm run drift-report [feature-id]</code>):
+<li class="doc-li">Parses <code class="inline-code">spec.md</code> to extract declared Business Rules (<code class="inline-code">BR-X</code>), BDD scenarios (<code class="inline-code">AC-X</code>), data models, and constraints.</li>
+<li class="doc-li">Inspects repository diffs (<code class="inline-code">git diff</code> or working tree) on declared <code class="inline-code">Target Files</code>.</li>
+<li class="doc-li">Generates an actionable markdown report <code class="inline-code">.specs/features/&lt;feature-id&gt;/drift-report.md</code> categorizing discrepancies into:</li>
+<li class="doc-li"><code class="inline-code">MISSING_FEATURES</code></li>
+<li class="doc-li"><code class="inline-code">INCOMPLETE_MODELS</code></li>
+<li class="doc-li"><code class="inline-code">LOGIC_SHORTCUTS</code></li>
+<li class="doc-li"><code class="inline-code">ARCHITECTURAL_DIVERGENCE</code></li>
+<li class="doc-li">Integrates directly into <code class="inline-code">run-sdd-review.js</code> as an automated sensor gate.</li></p><p class="doc-p"><h4 class="doc-h3">4. Installer Distribution Guarantee</h4>
+The one-liner installers (<code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code>) already package and distribute <code class="inline-code">.agents/</code> as the canonical payload. By keeping all skills inside <code class="inline-code">.agents/skills/</code> and scripts inside <code class="inline-code">.agents/scripts/</code>, the installer automatically guarantees that every new or upgraded project receives the complete EGM infrastructure without requiring separate vendor folders.</p><p class="doc-p"><h3 class="doc-h2">Consequences</h3></p><p class="doc-p"><h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>Zero Tool Pollution</strong>: No <code class="inline-code">.claude/</code>, <code class="inline-code">.codex/</code>, or proprietary directory sprawl in user repositories.</li>
+<li class="doc-li"><strong>Open Standard Compliance</strong>: Aligns with Anthropic&#039;s Agent Skills specification and Linux Foundation&#039;s <code class="inline-code">AGENTS.md</code>.</li>
+<li class="doc-li"><strong>Zero Sycophancy</strong>: Goldfish subagents eliminate confirmation bias before implementation begins.</li>
+<li class="doc-li"><strong>Deep Quality Enforcement</strong>: Semantic drift report catches bugs, missing scenarios, and shortcuts that pass linter and file-drift checks.</li>
+<li class="doc-li"><strong>Seamless Distribution</strong>: <code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code> require zero extra directory handling—all new capabilities reside natively in <code class="inline-code">.agents/</code>.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Generating a semantic drift report on large features requires scanning multiple files. <em>Mitigation</em>: The engine scopes analysis strictly to the <code class="inline-code">Target Files</code> declared in <code class="inline-code">tasks.md</code>, maintaining execution under 100ms for deterministic checks.</li>
+</p></div>
+        </div>
+      </div>
+    
       </div>
     </section>
 
@@ -1124,13 +1279,15 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">github-one-liner-installer</code> (Zero-Dependency GitHub One-Liner Installer &amp; Quickstart Docs).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 7/7 tasks completed. Delivered <code class="inline-code">setup.ps1</code>, <code class="inline-code">setup.sh</code>, comprehensive test suite in <code class="inline-code">tests/installer.test.js</code> (33/33 tests passing), ADR 0007, updated README Quickstart guide, and zero-drift review approval.</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">egm-multi-harness-drift</code> (Multi-Harness EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 8/8 tasks completed. Delivered <code class="inline-code">generate-drift-report.js</code>, <code class="inline-code">run-spec-review.js</code>, canonical skill <code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>, Stage 6 Reviewer integration, ADR 0008, updated <code class="inline-code">AGENTS.md</code> and <code class="inline-code">package.json</code>, and zero-drift review approval.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
   1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 33/33 passing across 4 test suites (100% in ~230ms).
-  3. Spec Drift Sensor: <code class="inline-code">npm run check-drift</code> — 0 drifted files.
-  4. SDD Review Runner: <code class="inline-code">npm run review github-one-liner-installer</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 46/46 passing across 5 test suites (100% in ~240ms).
+  3. Spec Drift Sensor (File-level): <code class="inline-code">npm run check-drift</code> — 0 drifted files.
+  4. Semantic Drift Sensor: <code class="inline-code">npm run drift-report egm-multi-harness-drift</code> — 0 semantic discrepancies.
+  5. SDD Review Runner: <code class="inline-code">npm run review egm-multi-harness-drift</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-11-03 - Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine (ADR 0008)</strong>: Formalized the 5-phase Elephant-Goldfish Model (EGM) in <code class="inline-code">AGENTS.md</code>. Packaged Goldfish adversarial spec review as a canonical Agent Skill (<code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>) following Anthropic&#039;s open standard. Implemented native zero-dependency Semantic Drift Engine (<code class="inline-code">generate-drift-report.js</code>) classifying discrepancies into 4 categories (Missing Features, Incomplete Models, Logic Shortcuts, Architectural Divergences) and integrated as Stage 6 in <code class="inline-code">run-sdd-review.js</code>. Accepted ADR 0008.</li>
 <li class="doc-li"><strong>2026-11-02 - GitHub One-Liner Installer &amp; Update-Safe Distribution (ADR 0007)</strong>: Implemented dual-platform zero-dependency one-liner installers (<code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code>) pulling directly from GitHub archive. Enforced update-safety invariance protecting <code class="inline-code">.specs/</code> and <code class="inline-code">memory_graph.jsonl</code>, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.</li>
 <li class="doc-li"><strong>2026-10-18 - Core Sensors Robustness &amp; Productivity Automation Tooling (ADR 0006)</strong>: Introduced dual-mode verification (<code class="inline-code">--bootstrap</code> vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (<code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>). Accepted ADR 0006.</li>
 <li class="doc-li"><strong>2026-09-27 - Unified Spec Execution Cascade &amp; Kanban Retirement (ADR 0005)</strong>: Retired legacy 3-column Kanban board in favor of AI-native execution cascade inside <code class="inline-code">SpecsCascade.vue</code> featuring real-time topological dependency resolution, Next Actionable task pulse highlight, inline <code class="inline-code">Delegar</code>/<code class="inline-code">Rejeitar</code> actions, and clickable dependency badges. Superseded ADR 0003.</li>
