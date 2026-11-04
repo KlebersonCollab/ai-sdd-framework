@@ -22,8 +22,8 @@
 Instead of unconstrained "prompt-and-code" execution, the framework enforces a **strict, deterministic Spec Driven Development lifecycle** governed by file-based persistent state, empirical sensor validation, and open skill standards.
 
 ```text
-0. sdd-memory   ──► 1. sdd-explorer ──► 2. sdd-planner ──► 3. sdd-executor ──► 4. sdd-review
-(Long-Term Recall)  (Brownfield Reality) (Specs & ADRs)     (Atomic TDD Cycle)   (Sensor Audit)
+0. sdd-memory ──► 1. Bootstrap ──► 2. Brainstorm ──► 3. Draft ──► 4. Spec Review ──► 5. Execution ──► 6. Review & Drift
+(Memory Recall)  (sdd-explorer)    (grill-me)     (sdd-planner)  (sdd-spec-review) (sdd-executor)    (sdd-review)
 ```
 
 ---
@@ -108,35 +108,40 @@ sequenceDiagram
     actor User
     participant Memory as sdd-memory
     participant Explorer as sdd-explorer
-    participant Planner as sdd-planner
+    participant Planner as sdd-planner (Elephant)
+    participant Goldfish as sdd-spec-review (Goldfish)
     participant Executor as sdd-executor
     participant Reviewer as sdd-review
 
     User->>Memory: Start Session / Task Request
     Memory->>Memory: Rehydrate context from memory_graph.jsonl & STATE.md
     
-    alt Missing or Incomplete Context
+    alt Missing or Incomplete Context (1. Bootstrap)
         Memory->>Explorer: Trigger Auto-Discovery Protocol
         Explorer->>Explorer: Scan manifests, directory tree, stack & conventions
         Explorer->>User: Present baseline discovery & confirm assumptions
     end
 
-    User->>Planner: New Feature / Bug / Architecture Request
+    User->>Planner: 2. Brainstorm (Zero-Code Invariance)
     opt Grilling Session (Phase 0: ALIGN via grill-me)
         Planner->>User: Stress-test requirements, resolve ambiguities & identify ADRs
     end
-    Planner->>Planner: Author plan.md, spec.md (BDD), tasks.md, and ADRs
+    Planner->>Planner: 3. Draft plan.md, spec.md (BDD), tasks.md, and ADRs
+
+    Planner->>Goldfish: 4. Spec Review (Stateless Cold Audit)
+    Goldfish->>Goldfish: Detect ambiguities ("fast", "simple") & verify BDD Given/When/Then
+    Goldfish-->>Planner: Issue spec-review-report.md [APPROVED or REVISE]
 
     Planner->>Executor: Approved Plan Handoff
-    loop For each Atomic Task in tasks.md (Sequential)
+    loop For each Atomic Task in tasks.md (5. Sequential Execution - TDD)
         Executor->>Executor: 1. Write failing test (TDD)
         Executor->>Executor: 2. Write minimal code to pass test
-        Executor->>Executor: 3. Run Sensors (Lint, Tests, Build)
+        Executor->>Executor: 3. Run Sensors (Lint, Tests, Build, check-spec-drift)
         Executor->>Executor: 4. Log commit & sensor Evidence in tasks.md
     end
 
-    Executor->>Reviewer: Implementation Complete
-    Reviewer->>Reviewer: Run Sensors & Audit BDD Scenarios against Concrete Code
+    Executor->>Reviewer: 6. Implementation Complete (Review & Drift Report)
+    Reviewer->>Reviewer: Run Hard Sensors & Deep Semantic Drift Report (generate-drift-report.js)
     Reviewer-->>User: Formal Verification Report [APPROVED / REQUESTS CHANGES]
     Reviewer->>Memory: Persist architectural insights to memory_graph.jsonl
 ```
@@ -152,6 +157,7 @@ All skills follow the **Open Agent Skills Standard** with structured YAML frontm
 | **`sdd-memory`** | `project-codebase-memory` | Cross-session long-term recall & entity graph management | `.agents/memory/memory_graph.jsonl` |
 | **`sdd-explorer`** | `project-mapping` | Brownfield discovery, stack mapping & conventions extraction | `.specs/codebase/` (`STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `TECHNICAL-MAP.md`) |
 | **`sdd-planner`** | `project-planning` | Problem decomposition, BDD specs, atomic tasks & ADR authoring | `.specs/features/<id>/` (`plan.md`, `spec.md`, `tasks.md`), `.specs/project/` |
+| **`sdd-spec-review`** | `specification-audit` | Stateless Goldfish review eliminating ambiguities and unstated assumptions (Pre-Code) | `.specs/features/<id>/spec-review-report.md` |
 | **`grill-me`** | `requirement-analysis` | Relentless interview protocol to stress-test requirements (Phase 0) | Direct Q&A → Feeds `sdd-planner` & `CONTEXT.md` |
 | **`sdd-executor`** | `development-workflow` | Surgical TDD implementation with sensor evidence & Safety Valve | Source code, test files, `tasks.md` (Evidence column) |
 | **`sdd-review`** | `development-workflow` | Sensor-based empirical audit against BDD acceptance criteria | Formal Verification Report with Verdict in chat |
@@ -197,6 +203,8 @@ ai-sdd-framework/
 │   │   ├── export-docs.js              # Standalone single-file HTML documentation compiler
 │   │   ├── verify-sdd-integrity.js     # SDD Canonical Integrity & Schema Sensor (with --bootstrap & DAG checks)
 │   │   ├── check-spec-drift.js         # Spec Drift Sensor with working-tree & glob matching
+│   │   ├── generate-drift-report.js    # Deep Semantic Drift Engine classifying discrepancies into 4 categories
+│   │   ├── run-spec-review.js          # Cold adversarial Goldfish spec review runner
 │   │   ├── compact-memory.js           # Memory graph maintenance & compaction
 │   │   ├── install-hooks.js            # Worktree-resilient dual-sensor pre-commit hook installer
 │   │   ├── auto-discover.js            # Deterministic project stack detection & codebase specs generator
@@ -206,6 +214,7 @@ ai-sdd-framework/
 │       ├── sdd-memory/                 # Long-term recall & graph maintenance
 │       ├── sdd-explorer/               # Codebase discovery & technical mapping
 │       ├── sdd-planner/                # Problem decomposition, specs & ADR authoring
+│       ├── sdd-spec-review/            # Stateless Goldfish adversarial spec review
 │       ├── sdd-executor/               # Atomic TDD implementation with sensor evidence
 │       ├── sdd-review/                 # Sensor-based empirical verification & scoring
 │       ├── grill-me/                   # Interactive decision tree stress-testing (Phase 0)
@@ -217,7 +226,7 @@ ai-sdd-framework/
 ├── .specs/                             # Living Specifications (Created per project)
 │   ├── codebase/                       # Physical code architecture & stack maps (STACK, ARCHITECTURE, CONVENTIONS, CONCERNS, TECHNICAL-MAP)
 │   ├── project/                        # Product vision, roadmap, session state & ADRs (PROJECT, ROADMAP, STATE, CONTEXT, ADRs/)
-│   ├── features/                       # Active feature specifications (core-sensors-and-automation, enhanced-spec-cascade)
+│   ├── features/                       # Active feature specifications (core-sensors-and-automation, enhanced-spec-cascade, egm-multi-harness-drift)
 │   └── knowledge/                      # Curated patterns and anti-patterns
 ├── docs/                               # Exported Standalone Living Documentation
 │   └── index.html                      # Single-file offline documentation (100% serverless)
@@ -227,13 +236,15 @@ ai-sdd-framework/
 │   ├── serve-dashboard.test.js         # Server & Living Docs API test suite (19 unit & integration tests)
 │   ├── export-docs.test.js             # Standalone static exporter test suite (2 tests)
 │   ├── core-sensors-automation.test.js # Sensors robustness & CLI automation test suite (8 tests)
-│   └── installer.test.js               # One-Liner Installer & Update-Safe test suite (4 tests)
+│   ├── installer.test.js               # One-Liner Installer & Update-Safe test suite (5 tests)
+│   └── egm-multi-harness-drift.test.js # Semantic Drift & EGM multi-harness test suite (12 tests)
 ├── .cursorrules                        # Universal Cursor AI directive referencing AGENTS.md
 ├── .windsurfrules                      # Universal Windsurf AI directive referencing AGENTS.md
 ├── .clinerules                         # Universal Cline / RooCode directive referencing AGENTS.md
 ├── .github/
 │   └── copilot-instructions.md         # GitHub Copilot instructions referencing AGENTS.md
 ├── AGENTS.md                           # 🏛️ Master Operating Manual & Skill Routing Matrix
+├── CLAUDE.md                           # 🤖 Universal Claude Code project directives referencing AGENTS.md
 ├── DESIGN.md                           # 🎨 Linear-inspired Design Tokens & UI Specification
 ├── setup.ps1                           # 🚀 Windows PowerShell Universal One-Liner Installer
 ├── setup.sh                            # 🚀 POSIX Bash Universal One-Liner Installer
@@ -356,12 +367,14 @@ Emits **`docs/index.html`** (~85 KB) with embedded CSS, client-side search, tabs
 | Command | Purpose |
 | :--- | :--- |
 | `npm run dashboard` | Starts the native Cockpit server on port 3000 with real-time SSE live-sync |
-| `npm test` | Runs the 29-test sensor suite preceded by the SDD Canonical Integrity Sensor |
+| `npm test` | Runs the 46-test sensor suite preceded by the SDD Canonical Integrity Sensor |
 | `npm run verify-sdd` | Fast (<50ms) sensor auditing required canonical files, ADR statuses, schemas, and DAG acyclicity |
 | `npm run check-drift` | Pre-commit Spec Drift Sensor validating working tree or staged git code against active `tasks.md` |
+| `npm run drift-report <id>` | Deep Semantic Spec Drift Engine comparing spec.md vs. code reality across 4 discrepancy categories |
+| `npm run spec-review <id>` | Stateless Goldfish adversarial spec review detecting ambiguities and unstated assumptions prior to code |
 | `npm run auto-discover` | Deterministic brownfield stack scanner producing `.specs/codebase/` and `.specs/project/CONTEXT.md` |
 | `npm run create-feature <id>` | Scaffolds canonical `.specs/features/<id>/` (`plan.md`, `spec.md`, 7-column `tasks.md`) |
-| `npm run review <id>` | Unified Reviewer gate executing all 4 sensors, diff immutability check, and generating Verification Report |
+| `npm run review <id>` | Unified Reviewer gate executing all sensors (including Semantic Drift), diff immutability check, and generating Verification Report |
 | `npm run install-hooks` | Installs worktree-resilient dual-sensor pre-commit hook (`verify-sdd` + `check-drift`) |
 | `npm run docs:export` | Compiles 100% of `.specs/` and rules into a standalone offline `docs/index.html` |
 | `npm run compact-memory` | Compacts and resolves superseded entities in `memory_graph.jsonl` |
