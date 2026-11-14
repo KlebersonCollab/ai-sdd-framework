@@ -1,4 +1,4 @@
-# ==============================================================================
+﻿# ==============================================================================
 # AI-SDD Framework | Universal One-Liner Installer (PowerShell)
 # Repository: https://github.com/KlebersonCollab/ai-sdd-framework
 # ==============================================================================
@@ -130,7 +130,25 @@ try {
         }
     }
 
-    Write-Host "   ✓ Runtime e regras canônicas instalados." -ForegroundColor Green
+    # Sincronizar Knowledge Base canônico (.specs/knowledge) de forma Update-Safe (sem sobrescrever customizações)
+    $destKnowledgePatterns = Join-Path $targetDir ".specs\knowledge\patterns"
+    $destKnowledgeAnti = Join-Path $targetDir ".specs\knowledge\anti-patterns"
+    if (-not (Test-Path $destKnowledgePatterns)) { New-Item -ItemType Directory -Path $destKnowledgePatterns -Force | Out-Null }
+    if (-not (Test-Path $destKnowledgeAnti)) { New-Item -ItemType Directory -Path $destKnowledgeAnti -Force | Out-Null }
+
+    $sourceKnowledge = Join-Path $sourceRoot ".specs\knowledge"
+    if (Test-Path $sourceKnowledge) {
+        Get-ChildItem -Path (Join-Path $sourceKnowledge "patterns") -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object {
+            $targetFile = Join-Path $destKnowledgePatterns $_.Name
+            if (-not (Test-Path $targetFile)) { Copy-Item -Path $_.FullName -Destination $targetFile }
+        }
+        Get-ChildItem -Path (Join-Path $sourceKnowledge "anti-patterns") -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object {
+            $targetFile = Join-Path $destKnowledgeAnti $_.Name
+            if (-not (Test-Path $targetFile)) { Copy-Item -Path $_.FullName -Destination $targetFile }
+        }
+    }
+
+    Write-Host "   ✓ Runtime, Antigravity Lifecycle Hooks (.agents/hooks.json) e regras canônicas instalados." -ForegroundColor Green
 } finally {
     # Limpeza de arquivos temporários
     if (Test-Path $tempZip) { Remove-Item -Path $tempZip -Force -ErrorAction SilentlyContinue }
@@ -140,8 +158,8 @@ try {
 # 5. Inicialização de Especificações (.specs) & Sensores
 Write-Host "⚙️  [5/6] Configurando especificações e auto-descoberta..." -ForegroundColor Yellow
 
-$specsDir = Join-Path $targetDir ".specs"
-if (Test-Path (Join-Path $targetDir ".specs")) {
+$specsProjectDir = Join-Path $targetDir ".specs\project"
+if (Test-Path (Join-Path $targetDir ".specs\project")) {
     Write-Host "   🛡️ [SPECS PRESERVADAS] Diretório .specs/ pré-existente foi mantido intacto." -ForegroundColor DarkCyan
 } else {
     # Detectar se o projeto possui manifesto de código (Brownfield)

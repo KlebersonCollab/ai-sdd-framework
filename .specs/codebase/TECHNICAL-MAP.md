@@ -3,7 +3,7 @@
 ## Executive Summary
 The AI-SDD Framework is a file-first agentic operating system enforcing determinism, persistent memory, and sensor-gated development across 13+ AI harnesses.
 
-- **Stack**: Node.js standard library, Git, Markdown, JSONL.
-- **Architecture**: 5-layer SDD lifecycle (.agents/ + .specs/).
-- **Conventions**: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria.
-- **Current Focus**: Dashboard Reactivity Stabilization & Universal Living HTML Documentation Platform.
+- **Stack**: Node.js standard library, Git, Markdown, JSONL, Vue 3 SPA Cockpit.
+- **Architecture**: 5-layer SDD lifecycle (`.agents/` + `.specs/`) with 5-phase Elephant-Goldfish Model (EGM) and native Google Antigravity Lifecycle Hooks (`.agents/hooks.json`).
+- **Conventions**: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria, active task scope drift filtering.
+- **Current Focus**: v1.0.0 — Full Multi-Harness Runtime with Antigravity Lifecycle Hooks, Semantic Drift Engine, and Living HTML Documentation.

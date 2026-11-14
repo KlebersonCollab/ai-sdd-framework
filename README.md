@@ -191,6 +191,7 @@ All skills follow the **Open Agent Skills Standard** with structured YAML frontm
 ```
 ai-sdd-framework/
 ├── .agents/
+│   ├── hooks.json                      # Google Antigravity native lifecycle hooks (SessionStart, PreToolUse, Stop)
 │   ├── dashboard/dist/                 # Pre-compiled production Vue 3 Cockpit SPA assets
 │   ├── memory/
 │   │   └── memory_graph.jsonl          # Cross-session persistent knowledge graph
@@ -202,9 +203,10 @@ ai-sdd-framework/
 │   │   ├── serve-dashboard.js          # Native HTTP & RFC 6455 WebSocket gateway & 360° Living Specs API
 │   │   ├── export-docs.js              # Standalone single-file HTML documentation compiler
 │   │   ├── verify-sdd-integrity.js     # SDD Canonical Integrity & Schema Sensor (with --bootstrap & DAG checks)
-│   │   ├── check-spec-drift.js         # Spec Drift Sensor with working-tree & glob matching
+│   │   ├── check-spec-drift.js         # Spec Drift Sensor with activeOnly task scope & glob matching
 │   │   ├── generate-drift-report.js    # Deep Semantic Drift Engine classifying discrepancies into 4 categories
-│   │   ├── run-spec-review.js          # Cold adversarial Goldfish spec review runner
+│   │   ├── run-spec-review.js          # Cold adversarial Goldfish spec review runner (bilingual PT/EN & SOP audit)
+│   │   ├── sdd-hook.js                 # Antigravity lifecycle hook runner (SessionStart, PreToolUse, Stop)
 │   │   ├── compact-memory.js           # Memory graph maintenance & compaction
 │   │   ├── install-hooks.js            # Worktree-resilient dual-sensor pre-commit hook installer
 │   │   ├── auto-discover.js            # Deterministic project stack detection & codebase specs generator
@@ -226,8 +228,8 @@ ai-sdd-framework/
 ├── .specs/                             # Living Specifications (Created per project)
 │   ├── codebase/                       # Physical code architecture & stack maps (STACK, ARCHITECTURE, CONVENTIONS, CONCERNS, TECHNICAL-MAP)
 │   ├── project/                        # Product vision, roadmap, session state & ADRs (PROJECT, ROADMAP, STATE, CONTEXT, ADRs/)
-│   ├── features/                       # Active feature specifications (core-sensors-and-automation, enhanced-spec-cascade, egm-multi-harness-drift)
-│   └── knowledge/                      # Curated patterns and anti-patterns
+│   ├── features/                       # Active feature specifications (core-sensors-and-automation, enhanced-spec-cascade, egm-multi-harness-drift, antigravity-harness-v2)
+│   └── knowledge/                      # Curated patterns and anti-patterns (zero-host-pollution, antigravity-lifecycle-hooks, etc.)
 ├── docs/                               # Exported Standalone Living Documentation
 │   └── index.html                      # Single-file offline documentation (100% serverless)
 ├── packages/
@@ -237,7 +239,8 @@ ai-sdd-framework/
 │   ├── export-docs.test.js             # Standalone static exporter test suite (2 tests)
 │   ├── core-sensors-automation.test.js # Sensors robustness & CLI automation test suite (8 tests)
 │   ├── installer.test.js               # One-Liner Installer & Update-Safe test suite (5 tests)
-│   └── egm-multi-harness-drift.test.js # Semantic Drift & EGM multi-harness test suite (12 tests)
+│   ├── egm-multi-harness-drift.test.js # Semantic Drift & EGM multi-harness test suite (12 tests)
+│   └── antigravity-harness-v2.test.js  # Antigravity Lifecycle Hooks, Active Drift & Sensors v2 test suite (9 tests)
 ├── .cursorrules                        # Universal Cursor AI directive referencing AGENTS.md
 ├── .windsurfrules                      # Universal Windsurf AI directive referencing AGENTS.md
 ├── .clinerules                         # Universal Cline / RooCode directive referencing AGENTS.md
@@ -367,11 +370,12 @@ Emits **`docs/index.html`** (~85 KB) with embedded CSS, client-side search, tabs
 | Command | Purpose |
 | :--- | :--- |
 | `npm run dashboard` | Starts the native Cockpit server on port 3000 with real-time SSE live-sync |
-| `npm test` | Runs the 46-test sensor suite preceded by the SDD Canonical Integrity Sensor |
+| `npm test` | Runs the 55-test sensor suite preceded by the SDD Canonical Integrity Sensor |
 | `npm run verify-sdd` | Fast (<50ms) sensor auditing required canonical files, ADR statuses, schemas, and DAG acyclicity |
 | `npm run check-drift` | Pre-commit Spec Drift Sensor validating working tree or staged git code against active `tasks.md` |
 | `npm run drift-report <id>` | Deep Semantic Spec Drift Engine comparing spec.md vs. code reality across 4 discrepancy categories |
-| `npm run spec-review <id>` | Stateless Goldfish adversarial spec review detecting ambiguities and unstated assumptions prior to code |
+| `npm run spec-review <id>` | Stateless Goldfish adversarial spec review detecting ambiguities, BDD completeness, and SOP task limits |
+| `node .agents/scripts/sdd-hook.js <event>` | Native Google Antigravity lifecycle hook handler (`session-start`, `pre-tool-use`, `stop`) |
 | `npm run auto-discover` | Deterministic brownfield stack scanner producing `.specs/codebase/` and `.specs/project/CONTEXT.md` |
 | `npm run create-feature <id>` | Scaffolds canonical `.specs/features/<id>/` (`plan.md`, `spec.md`, 7-column `tasks.md`) |
 | `npm run review <id>` | Unified Reviewer gate executing all sensors (including Semantic Drift), diff immutability check, and generating Verification Report |

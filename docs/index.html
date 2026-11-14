@@ -161,6 +161,121 @@
         <div class="card-header flex justify-between">
           <div class="flex items-center gap-2">
             <span class="badge badge-success">100%</span>
+            <span class="card-title">Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2</span>
+            <span class="card-subtitle font-mono">antigravity-harness-v2</span>
+          </div>
+          <span class="task-count">10/10 Tasks</span>
+        </div>
+        <div class="card-body">
+          <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">While the AI-SDD Framework enforces constitutional governance at git commit time and defines the 5-phase Elephant-Goldfish Model (EGM), an empirical audit of its operation inside the <strong>Google Antigravity</strong> harness identified four structural improvement areas:
+1. <strong>Runtime Hook Integration (<code class="inline-code">.agents/hooks.json</code>)</strong>: Without native lifecycle hooks, the agent must execute 5–6 manual file reads at the beginning of every session to rehydrate <code class="inline-code">STATE.md</code>, <code class="inline-code">CONTEXT.md</code>, and <code class="inline-code">memory_graph.jsonl</code>, and Tier 1 command prohibitions (<code class="inline-code">--no-verify</code>, <code class="inline-code">git reset --hard</code>) are not physically intercepted before shell execution.
+2. <strong>Historical Feature Bleed in <code class="inline-code">check-spec-drift.js</code></strong>: Scanning all <code class="inline-code">tasks.md</code> rows across already-completed features allows previously touched source files to be modified without an active task (<code class="inline-code">[ ]</code> or <code class="inline-code">[-]</code>).
+3. <strong>Sensor Coverage in <code class="inline-code">run-spec-review.js</code> and <code class="inline-code">generate-drift-report.js</code></strong>: <code class="inline-code">run-spec-review.js</code> lacks bilingual (PT/EN) ambiguity detection and automated MetaGPT SOP task validation (<code class="inline-code">test</code> before <code class="inline-code">feat</code>, max 3 target files per task), while <code class="inline-code">generate-drift-report.js</code> leaves <code class="inline-code">architecturalDivergence</code> unpopulated.
+4. <strong>Empty Knowledge Base &amp; Secondary Harness Rules</strong>: <code class="inline-code">.specs/knowledge/patterns/</code> and <code class="inline-code">.specs/knowledge/anti-patterns/</code> contain 0 entries, and <code class="inline-code">.cursorrules</code>, <code class="inline-code">.windsurfrules</code>, and <code class="inline-code">.clinerules</code> lack the EGM CLI commands present in <code class="inline-code">CLAUDE.md</code>.</p></div></div>
+          <h4 class="section-title">Implementation Tasks (MetaGPT SOP)</h4>
+          <table class="tasks-table">
+            <thead>
+              <tr><th>Status</th><th>ID</th><th>Type</th><th>Description</th><th>Target Files</th></tr>
+            </thead>
+            <tbody>
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-01</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Scaffold unit &amp; integration tests for Antigravity hooks, active drift scope, SOP task review, architectural divergence, and knowledge base</td>
+        <td class="files-col"><code>`tests/antigravity-harness-v2.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-02</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Implement Antigravity lifecycle hook runner and .agents/hooks.json configuration for SessionStart, PreToolUse, and Stop</td>
+        <td class="files-col"><code>`.agents/scripts/sdd-hook.js`, `.agents/hooks.json`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-03</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Upgrade check-spec-drift.js with activeOnly task scope filtering and completed-feature fallback</td>
+        <td class="files-col"><code>`.agents/scripts/check-spec-drift.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-04</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Upgrade run-spec-review.js with bilingual PT/EN ambiguity lexicon and auditTasksSop validator, and generate-drift-report.js with detectArchitecturalDivergence</td>
+        <td class="files-col"><code>`.agents/scripts/run-spec-review.js`, `.agents/scripts/generate-drift-report.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-05</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Populate .specs/knowledge/patterns/ and .specs/knowledge/anti-patterns/ with foundational SDD &amp; Antigravity entries</td>
+        <td class="files-col"><code>`.specs/knowledge/patterns/zero-host-pollution.md`, `.specs/knowledge/patterns/antigravity-lifecycle-hooks.md`, `.specs/knowledge/anti-patterns/blind-file-overwrite.md`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-06</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Add test-assertion-weakening anti-pattern and synchronize .cursorrules, .windsurfrules, and .clinerules with EGM commands</td>
+        <td class="files-col"><code>`.specs/knowledge/anti-patterns/test-assertion-weakening.md`, `.cursorrules`, `.windsurfrules`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-07</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Synchronize .clinerules, AGENTS.md, and package.json test suite with antigravity-harness-v2</td>
+        <td class="files-col"><code>`.clinerules`, `AGENTS.md`, `package.json`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-08</code></td>
+        <td class="type-col"><span class="type-pill">feat</span></td>
+        <td>Update setup.ps1, setup.sh, and auto-discover.js to bootstrap .specs/knowledge/ and Antigravity hooks in target projects</td>
+        <td class="files-col"><code>`setup.ps1`, `setup.sh`, `.agents/scripts/auto-discover.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-09</code></td>
+        <td class="type-col"><span class="type-pill">docs</span></td>
+        <td>Synchronize README.md, ROADMAP.md, codebase maps, and re-export docs/index.html</td>
+        <td class="files-col"><code>`README.md`, `.specs/project/ROADMAP.md`, `docs/index.html`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-10</code></td>
+        <td class="type-col"><span class="type-pill">review</span></td>
+        <td>Execute full SDD review gate, semantic drift report, and record verification evidence</td>
+        <td class="files-col"><code>`.specs/features/antigravity-harness-v2/tasks.md`, `tests/antigravity-harness-v2.test.js`</code></td>
+      </tr>
+    </tbody>
+          </table>
+        </div>
+      </div>
+    
+
+      <div class="card feature-card">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">100%</span>
             <span class="card-title">Core Sensors Robustness &amp; Automation Tooling</span>
             <span class="card-subtitle font-mono">core-sensors-and-automation</span>
           </div>
@@ -803,10 +918,10 @@ The AI Agent Cockpit must empower this exact collaboration dynamic:
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Consolidated Technical Map</h2></p><p class="doc-p"><h3 class="doc-h2">Executive Summary</h3>
 The AI-SDD Framework is a file-first agentic operating system enforcing determinism, persistent memory, and sensor-gated development across 13+ AI harnesses.
-<li class="doc-li"><strong>Stack</strong>: Node.js standard library, Git, Markdown, JSONL.</li>
-<li class="doc-li"><strong>Architecture</strong>: 5-layer SDD lifecycle (.agents/ + .specs/).</li>
-<li class="doc-li"><strong>Conventions</strong>: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria.</li>
-<li class="doc-li"><strong>Current Focus</strong>: Dashboard Reactivity Stabilization &amp; Universal Living HTML Documentation Platform.</li>
+<li class="doc-li"><strong>Stack</strong>: Node.js standard library, Git, Markdown, JSONL, Vue 3 SPA Cockpit.</li>
+<li class="doc-li"><strong>Architecture</strong>: 5-layer SDD lifecycle (<code class="inline-code">.agents/</code> + <code class="inline-code">.specs/</code>) with 5-phase Elephant-Goldfish Model (EGM) and native Google Antigravity Lifecycle Hooks (<code class="inline-code">.agents/hooks.json</code>).</li>
+<li class="doc-li"><strong>Conventions</strong>: MetaGPT 7-column SOP, BDD Given/When/Then acceptance criteria, active task scope drift filtering.</li>
+<li class="doc-li"><strong>Current Focus</strong>: v1.0.0 — Full Multi-Harness Runtime with Antigravity Lifecycle Hooks, Semantic Drift Engine, and Living HTML Documentation.</li>
 </p></div>
         </div>
       </div>
@@ -835,7 +950,12 @@ The AI-SDD Framework is a file-first agentic operating system enforcing determin
 <li class="doc-li"><strong>Package Manager</strong>: Zero-dependency architecture (pure native standard library)</li></p><p class="doc-p"><h3 class="doc-h2">Dependencies</h3>
 <li class="doc-li"><strong>Production</strong>: Zero runtime dependencies (native fs, path, child_process)</li>
 <li class="doc-li"><strong>Development &amp; Tooling</strong>: Git version control, 13+ AI Agent Harness Bridges</li></p><p class="doc-p"><h3 class="doc-h2">Testing &amp; Sensor Infrastructure</h3>
+<li class="doc-li"><strong>Test Runner</strong>: Node.js Native Test Runner (<code class="inline-code">node:test</code> &amp; <code class="inline-code">node:assert</code>) — 55 tests across 6 test suites</li>
+<li class="doc-li"><strong>SDD Integrity Sensor</strong>: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code></li>
 <li class="doc-li"><strong>Spec Drift Sensor</strong>: <code class="inline-code">node .agents/scripts/check-spec-drift.js</code></li>
+<li class="doc-li"><strong>Semantic Drift Engine</strong>: <code class="inline-code">node .agents/scripts/generate-drift-report.js</code></li>
+<li class="doc-li"><strong>Goldfish Spec Reviewer</strong>: <code class="inline-code">node .agents/scripts/run-spec-review.js</code></li>
+<li class="doc-li"><strong>Antigravity Lifecycle Hooks</strong>: <code class="inline-code">.agents/hooks.json</code> -&gt; <code class="inline-code">node .agents/scripts/sdd-hook.js</code></li>
 <li class="doc-li"><strong>Memory Compactor &amp; Linter</strong>: <code class="inline-code">node .agents/scripts/compact-memory.js</code></li>
 <li class="doc-li"><strong>Pre-commit Hook Installer</strong>: <code class="inline-code">node .agents/scripts/install-hooks.js</code></li>
 </p></div>
@@ -1210,6 +1330,45 @@ The one-liner installers (<code class="inline-code">setup.ps1</code> and <code c
         </div>
       </div>
     
+
+      <div class="card adr-card" data-status="accepted" data-title="adr 0009: antigravity lifecycle hooks, active drift scope &amp; sensors v2">
+        <div class="card-header flex justify-between">
+          <div class="flex items-center gap-2">
+            <span class="badge badge-success">ACCEPTED</span>
+            <span class="card-title">ADR 0009: Antigravity Lifecycle Hooks, Active Drift Scope &amp; Sensors v2</span>
+          </div>
+          <span class="card-date">2026-11-14</span>
+        </div>
+        <div class="card-body">
+          <div class="md-body"><p class="doc-p"><h2 class="doc-h1">ADR 0009: Antigravity Lifecycle Hooks, Active Drift Scope &amp; Sensors v2</h2></p><p class="doc-p"><h3 class="doc-h2">Status</h3>
+Accepted</p><p class="doc-p"><h3 class="doc-h2">Date</h3>
+2026-11-14</p><p class="doc-p"><h3 class="doc-h2">Context</h3>
+Following the implementation of the 5-phase Elephant-Goldfish Model (EGM) in ADR 0008, an in-depth audit of how SDD operates inside modern AI harnesses—specifically <strong>Google Antigravity</strong>—surfaced four critical architectural gaps:</p><p class="doc-p">1. <strong>Voluntary Prompt Compliance vs. Native Runtime Hooks</strong>:
+   Previously, SDD rules relied entirely on the LLM voluntarily reading <code class="inline-code">STATE.md</code>, <code class="inline-code">CONTEXT.md</code>, and <code class="inline-code">memory_graph.jsonl</code> at session start (consuming 5–6 sequential file-read tool calls) and voluntarily abstaining from prohibited git commands (<code class="inline-code">--no-verify</code>, <code class="inline-code">git reset --hard</code>) until the git pre-commit hook ran. Google Antigravity natively discovers <code class="inline-code">.agents/hooks.json</code> (<code class="inline-code">SessionStart</code>, <code class="inline-code">PreToolUse</code>, <code class="inline-code">Stop</code>), allowing deterministic runtime enforcement and automatic context injection over <code class="inline-code">stdin</code>/<code class="inline-code">stdout</code> protojson contracts.</p><p class="doc-p">2. <strong>Historical Feature Bleed in Spec Drift (<code class="inline-code">check-spec-drift.js</code>)</strong>:
+   <code class="inline-code">getDeclaredTargetFiles()</code> previously collected <code class="inline-code">Target Files</code> across all rows of all <code class="inline-code">.specs/features/&lt;id&gt;/tasks.md</code> files, regardless of whether a task was already marked <code class="inline-code">[x]</code> (completed). As a repository accumulated completed features, nearly every source file eventually appeared in a historical <code class="inline-code">tasks.md</code>, allowing orphaned edits to pass <code class="inline-code">check-spec-drift.js</code> without an active task.</p><p class="doc-p">3. <strong>Incomplete Goldfish &amp; Semantic Drift Heuristics (<code class="inline-code">run-spec-review.js</code> &amp; <code class="inline-code">generate-drift-report.js</code>)</strong>:
+<li class="doc-li"><code class="inline-code">run-spec-review.js</code> only checked 8 English adjectives and did not audit <code class="inline-code">tasks.md</code> for MetaGPT SOP compliance (test-first ordering and 1–3 file safety valve).</li>
+<li class="doc-li"><code class="inline-code">generate-drift-report.js</code> left the 4th drift category (<code class="inline-code">ARCHITECTURAL_DIVERGENCE</code>) unpopulated.</li></p><p class="doc-p">4. <strong>Empty Knowledge Base &amp; Multi-Harness Rule Desynchronization</strong>:
+   <code class="inline-code">.specs/knowledge/patterns/</code> and <code class="inline-code">.specs/knowledge/anti-patterns/</code> remained empty (<code class="inline-code">0 patterns | 0 anti-patterns</code>), and secondary harness rule files (<code class="inline-code">.cursorrules</code>, <code class="inline-code">.windsurfrules</code>, <code class="inline-code">.clinerules</code>) lacked the EGM commands added to <code class="inline-code">CLAUDE.md</code> in ADR 0008.</p><p class="doc-p"><h3 class="doc-h2">Decision</h3></p><p class="doc-p">We adopt the <strong>Antigravity Harness Runtime &amp; Sensors v2 Architecture</strong> within <code class="inline-code">.agents/</code> and <code class="inline-code">.specs/</code>:</p><p class="doc-p"><h4 class="doc-h3">1. Native Antigravity Lifecycle Hooks (<code class="inline-code">.agents/hooks.json</code> + <code class="inline-code">.agents/scripts/sdd-hook.js</code>)</h4>
+We configure <code class="inline-code">.agents/hooks.json</code> using cross-platform Node execution (<code class="inline-code">node scripts/sdd-hook.js &lt;event&gt;</code>, which executes with <code class="inline-code">.agents/</code> as working directory under both Windows <code class="inline-code">cmd /c</code> and Unix <code class="inline-code">sh -c</code>):
+<li class="doc-li"><strong><code class="inline-code">SessionStart</code></strong>: Reads <code class="inline-code">.specs/project/STATE.md</code>, <code class="inline-code">CONTEXT.md</code>, active entities in <code class="inline-code">.agents/memory/memory_graph.jsonl</code>, and <code class="inline-code">.specs/knowledge/</code> titles, returning an Antigravity <code class="inline-code">injectSteps</code> payload (<code class="inline-code">{&quot;injectSteps&quot;: [{&quot;systemMessage&quot;: {&quot;systemMessage&quot;: &quot;...&quot;}}]}</code>) for zero-tool-call context rehydration.</li>
+<li class="doc-li"><strong><code class="inline-code">PreToolUse</code></strong> (<code class="inline-code">matcher: &quot;run_command&quot;</code>): Inspects <code class="inline-code">toolCall.args.CommandLine</code> (and <code class="inline-code">command</code>) and returns <code class="inline-code">{&quot;decision&quot;: &quot;deny&quot;, &quot;reason&quot;: &quot;...&quot;}</code> if destructive or hook-bypassing flags (<code class="inline-code">--no-verify</code>, <code class="inline-code">git reset --hard</code>, <code class="inline-code">git push --force</code>, <code class="inline-code">git clean -f</code>) are present. Allows normal commands (<code class="inline-code">{&quot;decision&quot;: &quot;allow&quot;}</code>).</li>
+<li class="doc-li"><strong><code class="inline-code">Stop</code></strong>: Inspects working tree spec drift when <code class="inline-code">terminationReason === &quot;NO_TOOL_CALL&quot;</code>. Implements an anti-loop guardrail (<code class="inline-code">executionNum &lt;= 1</code>): if orphaned code files exist on the first stop attempt, returns <code class="inline-code">{&quot;decision&quot;: &quot;continue&quot;, &quot;reason&quot;: &quot;...&quot;}</code> once to remind the agent to map or revert the file; on subsequent turns (<code class="inline-code">executionNum &gt; 1</code>) or when clean, allows termination (<code class="inline-code">{&quot;decision&quot;: &quot;allow&quot;}</code>).</li></p><p class="doc-p"><h4 class="doc-h3">2. Active Task Scope Filtering in <code class="inline-code">check-spec-drift.js</code></h4>
+We update <code class="inline-code">getDeclaredTargetFiles(options)</code> in <code class="inline-code">.agents/scripts/check-spec-drift.js</code>:
+<li class="doc-li">By default, prioritizes uncompleted tasks (<code class="inline-code">[ ]</code> or <code class="inline-code">[-]</code>) across <code class="inline-code">.specs/features/&lt;id&gt;/tasks.md</code>.</li>
+<li class="doc-li">Supports a backward-compatible fallback when a feature has all tasks marked <code class="inline-code">[x]</code> during the final review/commit gate (<code class="inline-code">includeCompletedFallback</code>), or explicit <code class="inline-code">activeOnly: true</code> filtering for strict working-tree checks.</li></p><p class="doc-p"><h4 class="doc-h3">3. Sensors v2 (<code class="inline-code">run-spec-review.js</code> &amp; <code class="inline-code">generate-drift-report.js</code>)</h4>
+<li class="doc-li"><strong><code class="inline-code">run-spec-review.js</code></strong>: Expands ambiguity detection to bilingual PT/EN terms (<code class="inline-code">rápido</code>, <code class="inline-code">robusto</code>, <code class="inline-code">flexível</code>, <code class="inline-code">escalável</code>, <code class="inline-code">simples</code>, <code class="inline-code">fácil</code>) and adds <code class="inline-code">auditTasksSop(tasksContent)</code> to verify decoupled test-first ordering (<code class="inline-code">test</code> before <code class="inline-code">feat</code>) and the 1–3 target file boundary per task.</li>
+<li class="doc-li"><strong><code class="inline-code">generate-drift-report.js</code></strong>: Implements <code class="inline-code">detectArchitecturalDivergence(fileContents, contracts)</code> to flag forbidden external requires in zero-dependency <code class="inline-code">.agents/scripts/</code> modules or unapproved architectural patterns, populating <code class="inline-code">architecturalDivergence</code>.</li></p><p class="doc-p"><h4 class="doc-h3">4. Knowledge Base Seeding &amp; Multi-Harness Rule Parity</h4>
+<li class="doc-li">Populate foundational patterns in <code class="inline-code">.specs/knowledge/patterns/</code> (<code class="inline-code">zero-host-pollution.md</code>, <code class="inline-code">antigravity-lifecycle-hooks.md</code>) and anti-patterns in <code class="inline-code">.specs/knowledge/anti-patterns/</code> (<code class="inline-code">blind-file-overwrite.md</code>, <code class="inline-code">test-assertion-weakening.md</code>).</li>
+<li class="doc-li">Synchronize <code class="inline-code">.cursorrules</code>, <code class="inline-code">.windsurfrules</code>, and <code class="inline-code">.clinerules</code> with <code class="inline-code">CLAUDE.md</code> and <code class="inline-code">AGENTS.md</code>.</li></p><p class="doc-p"><h3 class="doc-h2">Consequences</h3></p><p class="doc-p"><h4 class="doc-h3">Positive</h4>
+<li class="doc-li"><strong>100% Native Antigravity Compatibility</strong>: Zero vendor pollution; leverages <code class="inline-code">.agents/hooks.json</code> directly as specified by Google Antigravity&#039;s customization engine.</li>
+<li class="doc-li"><strong>Zero-Latency Context Boot</strong>: <code class="inline-code">SessionStart</code> hook pre-hydrates SDD state automatically.</li>
+<li class="doc-li"><strong>Physical Tier-1 Guardrails</strong>: Destructive git commands and <code class="inline-code">--no-verify</code> are blocked by the harness before shell execution.</li>
+<li class="doc-li"><strong>Eliminates Historical Drift Blindspot</strong>: Completed features no longer grant blanket permission to edit old source files without an active task.</li></p><p class="doc-p"><h4 class="doc-h3">Trade-offs / Mitigations</h4>
+<li class="doc-li">Hook execution runs synchronously in Antigravity (<code class="inline-code">timeout: 10</code>). <em>Mitigation</em>: <code class="inline-code">sdd-hook.js</code> uses zero external dependencies and fast synchronous filesystem reads, completing in <code class="inline-code">&lt; 80ms</code>.</li>
+</p></div>
+        </div>
+      </div>
+    
       </div>
     </section>
 
@@ -1249,13 +1408,23 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
 <li class="doc-li">[x] Real-time in-browser Mermaid diagram rendering for architecture graphs.</li>
 <li class="doc-li">[x] ADR catalog with status lifecycle (<code class="inline-code">Proposed</code> -&gt; <code class="inline-code">Accepted</code> -&gt; <code class="inline-code">Superseded</code>) and cross-impact links.</li>
 <li class="doc-li">[x] Interactive domain glossary search (<code class="inline-code">CONTEXT.md</code>).</li>
-<li class="doc-li">[x] Standalone single-file HTML exporter (<code class="inline-code">npm run docs:export</code>) for zero-server distribution.</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">Release Status Matrix</h3>
+<li class="doc-li">[x] Standalone single-file HTML exporter (<code class="inline-code">npm run docs:export</code>) for zero-server distribution.</li></p><p class="doc-p"><h4 class="doc-h3">Milestone 5: Multi-Harness EGM Lifecycle &amp; One-Liner Distribution (v0.5.0)</h4>
+<li class="doc-li">[x] Universal GitHub one-liner installers (<code class="inline-code">setup.ps1</code> &amp; <code class="inline-code">setup.sh</code>) with update-safe <code class="inline-code">.specs/</code> and <code class="inline-code">memory_graph.jsonl</code> preservation (ADR 0007).</li>
+<li class="doc-li">[x] Canonical 5-phase Elephant-Goldfish Model (EGM) &amp; <code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code> (ADR 0008).</li>
+<li class="doc-li">[x] Zero-dependency Semantic Drift Engine (<code class="inline-code">generate-drift-report.js</code>) across 4 discrepancy categories.</li></p><p class="doc-p"><h4 class="doc-h3">Milestone 6: Native Google Antigravity Harness Hooks &amp; Sensors v2 (v1.0.0)</h4>
+<li class="doc-li">[x] Native Google Antigravity lifecycle hooks (<code class="inline-code">.agents/hooks.json</code> + <code class="inline-code">.agents/scripts/sdd-hook.js</code> for <code class="inline-code">SessionStart</code>, <code class="inline-code">PreToolUse</code>, <code class="inline-code">Stop</code>) (ADR 0009).</li>
+<li class="doc-li">[x] Active task scope filtering (<code class="inline-code">activeOnly</code>) in <code class="inline-code">check-spec-drift.js</code>.</li>
+<li class="doc-li">[x] Bilingual PT/EN ambiguity lexicon &amp; MetaGPT SOP task validator (<code class="inline-code">auditTasksSop</code>) in <code class="inline-code">run-spec-review.js</code>.</li>
+<li class="doc-li">[x] Architectural divergence detector (<code class="inline-code">detectArchitecturalDivergence</code>) in <code class="inline-code">generate-drift-report.js</code>.</li>
+<li class="doc-li">[x] Foundational Knowledge Base patterns &amp; anti-patterns seeded in <code class="inline-code">.specs/knowledge/</code>.</li></p><p class="doc-p">---</p><p class="doc-p"><h3 class="doc-h2">Release Status Matrix</h3>
 | Milestone | Version | Status | Target Date |
 |---|---|---|---|
 | Milestone 1: Governance &amp; Rules | v0.1.0 | Released | 2026-08-25 |
 | Milestone 2: Spec Drift Engine | v0.2.0 | Released | 2026-08-31 |
 | Milestone 3: Cockpit &amp; Reactivity | v0.3.0 | Released | 2026-09-27 |
 | Milestone 4: Living HTML Docs | v0.4.0 | Released | 2026-09-27 |
+| Milestone 5: EGM &amp; One-Liner Setup | v0.5.0 | Released | 2026-11-03 |
+| Milestone 6: Antigravity Harness v2 | v1.0.0 | Released | 2026-11-14 |
 </p></div>
         </div>
       </div>
@@ -1272,21 +1441,25 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
 <li class="doc-li"><strong>Feature Dashboard</strong>: An interactive visual presentation tool parsing .specs/features/ to display feature progress, user stories, acceptance criteria, and task tables.</li>
 <li class="doc-li"><strong>AI Agent Cockpit</strong>: Modular web workspace (Vue 3 SPA) combining living specs, real-time Kanban task tracking, memory graph visualization, and an embedded terminal for sensor and agent execution.</li>
 <li class="doc-li"><strong>Reactive Kanban Board</strong>: Column-based task view dynamically driven by <code class="inline-code">tasks.md</code> status, updating automatically via SSE/WebSocket without destructive UI-induced drift.</li>
-<li class="doc-li"><strong>Embedded PTY Terminal</strong>: In-browser interactive terminal powered by <code class="inline-code">xterm.js</code> streaming to a local shell over WebSockets with 1-click trigger actions for SDD sensors.</li></p><p class="doc-p"></p></div>
+<li class="doc-li"><strong>Embedded PTY Terminal</strong>: In-browser interactive terminal powered by <code class="inline-code">xterm.js</code> streaming to a local shell over WebSockets with 1-click trigger actions for SDD sensors.</li>
+<li class="doc-li"><strong>Antigravity Lifecycle Hooks</strong>: Native event handlers (<code class="inline-code">SessionStart</code>, <code class="inline-code">PreToolUse</code>, <code class="inline-code">Stop</code>) configured in <code class="inline-code">.agents/hooks.json</code> and executed by the Google Antigravity runtime via JSON stdin/stdout contracts.</li>
+<li class="doc-li"><strong>Active Task Scope Filtering</strong>: Spec drift validation rule where only uncompleted (<code class="inline-code">[ ]</code> or <code class="inline-code">[-]</code>) task rows in <code class="inline-code">tasks.md</code> authorize code modifications, preventing completed historical features from masking orphaned file edits.</li>
+<li class="doc-li"><strong>Knowledge Base Distillation</strong>: Curated architectural patterns (<code class="inline-code">.specs/knowledge/patterns/</code>) and forbidden designs (<code class="inline-code">.specs/knowledge/anti-patterns/</code>) indexed and enforced across sessions.</li></p><p class="doc-p"></p></div>
         </div>
       </div>
       <div class="card">
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">egm-multi-harness-drift</code> (Multi-Harness EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 4 (Verified &amp; Complete) — 8/8 tasks completed. Delivered <code class="inline-code">generate-drift-report.js</code>, <code class="inline-code">run-spec-review.js</code>, canonical skill <code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>, Stage 6 Reviewer integration, ADR 0008, updated <code class="inline-code">AGENTS.md</code> and <code class="inline-code">package.json</code>, and zero-drift review approval.</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">antigravity-harness-v2</code> (Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 6 (Verified &amp; Complete) — 8/8 tasks completed. Delivered <code class="inline-code">.agents/hooks.json</code>, <code class="inline-code">.agents/scripts/sdd-hook.js</code>, <code class="inline-code">activeOnly</code> task filtering in <code class="inline-code">check-spec-drift.js</code>, bilingual PT/EN + <code class="inline-code">auditTasksSop</code> in <code class="inline-code">run-spec-review.js</code>, <code class="inline-code">detectArchitecturalDivergence</code> in <code class="inline-code">generate-drift-report.js</code>, foundational patterns/anti-patterns in <code class="inline-code">.specs/knowledge/</code>, and ADR 0009.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
-  1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 46/46 passing across 5 test suites (100% in ~240ms).
+  1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations, 2 patterns, 2 anti-patterns).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 55/55 passing across 6 test suites (100%).
   3. Spec Drift Sensor (File-level): <code class="inline-code">npm run check-drift</code> — 0 drifted files.
-  4. Semantic Drift Sensor: <code class="inline-code">npm run drift-report egm-multi-harness-drift</code> — 0 semantic discrepancies.
-  5. SDD Review Runner: <code class="inline-code">npm run review egm-multi-harness-drift</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+  4. Semantic Drift Sensor: <code class="inline-code">npm run drift-report antigravity-harness-v2</code> — 0 semantic discrepancies (<code class="inline-code">APPROVED</code>).
+  5. SDD Review Runner: <code class="inline-code">npm run review antigravity-harness-v2</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-11-14 - Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2 (ADR 0009)</strong>: Adopted native <code class="inline-code">.agents/hooks.json</code> + <code class="inline-code">.agents/scripts/sdd-hook.js</code> (<code class="inline-code">SessionStart</code> context injection, <code class="inline-code">PreToolUse</code> Tier 1 command blocking, and <code class="inline-code">Stop</code> single-turn drift guardrail), <code class="inline-code">activeOnly</code> task filtering in <code class="inline-code">check-spec-drift.js</code>, bilingual PT/EN + SOP task audit in <code class="inline-code">run-spec-review.js</code>, <code class="inline-code">detectArchitecturalDivergence</code> in <code class="inline-code">generate-drift-report.js</code>, and initial Knowledge Base seeding. Accepted ADR 0009.</li>
 <li class="doc-li"><strong>2026-11-03 - Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine (ADR 0008)</strong>: Formalized the 5-phase Elephant-Goldfish Model (EGM) in <code class="inline-code">AGENTS.md</code>. Packaged Goldfish adversarial spec review as a canonical Agent Skill (<code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>) following Anthropic&#039;s open standard. Implemented native zero-dependency Semantic Drift Engine (<code class="inline-code">generate-drift-report.js</code>) classifying discrepancies into 4 categories (Missing Features, Incomplete Models, Logic Shortcuts, Architectural Divergences) and integrated as Stage 6 in <code class="inline-code">run-sdd-review.js</code>. Accepted ADR 0008.</li>
 <li class="doc-li"><strong>2026-11-02 - GitHub One-Liner Installer &amp; Update-Safe Distribution (ADR 0007)</strong>: Implemented dual-platform zero-dependency one-liner installers (<code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code>) pulling directly from GitHub archive. Enforced update-safety invariance protecting <code class="inline-code">.specs/</code> and <code class="inline-code">memory_graph.jsonl</code>, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.</li>
 <li class="doc-li"><strong>2026-10-18 - Core Sensors Robustness &amp; Productivity Automation Tooling (ADR 0006)</strong>: Introduced dual-mode verification (<code class="inline-code">--bootstrap</code> vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (<code class="inline-code">auto-discover.js</code>, <code class="inline-code">create-feature.js</code>, <code class="inline-code">run-sdd-review.js</code>). Accepted ADR 0006.</li>

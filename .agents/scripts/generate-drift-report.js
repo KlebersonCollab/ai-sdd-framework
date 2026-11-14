@@ -106,9 +106,14 @@ function parseSpecContracts(specMarkdown) {
 function detectLogicShortcuts(fileContent, filePath = '') {
   if (!fileContent || typeof fileContent !== 'string') return [];
 
-  // Exclude test suite files from production logic shortcuts
+  // Exclude test suite and documentation files from production logic shortcuts
   const normalizedPath = (filePath || '').replace(/\\/g, '/');
-  if (normalizedPath.startsWith('tests/') || normalizedPath.includes('.test.')) {
+  if (
+    normalizedPath.startsWith('tests/') ||
+    normalizedPath.includes('.test.') ||
+    normalizedPath.startsWith('docs/') ||
+    /\.md$/i.test(normalizedPath)
+  ) {
     return [];
   }
 
@@ -148,6 +153,50 @@ function detectLogicShortcuts(fileContent, filePath = '') {
   return shortcuts;
 }
 
+const NODE_BUILTINS = new Set([
+  'assert', 'buffer', 'child_process', 'cluster', 'console', 'constants', 'crypto',
+  'dgram', 'diagnostics_channel', 'dns', 'domain', 'events', 'fs', 'http', 'http2',
+  'https', 'inspector', 'module', 'net', 'os', 'path', 'perf_hooks', 'process',
+  'punycode', 'querystring', 'readline', 'repl', 'stream', 'string_decoder', 'sys',
+  'timers', 'tls', 'trace_events', 'tty', 'url', 'util', 'v8', 'vm', 'wasi', 'worker_threads', 'zlib'
+]);
+
+/**
+ * Audits target files for architectural divergences such as prohibited external npm packages
+ * inside zero-dependency .agents/scripts/ runtime modules (BR-5, AC-6)
+ * @param {Array<{ file: string, content: string }>} fileContents
+ * @returns {Array<string>}
+ */
+function detectArchitecturalDivergence(fileContents = []) {
+  if (!Array.isArray(fileContents)) return [];
+  const divergences = [];
+
+  for (const item of fileContents) {
+    const normPath = String(item.file || '').replace(/\\/g, '/');
+    if (!normPath.startsWith('.agents/scripts/')) continue;
+
+    const lines = String(item.content || '').split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const trimmed = lines[i].trim();
+      if (trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.startsWith('/*')) continue;
+
+      const reqMatches = trimmed.matchAll(/\brequire\(\s*['"]([^'"]+)['"]\s*\)/g);
+      for (const match of reqMatches) {
+        const modName = match[1].trim();
+        if (modName.startsWith('.') || modName.startsWith('/') || modName.startsWith('node:')) continue;
+        const basePkg = modName.split('/')[0];
+        if (!NODE_BUILTINS.has(basePkg)) {
+          divergences.push(
+            `${normPath}:${i + 1} — Prohibited external dependency "${modName}" in zero-dependency .agents/scripts/ module`
+          );
+        }
+      }
+    }
+  }
+
+  return divergences;
+}
+
 /**
  * Cross-references specification contracts against code contents
  * @param {{ businessRules: Array, acceptanceCriteria: Array, modelFields: Array }} contracts
@@ -158,7 +207,7 @@ function analyzeSemanticDrift(contracts, fileContents) {
   const missingFeatures = [];
   const incompleteModels = [];
   const logicShortcuts = [];
-  const architecturalDivergence = [];
+  const architecturalDivergence = detectArchitecturalDivergence(fileContents);
 
   const combinedCode = fileContents.map(f => f.content).join('\n');
   const lowerCode = combinedCode.toLowerCase();
@@ -431,6 +480,7 @@ if (require.main === module) {
 module.exports = {
   parseSpecContracts,
   detectLogicShortcuts,
+  detectArchitecturalDivergence,
   analyzeSemanticDrift,
   generateDriftReportMarkdown,
   runDriftReportCli

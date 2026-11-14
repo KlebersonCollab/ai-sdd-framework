@@ -11,4 +11,8 @@
 - **AI Agent Cockpit**: Modular web workspace (Vue 3 SPA) combining living specs, real-time Kanban task tracking, memory graph visualization, and an embedded terminal for sensor and agent execution.
 - **Reactive Kanban Board**: Column-based task view dynamically driven by `tasks.md` status, updating automatically via SSE/WebSocket without destructive UI-induced drift.
 - **Embedded PTY Terminal**: In-browser interactive terminal powered by `xterm.js` streaming to a local shell over WebSockets with 1-click trigger actions for SDD sensors.
+- **Antigravity Lifecycle Hooks**: Native event handlers (`SessionStart`, `PreToolUse`, `Stop`) configured in `.agents/hooks.json` and executed by the Google Antigravity runtime via JSON stdin/stdout contracts.
+- **Active Task Scope Filtering**: Spec drift validation rule where only uncompleted (`[ ]` or `[-]`) task rows in `tasks.md` authorize code modifications, preventing completed historical features from masking orphaned file edits.
+- **Knowledge Base Distillation**: Curated architectural patterns (`.specs/knowledge/patterns/`) and forbidden designs (`.specs/knowledge/anti-patterns/`) indexed and enforced across sessions.
+
 

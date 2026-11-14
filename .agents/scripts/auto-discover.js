@@ -254,9 +254,13 @@ function writeDiscoveredSpecs(rootDir = REPO_ROOT, options = {}) {
   const discovery = discoverProject(rootDir);
   const codebaseDir = path.join(rootDir, '.specs', 'codebase');
   const projectDir = path.join(rootDir, '.specs', 'project');
+  const kbPatternsDir = path.join(rootDir, '.specs', 'knowledge', 'patterns');
+  const kbAntiPatternsDir = path.join(rootDir, '.specs', 'knowledge', 'anti-patterns');
 
   if (!fs.existsSync(codebaseDir)) fs.mkdirSync(codebaseDir, { recursive: true });
   if (!fs.existsSync(projectDir)) fs.mkdirSync(projectDir, { recursive: true });
+  if (!fs.existsSync(kbPatternsDir)) fs.mkdirSync(kbPatternsDir, { recursive: true });
+  if (!fs.existsSync(kbAntiPatternsDir)) fs.mkdirSync(kbAntiPatternsDir, { recursive: true });
 
   const filesToWrite = [
     { dir: codebaseDir, file: 'STACK.md', content: discovery.markdown.stack },

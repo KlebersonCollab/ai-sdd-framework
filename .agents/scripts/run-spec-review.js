@@ -24,11 +24,17 @@ const AMBIGUOUS_WORDS = [
   { word: 'simple', suggestion: 'Describe concrete API signature or step count' },
   { word: 'easy', suggestion: 'Describe concrete user workflow or DX contract' },
   { word: 'seamless', suggestion: 'Detail state synchronization or transition mechanics' },
-  { word: 'clean', suggestion: 'Reference specific architectural convention or linter standard' }
+  { word: 'clean', suggestion: 'Reference specific architectural convention or linter standard' },
+  { word: 'rápido', suggestion: 'Defina limite quantificável de latência (ex: < 200ms p95)' },
+  { word: 'robusto', suggestion: 'Especifique política de retry, fallback ou invariantes de erro' },
+  { word: 'flexível', suggestion: 'Especifique interfaces, pontos de extensão ou parâmetros exatos' },
+  { word: 'escalável', suggestion: 'Especifique metas de concorrência, throughput ou volume' },
+  { word: 'simples', suggestion: 'Descreva assinatura exata da API ou limite de passos' },
+  { word: 'fácil', suggestion: 'Descreva contrato de uso determinístico' }
 ];
 
 /**
- * Scans text for subjective words that lack verifiable metrics
+ * Scans text for subjective words that lack verifiable metrics (AC-5)
  * @param {string} text
  * @returns {Array<{ word: string, line: number, snippet: string, suggestion: string }>}
  */
@@ -40,9 +46,11 @@ function detectAmbiguities(text) {
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
+    // Strip inline code spans (`...`) to avoid matching CLI flags like `git clean -f`
+    const proseLine = line.replace(/`[^`]*`/g, ' ');
     for (const item of AMBIGUOUS_WORDS) {
-      const regex = new RegExp(`\\b${item.word}\\b`, 'i');
-      if (regex.test(line)) {
+      const regex = new RegExp(`(?:^|[^\\p{L}\\p{N}_])(${item.word})(?=$|[^\\p{L}\\p{N}_])`, 'iu');
+      if (regex.test(proseLine)) {
         results.push({
           word: item.word,
           line: i + 1,
@@ -54,6 +62,56 @@ function detectAmbiguities(text) {
   }
 
   return results;
+}
+
+/**
+ * Audits tasks.md for MetaGPT SOP compliance: Test-First ordering & <= 3 Target Files per task (BR-5, AC-5)
+ * @param {string} tasksContent
+ * @returns {{ valid: boolean, issues: Array<string>, taskCount: number }}
+ */
+function auditTasksSop(tasksContent) {
+  if (!tasksContent || typeof tasksContent !== 'string') {
+    return { valid: true, issues: [], taskCount: 0 };
+  }
+
+  const issues = [];
+  const lines = tasksContent.split('\n');
+  const parsedTasks = [];
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('|') || trimmed.includes('Target Files') || trimmed.includes('---')) continue;
+    const cols = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+    if (cols.length < 7) continue;
+
+    const id = cols[1] || 'TASK';
+    const type = (cols[2] || '').toLowerCase();
+    const targetCol = cols[4] || '';
+
+    const codeMatches = targetCol.match(/`([^`]+)`/g);
+    const files = codeMatches
+      ? codeMatches.map(m => m.replace(/`/g, '').trim()).filter(Boolean)
+      : targetCol.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (files.length > 3) {
+      issues.push(`${id} declares ${files.length} target files (max 3 allowed per atomic task — Safety Valve)`);
+    }
+
+    parsedTasks.push({ id, type, files });
+  }
+
+  const firstTestIdx = parsedTasks.findIndex(t => t.type === 'test');
+  const firstFeatIdx = parsedTasks.findIndex(t => t.type === 'feat');
+
+  if (firstFeatIdx !== -1 && (firstTestIdx === -1 || firstFeatIdx < firstTestIdx)) {
+    issues.push('MetaGPT SOP Test-First violation: A "test" task must precede the first "feat" implementation task');
+  }
+
+  return {
+    valid: issues.length === 0,
+    issues,
+    taskCount: parsedTasks.length
+  };
 }
 
 /**
@@ -183,6 +241,7 @@ function runSpecReviewCli(featureId) {
   const featureDir = path.join(specsFeaturesDir, featureId);
   const specFile = path.join(featureDir, 'spec.md');
   const planFile = path.join(featureDir, 'plan.md');
+  const tasksFile = path.join(featureDir, 'tasks.md');
 
   if (!fs.existsSync(specFile)) {
     console.error(`\n❌ [ERRO] Arquivo spec.md não encontrado em ${featureDir}`);
@@ -193,27 +252,30 @@ function runSpecReviewCli(featureId) {
 
   const specContent = fs.readFileSync(specFile, 'utf8');
   const planContent = fs.existsSync(planFile) ? fs.readFileSync(planFile, 'utf8') : '';
+  const tasksContent = fs.existsSync(tasksFile) ? fs.readFileSync(tasksFile, 'utf8') : '';
   const combined = planContent + '\n' + specContent;
 
   const ambiguities = detectAmbiguities(combined);
   const completeness = auditSpecCompleteness(specContent);
+  const tasksSop = auditTasksSop(tasksContent);
 
   const report = formatSpecReviewReport({
     featureId,
     ambiguities,
-    completeness
+    completeness,
+    tasksSop
   });
 
   const reportPath = path.join(featureDir, 'spec-review-report.md');
   fs.writeFileSync(reportPath, report, 'utf8');
   console.log(`📄 Relatório de revisão gravado em: .specs/features/${featureId}/spec-review-report.md`);
 
-  const pass = !completeness.hasIncompleteScenarios && ambiguities.length === 0;
+  const pass = !completeness.hasIncompleteScenarios && ambiguities.length === 0 && tasksSop.valid;
 
   if (pass) {
     console.log(`✅ [SPEC REVIEW OK] Especificação rigorosa e determinística. Pronta para implementação.`);
   } else {
-    console.log(`⚠️  [SPEC REVIEW WARNINGS] Foram detectados ${ambiguities.length} termos vagos e ${completeness.incompleteScenarios.length} cenários incompletos.`);
+    console.log(`⚠️  [SPEC REVIEW WARNINGS] Foram detectados ${ambiguities.length} termos vagos, ${completeness.incompleteScenarios.length} cenários incompletos e ${tasksSop.issues.length} desvios SOP.`);
   }
 
   return { pass, report };
@@ -229,6 +291,7 @@ if (require.main === module) {
 module.exports = {
   detectAmbiguities,
   auditSpecCompleteness,
+  auditTasksSop,
   formatSpecReviewReport,
   runSpecReviewCli
 };

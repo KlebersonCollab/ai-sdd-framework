@@ -1,0 +1,37 @@
+{
+  "sdd-context-gate": {
+    "enabled": true,
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node scripts/sdd-hook.js session-start",
+        "timeout": 10
+      }
+    ]
+  },
+  "sdd-tier1-safety-gate": {
+    "enabled": true,
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/sdd-hook.js pre-tool-use",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "sdd-drift-stop-gate": {
+    "enabled": true,
+    "Stop": [
+      {
+        "type": "command",
+        "command": "node scripts/sdd-hook.js stop",
+        "timeout": 10
+      }
+    ]
+  }
+}

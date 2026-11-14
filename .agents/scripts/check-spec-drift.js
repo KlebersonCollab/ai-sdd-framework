@@ -133,11 +133,63 @@ function isFileCovered(filePath, declaredTargets) {
   return false;
 }
 
-function getDeclaredTargetFiles() {
+/**
+ * Extracts Target Files from a tasks.md markdown string (BR-4, AC-4)
+ * @param {string} content
+ * @param {object} [options]
+ * @returns {Set<string>}
+ */
+function extractTargetsFromTasksMarkdown(content, options = {}) {
+  const activeOnly = Boolean(options.activeOnly);
+  const targets = new Set();
+  if (!content || typeof content !== 'string') return targets;
+
+  const lines = content.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed.startsWith('|') || trimmed.includes('Target Files') || trimmed.includes('---')) continue;
+    const columns = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
+    if (columns.length < 5) continue;
+
+    const statusCol = columns[0] || '';
+    const isCompleted = /^\[\s*x\s*\]$/i.test(statusCol);
+    if (activeOnly && isCompleted) {
+      continue;
+    }
+
+    let targetColumn = '';
+    if (columns.length >= 7) {
+      targetColumn = columns[4];
+    } else if (columns.length >= 5) {
+      targetColumn = columns[3];
+    }
+
+    if (targetColumn) {
+      const matches = targetColumn.match(/`([^`]+)`/g);
+      if (matches) {
+        matches.forEach(m => {
+          const cleanPath = normalizePath(m.replace(/`/g, ''));
+          if (cleanPath) targets.add(cleanPath);
+        });
+      } else {
+        targetColumn.split(',').forEach(p => {
+          const cleanPath = normalizePath(p);
+          if (cleanPath) targets.add(cleanPath);
+        });
+      }
+    }
+  }
+
+  return targets;
+}
+
+function getDeclaredTargetFiles(options = {}) {
   const specsFeaturesDir = path.join(REPO_ROOT, '.specs', 'features');
   if (!fs.existsSync(specsFeaturesDir)) return new Set();
 
+  const activeOnly = Boolean(options.activeOnly);
   const declaredFiles = new Set();
+  const fallbackFiles = new Set();
   const featureDirs = fs.readdirSync(specsFeaturesDir);
 
   for (const featureDir of featureDirs) {
@@ -145,35 +197,24 @@ function getDeclaredTargetFiles() {
     if (!fs.existsSync(tasksFile)) continue;
 
     const content = fs.readFileSync(tasksFile, 'utf8');
-    const lines = content.split('\n');
+    const activeTargets = extractTargetsFromTasksMarkdown(content, { activeOnly: true });
+    const allTargets = extractTargetsFromTasksMarkdown(content, { activeOnly: false });
 
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith('|') || trimmed.includes('Target Files') || trimmed.includes('---')) continue;
-      const columns = trimmed.replace(/^\|/, '').replace(/\|$/, '').split('|').map(c => c.trim());
-      
-      let targetColumn = '';
-      if (columns.length >= 7) {
-        targetColumn = columns[4];
-      } else if (columns.length >= 5) {
-        targetColumn = columns[3];
-      }
+    allTargets.forEach(t => fallbackFiles.add(t));
 
-      if (targetColumn) {
-        const matches = targetColumn.match(/`([^`]+)`/g);
-        if (matches) {
-          matches.forEach(m => {
-            const cleanPath = normalizePath(m.replace(/`/g, ''));
-            if (cleanPath) declaredFiles.add(cleanPath);
-          });
-        } else {
-          targetColumn.split(',').forEach(p => {
-            const cleanPath = normalizePath(p);
-            if (cleanPath) declaredFiles.add(cleanPath);
-          });
-        }
+    // If feature has at least one active task ([ ] or [-]), include all tasks of this active feature
+    if (activeTargets.size > 0) {
+      if (activeOnly) {
+        activeTargets.forEach(t => declaredFiles.add(t));
+      } else {
+        allTargets.forEach(t => declaredFiles.add(t));
       }
     }
+  }
+
+  // Fallback: when all tasks across all features are marked [x] (e.g. during final commit/review gate)
+  if (!activeOnly && declaredFiles.size === 0) {
+    return fallbackFiles;
   }
 
   return declaredFiles;
@@ -248,6 +289,7 @@ module.exports = {
   isFileCovered,
   getStagedFiles,
   getWorkingTreeFiles,
+  extractTargetsFromTasksMarkdown,
   getDeclaredTargetFiles,
   checkSpecDrift
 };

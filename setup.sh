@@ -136,12 +136,33 @@ if [ -f "${SRC_ROOT}/.github/copilot-instructions.md" ]; then
     cp -f "${SRC_ROOT}/.github/copilot-instructions.md" "${TARGET_DIR}/.github/copilot-instructions.md"
 fi
 
-echo -e "${GREEN}   ✓ Runtime e regras canônicas instalados.${NC}"
+# Sincronizar Knowledge Base canônico (.specs/knowledge) de forma Update-Safe (sem sobrescrever customizações)
+mkdir -p "${TARGET_DIR}/.specs/knowledge/patterns" "${TARGET_DIR}/.specs/knowledge/anti-patterns"
+if [ -d "${SRC_ROOT}/.specs/knowledge/patterns" ]; then
+    for pf in "${SRC_ROOT}/.specs/knowledge/patterns/"*.md; do
+        [ -e "$pf" ] || continue
+        base_pf=$(basename "$pf")
+        if [ ! -f "${TARGET_DIR}/.specs/knowledge/patterns/${base_pf}" ]; then
+            cp "$pf" "${TARGET_DIR}/.specs/knowledge/patterns/${base_pf}"
+        fi
+    done
+fi
+if [ -d "${SRC_ROOT}/.specs/knowledge/anti-patterns" ]; then
+    for af in "${SRC_ROOT}/.specs/knowledge/anti-patterns/"*.md; do
+        [ -e "$af" ] || continue
+        base_af=$(basename "$af")
+        if [ ! -f "${TARGET_DIR}/.specs/knowledge/anti-patterns/${base_af}" ]; then
+            cp "$af" "${TARGET_DIR}/.specs/knowledge/anti-patterns/${base_af}"
+        fi
+    done
+fi
+
+echo -e "${GREEN}   ✓ Runtime, Antigravity Lifecycle Hooks (.agents/hooks.json) e regras canônicas instalados.${NC}"
 
 # 5. Configurar Especificações (.specs) & Sensores
 echo -e "${YELLOW}⚙️  [5/6] Configurando especificações e auto-descoberta...${NC}"
 
-if [ -d "${TARGET_DIR}/.specs" ]; then
+if [ -d "${TARGET_DIR}/.specs/project" ]; then
     echo -e "${CYAN}   🛡️ [SPECS PRESERVADAS] Diretório .specs/ pré-existente foi mantido intacto.${NC}"
 else
     # Detectar se o projeto possui manifesto de código (Brownfield)

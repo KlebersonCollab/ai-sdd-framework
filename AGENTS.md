@@ -166,6 +166,7 @@ All agents across any AI harness MUST leverage these zero-dependency native scri
 | `node .agents/scripts/serve-dashboard.js` | Launches native Cockpit server (port 3000) with SSE live-sync | Visualizing cascade, living docs, and terminal. |
 | `node .agents/scripts/export-docs.js` | Compiles 100% of `.specs/` and rules into standalone `docs/index.html` | Offline distribution and static documentation hosting. |
 | `node .agents/scripts/compact-memory.js [--compact]` | Audits and archives superseded records in `memory_graph.jsonl` | Session maintenance and long-term memory hygiene. |
+| `node .agents/scripts/sdd-hook.js <event>` | Executes Antigravity native lifecycle hooks (`session-start`, `pre-tool-use`, `stop`) | Automatically invoked via `.agents/hooks.json`. |
 
 ---
 
@@ -176,7 +177,7 @@ When handling complex tasks, use subagents strategically across your active AI a
 ### Multi-Harness Invocation Matrix
 | AI Assistant / IDE | Discovery Mechanism | Subagent Invocation Method | Target Scope |
 | :--- | :--- | :--- | :--- |
-| **Google Antigravity** | `.agents/skills/` & `AGENTS.md` | `invoke_subagent` (`TypeName: "research"`, `Role: "Goldfish Spec Reviewer"`) | Cold spec review, codebase exploration |
+| **Google Antigravity** | `.agents/skills/`, `.agents/hooks.json` & `AGENTS.md` | `invoke_subagent` (`TypeName: "research"`, `Role: "Goldfish Spec Reviewer"`) | Native lifecycle hooks (`SessionStart`, `PreToolUse`, `Stop`), cold spec review |
 | **Anthropic Claude Code** | `.agents/skills/` (Agent Skills Standard) | `Task` tool spawning stateless worker referencing `sdd-spec-review` | Cold spec review without chat history bias |
 | **OpenAI Codex** | `AGENTS.md` & `.agents/skills/` | Multi-thread execution (`agents.max_threads`) via isolated worker | Parallel test and spec auditing |
 | **Universal CLI** | `package.json` & `.agents/scripts/` | `npm run spec-review <id>` / `npm run drift-report <id>` | Deterministic zero-dependency CLI execution |

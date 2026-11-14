@@ -1,16 +1,17 @@
 # Project State & Context
 
 ## 🏁 Session Status
-- **Current Task**: Completed implementation and verification of feature `egm-multi-harness-drift` (Multi-Harness EGM Lifecycle, Agent Skills Convention & Semantic Drift Engine).
-- **Progress**: Phase 4 (Verified & Complete) — 8/8 tasks completed. Delivered `generate-drift-report.js`, `run-spec-review.js`, canonical skill `.agents/skills/sdd-spec-review/SKILL.md`, Stage 6 Reviewer integration, ADR 0008, updated `AGENTS.md` and `package.json`, and zero-drift review approval.
+- **Current Task**: Completed implementation and verification of feature `antigravity-harness-v2` (Antigravity Harness Lifecycle Hooks, Active Drift Scope & Sensors v2).
+- **Progress**: Phase 6 (Verified & Complete) — 8/8 tasks completed. Delivered `.agents/hooks.json`, `.agents/scripts/sdd-hook.js`, `activeOnly` task filtering in `check-spec-drift.js`, bilingual PT/EN + `auditTasksSop` in `run-spec-review.js`, `detectArchitecturalDivergence` in `generate-drift-report.js`, foundational patterns/anti-patterns in `.specs/knowledge/`, and ADR 0009.
 - **Verification Sensors**:
-  1. SDD Integrity Sensor: `node .agents/scripts/verify-sdd-integrity.js` — 100% pass (0 violations).
-  2. Unit & Integration Tests: `npm test` — 46/46 passing across 5 test suites (100% in ~240ms).
+  1. SDD Integrity Sensor: `node .agents/scripts/verify-sdd-integrity.js` — 100% pass (0 violations, 2 patterns, 2 anti-patterns).
+  2. Unit & Integration Tests: `npm test` — 55/55 passing across 6 test suites (100%).
   3. Spec Drift Sensor (File-level): `npm run check-drift` — 0 drifted files.
-  4. Semantic Drift Sensor: `npm run drift-report egm-multi-harness-drift` — 0 semantic discrepancies.
-  5. SDD Review Runner: `npm run review egm-multi-harness-drift` — VERDICT: APPROVED.
+  4. Semantic Drift Sensor: `npm run drift-report antigravity-harness-v2` — 0 semantic discrepancies (`APPROVED`).
+  5. SDD Review Runner: `npm run review antigravity-harness-v2` — VERDICT: APPROVED.
 
 ## 💡 Decisions Log
+- **2026-11-14 - Antigravity Harness Lifecycle Hooks, Active Drift Scope & Sensors v2 (ADR 0009)**: Adopted native `.agents/hooks.json` + `.agents/scripts/sdd-hook.js` (`SessionStart` context injection, `PreToolUse` Tier 1 command blocking, and `Stop` single-turn drift guardrail), `activeOnly` task filtering in `check-spec-drift.js`, bilingual PT/EN + SOP task audit in `run-spec-review.js`, `detectArchitecturalDivergence` in `generate-drift-report.js`, and initial Knowledge Base seeding. Accepted ADR 0009.
 - **2026-11-03 - Canonical EGM Lifecycle, Agent Skills Convention & Semantic Drift Engine (ADR 0008)**: Formalized the 5-phase Elephant-Goldfish Model (EGM) in `AGENTS.md`. Packaged Goldfish adversarial spec review as a canonical Agent Skill (`.agents/skills/sdd-spec-review/SKILL.md`) following Anthropic's open standard. Implemented native zero-dependency Semantic Drift Engine (`generate-drift-report.js`) classifying discrepancies into 4 categories (Missing Features, Incomplete Models, Logic Shortcuts, Architectural Divergences) and integrated as Stage 6 in `run-sdd-review.js`. Accepted ADR 0008.
 - **2026-11-02 - GitHub One-Liner Installer & Update-Safe Distribution (ADR 0007)**: Implemented dual-platform zero-dependency one-liner installers (`setup.ps1` and `setup.sh`) pulling directly from GitHub archive. Enforced update-safety invariance protecting `.specs/` and `memory_graph.jsonl`, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.
 - **2026-10-18 - Core Sensors Robustness & Productivity Automation Tooling (ADR 0006)**: Introduced dual-mode verification (`--bootstrap` vs canonical), DFS topological task dependency cycle sensor, working-tree aware spec drift detection, worktree-resilient pre-commit hooks, and native CLI automation tools (`auto-discover.js`, `create-feature.js`, `run-sdd-review.js`). Accepted ADR 0006.
