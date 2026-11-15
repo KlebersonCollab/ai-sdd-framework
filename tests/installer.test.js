@@ -121,3 +121,16 @@ test('Installer logic: Fresh installation initializes a clean zeroed memory_grap
   }
 });
 
+test('AC-8: setup.ps1 is UTF-8 without BOM, free of top-level CmdletBinding/param for irm | iex, and writes BOM-free memory_graph.jsonl', () => {
+  const rawBytes = fs.readFileSync(SETUP_PS1);
+  const hasBom = rawBytes[0] === 0xEF && rawBytes[1] === 0xBB && rawBytes[2] === 0xBF;
+  assert.strictEqual(hasBom, false, 'setup.ps1 must NOT start with a UTF-8 BOM (0xEF 0xBB 0xBF) which breaks irm | iex in PowerShell');
+
+  const content = rawBytes.toString('utf8');
+  assert.strictEqual(/^\s*\[CmdletBinding\(\)\]/m.test(content), false, 'setup.ps1 must not use top-level [CmdletBinding()] which fails in Invoke-Expression');
+  assert.strictEqual(/^\s*param\s*\(/m.test(content), false, 'setup.ps1 must not use top-level param(...) which fails in Invoke-Expression');
+  assert.match(content, /AI_SDD_REPO/, 'setup.ps1 must support $env:AI_SDD_REPO fallback');
+  assert.match(content, /UTF8Encoding\(\$false\)/, 'setup.ps1 must write memory_graph.jsonl using UTF8Encoding($false) without BOM');
+});
+
+

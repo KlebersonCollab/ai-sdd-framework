@@ -20,6 +20,8 @@
 | [x] | TASK-08 | feat | Update setup.ps1, setup.sh, and auto-discover.js to bootstrap .specs/knowledge/ and Antigravity hooks in target projects | `setup.ps1`, `setup.sh`, `.agents/scripts/auto-discover.js` | TASK-07 | Updated setup.ps1, setup.sh, and auto-discover.js with update-safe .specs/knowledge/ seeding |
 | [x] | TASK-09 | docs | Synchronize README.md, ROADMAP.md, codebase maps, and re-export docs/index.html | `README.md`, `.specs/project/ROADMAP.md`, `docs/index.html` | TASK-08 | Synced README.md, ROADMAP.md, codebase maps, and exported docs/index.html (167 KB) |
 | [x] | TASK-10 | review | Execute full SDD review gate, semantic drift report, and record verification evidence | `.specs/features/antigravity-harness-v2/tasks.md`, `tests/antigravity-harness-v2.test.js` | TASK-08, TASK-09 | Verified 10/10 tasks and 56/56 tests passing with 0 drift |
+| [x] | TASK-11 | test | Add regression test in tests/installer.test.js verifying setup.ps1 has no UTF-8 BOM, no top-level CmdletBinding/param breaking irm-to-iex, and BOM-free memory_graph.jsonl write | `tests/installer.test.js` | TASK-10 | Added AC-8 regression test in tests/installer.test.js (6/6 passing) |
+| [x] | TASK-12 | fix | Strip UTF-8 BOM from setup.ps1, replace CmdletBinding/param with iex-safe env fallbacks, and write memory_graph.jsonl with UTF8Encoding($false) | `setup.ps1`, `docs/index.html` | TASK-11 | Stripped UTF-8 BOM and CmdletBinding/param from setup.ps1 (0 AST parse errors, 56/56 tests passing) |
 
 ## Schema Dictionary
 - **Status**: `[ ]` (Pending) | `[-]` (In Progress) | `[x]` (Verified Complete).

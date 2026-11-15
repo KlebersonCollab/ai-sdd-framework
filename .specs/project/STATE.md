@@ -1,16 +1,17 @@
 # Project State & Context
 
 ## 🏁 Session Status
-- **Current Task**: Completed implementation and verification of feature `antigravity-harness-v2` (Antigravity Harness Lifecycle Hooks, Active Drift Scope & Sensors v2).
-- **Progress**: Phase 6 (Verified & Complete) — 8/8 tasks completed. Delivered `.agents/hooks.json`, `.agents/scripts/sdd-hook.js`, `activeOnly` task filtering in `check-spec-drift.js`, bilingual PT/EN + `auditTasksSop` in `run-spec-review.js`, `detectArchitecturalDivergence` in `generate-drift-report.js`, foundational patterns/anti-patterns in `.specs/knowledge/`, and ADR 0009.
+- **Current Task**: Completed implementation and verification of feature `antigravity-harness-v2` (including `TASK-11` and `TASK-12` PowerShell `irm | iex` BOM-free one-liner installer resilience).
+- **Progress**: Phase 6 (Verified & Complete) — 12/12 tasks completed. Delivered `.agents/hooks.json`, `.agents/scripts/sdd-hook.js`, `activeOnly` task filtering in `check-spec-drift.js`, bilingual PT/EN + `auditTasksSop` in `run-spec-review.js`, `detectArchitecturalDivergence` in `generate-drift-report.js`, foundational patterns/anti-patterns in `.specs/knowledge/`, BOM-free `setup.ps1` pipeline resilience (`AC-8`), and ADR 0009.
 - **Verification Sensors**:
   1. SDD Integrity Sensor: `node .agents/scripts/verify-sdd-integrity.js` — 100% pass (0 violations, 2 patterns, 2 anti-patterns).
-  2. Unit & Integration Tests: `npm test` — 55/55 passing across 6 test suites (100%).
+  2. Unit & Integration Tests: `npm test` — 56/56 passing across 6 test suites (100%).
   3. Spec Drift Sensor (File-level): `npm run check-drift` — 0 drifted files.
   4. Semantic Drift Sensor: `npm run drift-report antigravity-harness-v2` — 0 semantic discrepancies (`APPROVED`).
   5. SDD Review Runner: `npm run review antigravity-harness-v2` — VERDICT: APPROVED.
 
 ## 💡 Decisions Log
+- **2026-11-15 - PowerShell One-Liner (`irm | iex`) BOM-Free & Pipeline Resilience (`AC-8`)**: Stripped 3-byte UTF-8 BOM (`0xEF 0xBB 0xBF`) from `setup.ps1`, replaced top-level `[CmdletBinding()] param(...)` with `iex`-safe `$env:AI_SDD_REPO` / `$env:AI_SDD_BRANCH` fallbacks, and switched `memory_graph.jsonl` initialization to `System.Text.UTF8Encoding($false)` to prevent Windows PowerShell 5.1 from injecting BOM bytes or failing AST parsing during `irm ... | iex`.
 - **2026-11-14 - Antigravity Harness Lifecycle Hooks, Active Drift Scope & Sensors v2 (ADR 0009)**: Adopted native `.agents/hooks.json` + `.agents/scripts/sdd-hook.js` (`SessionStart` context injection, `PreToolUse` Tier 1 command blocking, and `Stop` single-turn drift guardrail), `activeOnly` task filtering in `check-spec-drift.js`, bilingual PT/EN + SOP task audit in `run-spec-review.js`, `detectArchitecturalDivergence` in `generate-drift-report.js`, and initial Knowledge Base seeding. Accepted ADR 0009.
 - **2026-11-03 - Canonical EGM Lifecycle, Agent Skills Convention & Semantic Drift Engine (ADR 0008)**: Formalized the 5-phase Elephant-Goldfish Model (EGM) in `AGENTS.md`. Packaged Goldfish adversarial spec review as a canonical Agent Skill (`.agents/skills/sdd-spec-review/SKILL.md`) following Anthropic's open standard. Implemented native zero-dependency Semantic Drift Engine (`generate-drift-report.js`) classifying discrepancies into 4 categories (Missing Features, Incomplete Models, Logic Shortcuts, Architectural Divergences) and integrated as Stage 6 in `run-sdd-review.js`. Accepted ADR 0008.
 - **2026-11-02 - GitHub One-Liner Installer & Update-Safe Distribution (ADR 0007)**: Implemented dual-platform zero-dependency one-liner installers (`setup.ps1` and `setup.sh`) pulling directly from GitHub archive. Enforced update-safety invariance protecting `.specs/` and `memory_graph.jsonl`, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.

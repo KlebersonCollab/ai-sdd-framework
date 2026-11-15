@@ -164,7 +164,7 @@
             <span class="card-title">Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2</span>
             <span class="card-subtitle font-mono">antigravity-harness-v2</span>
           </div>
-          <span class="task-count">10/10 Tasks</span>
+          <span class="task-count">12/12 Tasks</span>
         </div>
         <div class="card-body">
           <div class="problem-box"><strong>Problem Statement:</strong><br><div class="md-body"><p class="doc-p">While the AI-SDD Framework enforces constitutional governance at git commit time and defines the 5-phase Elephant-Goldfish Model (EGM), an empirical audit of its operation inside the <strong>Google Antigravity</strong> harness identified four structural improvement areas:
@@ -265,6 +265,24 @@
         <td class="type-col"><span class="type-pill">review</span></td>
         <td>Execute full SDD review gate, semantic drift report, and record verification evidence</td>
         <td class="files-col"><code>`.specs/features/antigravity-harness-v2/tasks.md`, `tests/antigravity-harness-v2.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-11</code></td>
+        <td class="type-col"><span class="type-pill">test</span></td>
+        <td>Add regression test in tests/installer.test.js verifying setup.ps1 has no UTF-8 BOM, no top-level CmdletBinding/param breaking irm-to-iex, and BOM-free memory_graph.jsonl write</td>
+        <td class="files-col"><code>`tests/installer.test.js`</code></td>
+      </tr>
+    
+
+      <tr>
+        <td class="status-col"><span class="badge badge-success">DONE</span></td>
+        <td class="id-col"><code>TASK-12</code></td>
+        <td class="type-col"><span class="type-pill">fix</span></td>
+        <td>Strip UTF-8 BOM from setup.ps1, replace CmdletBinding/param with iex-safe env fallbacks, and write memory_graph.jsonl with UTF8Encoding($false)</td>
+        <td class="files-col"><code>`setup.ps1`, `docs/index.html`</code></td>
       </tr>
     </tbody>
           </table>
@@ -1451,14 +1469,15 @@ Establish the industry-standard Spec Driven Development (SDD) runtime and living
         <div class="card-header"><span class="card-title">Current State & Session Memory</span></div>
         <div class="card-body">
           <div class="md-body"><p class="doc-p"><h2 class="doc-h1">Project State &amp; Context</h2></p><p class="doc-p"><h3 class="doc-h2">🏁 Session Status</h3>
-<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">antigravity-harness-v2</code> (Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2).</li>
-<li class="doc-li"><strong>Progress</strong>: Phase 6 (Verified &amp; Complete) — 8/8 tasks completed. Delivered <code class="inline-code">.agents/hooks.json</code>, <code class="inline-code">.agents/scripts/sdd-hook.js</code>, <code class="inline-code">activeOnly</code> task filtering in <code class="inline-code">check-spec-drift.js</code>, bilingual PT/EN + <code class="inline-code">auditTasksSop</code> in <code class="inline-code">run-spec-review.js</code>, <code class="inline-code">detectArchitecturalDivergence</code> in <code class="inline-code">generate-drift-report.js</code>, foundational patterns/anti-patterns in <code class="inline-code">.specs/knowledge/</code>, and ADR 0009.</li>
+<li class="doc-li"><strong>Current Task</strong>: Completed implementation and verification of feature <code class="inline-code">antigravity-harness-v2</code> (including <code class="inline-code">TASK-11</code> and <code class="inline-code">TASK-12</code> PowerShell <code class="inline-code">irm | iex</code> BOM-free one-liner installer resilience).</li>
+<li class="doc-li"><strong>Progress</strong>: Phase 6 (Verified &amp; Complete) — 12/12 tasks completed. Delivered <code class="inline-code">.agents/hooks.json</code>, <code class="inline-code">.agents/scripts/sdd-hook.js</code>, <code class="inline-code">activeOnly</code> task filtering in <code class="inline-code">check-spec-drift.js</code>, bilingual PT/EN + <code class="inline-code">auditTasksSop</code> in <code class="inline-code">run-spec-review.js</code>, <code class="inline-code">detectArchitecturalDivergence</code> in <code class="inline-code">generate-drift-report.js</code>, foundational patterns/anti-patterns in <code class="inline-code">.specs/knowledge/</code>, BOM-free <code class="inline-code">setup.ps1</code> pipeline resilience (<code class="inline-code">AC-8</code>), and ADR 0009.</li>
 <li class="doc-li"><strong>Verification Sensors</strong>:</li>
   1. SDD Integrity Sensor: <code class="inline-code">node .agents/scripts/verify-sdd-integrity.js</code> — 100% pass (0 violations, 2 patterns, 2 anti-patterns).
-  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 55/55 passing across 6 test suites (100%).
+  2. Unit &amp; Integration Tests: <code class="inline-code">npm test</code> — 56/56 passing across 6 test suites (100%).
   3. Spec Drift Sensor (File-level): <code class="inline-code">npm run check-drift</code> — 0 drifted files.
   4. Semantic Drift Sensor: <code class="inline-code">npm run drift-report antigravity-harness-v2</code> — 0 semantic discrepancies (<code class="inline-code">APPROVED</code>).
   5. SDD Review Runner: <code class="inline-code">npm run review antigravity-harness-v2</code> — VERDICT: APPROVED.</p><p class="doc-p"><h3 class="doc-h2">💡 Decisions Log</h3>
+<li class="doc-li"><strong>2026-11-15 - PowerShell One-Liner (<code class="inline-code">irm | iex</code>) BOM-Free &amp; Pipeline Resilience (<code class="inline-code">AC-8</code>)</strong>: Stripped 3-byte UTF-8 BOM (<code class="inline-code">0xEF 0xBB 0xBF</code>) from <code class="inline-code">setup.ps1</code>, replaced top-level <code class="inline-code">[CmdletBinding()] param(...)</code> with <code class="inline-code">iex</code>-safe <code class="inline-code">$env:AI_SDD_REPO</code> / <code class="inline-code">$env:AI_SDD_BRANCH</code> fallbacks, and switched <code class="inline-code">memory_graph.jsonl</code> initialization to <code class="inline-code">System.Text.UTF8Encoding($false)</code> to prevent Windows PowerShell 5.1 from injecting BOM bytes or failing AST parsing during <code class="inline-code">irm ... | iex</code>.</li>
 <li class="doc-li"><strong>2026-11-14 - Antigravity Harness Lifecycle Hooks, Active Drift Scope &amp; Sensors v2 (ADR 0009)</strong>: Adopted native <code class="inline-code">.agents/hooks.json</code> + <code class="inline-code">.agents/scripts/sdd-hook.js</code> (<code class="inline-code">SessionStart</code> context injection, <code class="inline-code">PreToolUse</code> Tier 1 command blocking, and <code class="inline-code">Stop</code> single-turn drift guardrail), <code class="inline-code">activeOnly</code> task filtering in <code class="inline-code">check-spec-drift.js</code>, bilingual PT/EN + SOP task audit in <code class="inline-code">run-spec-review.js</code>, <code class="inline-code">detectArchitecturalDivergence</code> in <code class="inline-code">generate-drift-report.js</code>, and initial Knowledge Base seeding. Accepted ADR 0009.</li>
 <li class="doc-li"><strong>2026-11-03 - Canonical EGM Lifecycle, Agent Skills Convention &amp; Semantic Drift Engine (ADR 0008)</strong>: Formalized the 5-phase Elephant-Goldfish Model (EGM) in <code class="inline-code">AGENTS.md</code>. Packaged Goldfish adversarial spec review as a canonical Agent Skill (<code class="inline-code">.agents/skills/sdd-spec-review/SKILL.md</code>) following Anthropic&#039;s open standard. Implemented native zero-dependency Semantic Drift Engine (<code class="inline-code">generate-drift-report.js</code>) classifying discrepancies into 4 categories (Missing Features, Incomplete Models, Logic Shortcuts, Architectural Divergences) and integrated as Stage 6 in <code class="inline-code">run-sdd-review.js</code>. Accepted ADR 0008.</li>
 <li class="doc-li"><strong>2026-11-02 - GitHub One-Liner Installer &amp; Update-Safe Distribution (ADR 0007)</strong>: Implemented dual-platform zero-dependency one-liner installers (<code class="inline-code">setup.ps1</code> and <code class="inline-code">setup.sh</code>) pulling directly from GitHub archive. Enforced update-safety invariance protecting <code class="inline-code">.specs/</code> and <code class="inline-code">memory_graph.jsonl</code>, automatic greenfield/brownfield bootstrapping, and pre-commit hook registration. Accepted ADR 0007.</li>

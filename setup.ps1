@@ -1,13 +1,10 @@
-﻿# ==============================================================================
+# ==============================================================================
 # AI-SDD Framework | Universal One-Liner Installer (PowerShell)
 # Repository: https://github.com/KlebersonCollab/ai-sdd-framework
 # ==============================================================================
 
-[CmdletBinding()]
-param(
-    [string]$Repo = "KlebersonCollab/ai-sdd-framework",
-    [string]$Branch = "main"
-)
+if (-not $Repo) { $Repo = if ($env:AI_SDD_REPO) { $env:AI_SDD_REPO } else { "KlebersonCollab/ai-sdd-framework" } }
+if (-not $Branch) { $Branch = if ($env:AI_SDD_BRANCH) { $env:AI_SDD_BRANCH } else { "main" } }
 
 $ErrorActionPreference = "Stop"
 
@@ -86,8 +83,7 @@ try {
     $memoryBackup = $null
 
     if (Test-Path $existingMemoryFile) {
-        $memoryBackup = Get-Content $existingMemoryFile -Raw
-        Write-Host "   🛡️ Grafo de memória pré-existente preservado." -ForegroundColor DarkCyan
+        $memoryBackup = [System.IO.File]::ReadAllText($existingMemoryFile, [System.Text.Encoding]::UTF8)
     }
 
     # Copiar .agents
@@ -96,16 +92,17 @@ try {
         Copy-Item -Path $sourceAgents -Destination $targetDir -Recurse -Force
     }
 
-    # Restaurar backup de memória caso existisse, ou inicializar 100% limpo para projetos novos
+    # Restaurar backup de memória caso existisse, ou inicializar 100% limpo para projetos novos (UTF-8 sem BOM)
     $destMemoryDir = Join-Path $destAgents "memory"
     $destMemoryFile = Join-Path $destMemoryDir "memory_graph.jsonl"
     if (-not (Test-Path $destMemoryDir)) { New-Item -ItemType Directory -Path $destMemoryDir -Force | Out-Null }
 
+    $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
     if ($memoryBackup) {
-        Set-Content -Path $destMemoryFile -Value $memoryBackup -Encoding UTF8 -NoNewline
+        [System.IO.File]::WriteAllText($destMemoryFile, $memoryBackup, $utf8NoBom)
         Write-Host "   🛡️ Grafo de memória pré-existente preservado." -ForegroundColor DarkCyan
     } else {
-        Set-Content -Path $destMemoryFile -Value "" -Encoding UTF8 -NoNewline
+        [System.IO.File]::WriteAllText($destMemoryFile, "", $utf8NoBom)
         Write-Host "   🧠 Grafo de memória inicializado limpo (0 entidades/relação herdadas)." -ForegroundColor Green
     }
 

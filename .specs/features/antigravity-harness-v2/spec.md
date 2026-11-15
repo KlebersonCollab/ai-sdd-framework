@@ -54,6 +54,11 @@
   - **When** the script executes
   - **Then** it safely falls back to a valid non-crashing JSON response (`{}` or `{"decision": "allow"}`) and exits with code 0 so the Antigravity harness loop is never deadlocked.
 
+- **AC-8: PowerShell One-Liner (irm | iex) BOM-Free & Pipeline Execution Resilience**
+  - **Given** `setup.ps1` is fetched via `Invoke-RestMethod` (`irm`) from `raw.githubusercontent.com` and piped into `Invoke-Expression` (`iex`) in Windows PowerShell 5.1 or PowerShell 7
+  - **When** the PowerShell AST parser (`Parser::ParseInput`) and `Invoke-Expression` evaluate `setup.ps1`
+  - **Then** `setup.ps1` contains zero UTF-8 BOM bytes (`0xEF 0xBB 0xBF`), omits top-level `[CmdletBinding()]` and `param(...)` blocks that fail under `iex`, resolves `$Repo` and `$Branch` via `$env:AI_SDD_REPO` / `$env:AI_SDD_BRANCH` fallbacks, and writes `memory_graph.jsonl` using BOM-free `UTF8Encoding($false)` with 0 parse errors.
+
 ## 4. Test Data & Boundary Matrix
 | Parameter / Field | Valid Inputs (Happy) | Invalid / Boundary Inputs (Edge) |
 |---|---|---|
